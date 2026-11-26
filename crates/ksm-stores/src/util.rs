@@ -285,3 +285,105 @@ pub fn owner_metrics(m: &ObjectMeta) -> Vec<Metric> {
 pub fn opt_bool_string(b: Option<bool>) -> String {
     b.map(|b| b.to_string()).unwrap_or_default()
 }
+
+/// `v1.ResourceHugePagesPrefix`.
+const RESOURCE_HUGE_PAGES_PREFIX: &str = "hugepages-";
+/// `v1.ResourceAttachableVolumesPrefix`.
+const RESOURCE_ATTACHABLE_VOLUMES_PREFIX: &str = "attachable-volumes-";
+/// `v1.DefaultResourceRequestsPrefix`.
+const DEFAULT_RESOURCE_REQUESTS_PREFIX: &str = "requests.";
+/// `v1.ResourceDefaultNamespacePrefix`.
+const RESOURCE_DEFAULT_NAMESPACE_PREFIX: &str = "kubernetes.io/";
+
+/// `isHugePageResourceName`.
+pub fn is_huge_page_resource_name(name: &str) -> bool {
+    name.starts_with(RESOURCE_HUGE_PAGES_PREFIX)
+}
+
+/// `isAttachableVolumeResourceName`.
+pub fn is_attachable_volume_resource_name(name: &str) -> bool {
+    name.starts_with(RESOURCE_ATTACHABLE_VOLUMES_PREFIX)
+}
+
+/// `isNativeResource`.
+fn is_native_resource(name: &str) -> bool {
+    !name.contains('/') || name.contains(RESOURCE_DEFAULT_NAMESPACE_PREFIX)
+}
+
+/// `isExtendedResourceName`.
+pub fn is_extended_resource_name(name: &str) -> bool {
+    if is_native_resource(name) || name.starts_with(DEFAULT_RESOURCE_REQUESTS_PREFIX) {
+        return false;
+    }
+    is_qualified_name(&format!("{DEFAULT_RESOURCE_REQUESTS_PREFIX}{name}"))
+}
+
+/// One DNS-1123 label: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`.
+fn is_dns1123_label_fmt(s: &str) -> bool {
+    let b = s.as_bytes();
+    let edge = |c: u8| c.is_ascii_lowercase() || c.is_ascii_digit();
+    match (b.first(), b.last()) {
+        (Some(&f), Some(&l)) => edge(f) && edge(l) && b.iter().all(|&c| edge(c) || c == b'-'),
+        _ => false,
+    }
+}
+
+/// k8s `validation.IsDNS1123Subdomain` reports no error.
+pub fn is_dns1123_subdomain(s: &str) -> bool {
+    s.len() <= 253 && s.split('.').all(is_dns1123_label_fmt)
+}
+
+/// The name part of a label key: `([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]`,
+/// at most 63 bytes.
+fn is_label_key_name(s: &str) -> bool {
+    let b = s.as_bytes();
+    if b.len() > 63 {
+        return false;
+    }
+    match (b.first(), b.last()) {
+        (Some(&f), Some(&l)) => {
+            f.is_ascii_alphanumeric()
+                && l.is_ascii_alphanumeric()
+                && b.iter()
+                    .all(|&c| c.is_ascii_alphanumeric() || matches!(c, b'-' | b'_' | b'.'))
+        }
+        _ => false,
+    }
+}
+
+/// k8s `validation.IsQualifiedName` reports no error: an optional DNS-1123
+/// subdomain prefix and `/`, then a label-key name.
+pub fn is_qualified_name(value: &str) -> bool {
+    let parts: Vec<&str> = value.split('/').collect();
+    match parts.as_slice() {
+        [name] => is_label_key_name(name),
+        [prefix, name] => {
+            !prefix.is_empty() && is_dns1123_subdomain(prefix) && is_label_key_name(name)
+        }
+        _ => false,
+    }
+}
+
+/// The IP family (`"4"` or `"6"`) of an address as Go's `netip.ParseAddr`
+/// followed by `Unmap()` sees it; `None` where Go fails to parse it.
+pub fn go_ip_family(s: &str) -> Option<&'static str> {
+    use std::net::{Ipv4Addr, Ipv6Addr};
+    // Go picks the parser by the first '.', ':' or '%' in the string.
+    match s.bytes().find(|c| matches!(c, b'.' | b':' | b'%'))? {
+        b'.' => s.parse::<Ipv4Addr>().ok().map(|_| "4"),
+        b':' => {
+            let addr = match s.split_once('%') {
+                Some((_, "")) => return None,
+                Some((a, _)) => a,
+                None => s,
+            };
+            let a = addr.parse::<Ipv6Addr>().ok()?;
+            Some(if a.to_ipv4_mapped().is_some() {
+                "4"
+            } else {
+                "6"
+            })
+        }
+        _ => None,
+    }
+}
