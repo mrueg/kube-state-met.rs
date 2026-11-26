@@ -784,7 +784,7 @@ pub fn families(
         Gauge,
         Stable,
         "",
-        |p| owner_metrics(&p.metadata),
+        |p| owner_metrics(&p.metadata, true),
     )
     .add(
         "kube_pod_resourceclaim_info",

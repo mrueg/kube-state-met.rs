@@ -60,7 +60,7 @@ pub fn families(
         Gauge,
         Alpha,
         "",
-        |o| owner_metrics(&o.metadata),
+        |o| owner_metrics(&o.metadata, true),
     );
     f.build()
 }

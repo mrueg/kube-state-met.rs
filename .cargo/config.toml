@@ -1,0 +1,4 @@
+# Tests compare against goldens recorded with TZ=UTC (CronJob schedules without
+# spec.timeZone follow the process's local zone, as in Go).
+[env]
+TZ = { value = "UTC", force = true }

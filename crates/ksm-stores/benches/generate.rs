@@ -11,8 +11,12 @@ use ksm_core::store::{Headers, MetricsStore, MetricsWriter, sanitize_headers};
 use serde::de::DeserializeOwned;
 
 fn objects<K: DeserializeOwned>(kind: &str) -> Vec<K> {
-    let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../../testdata/fixtures/golden/objects.json");
-    let v: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(path).expect("fixtures")).expect("json");
+    let path = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../testdata/fixtures/golden/objects.json"
+    );
+    let v: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(path).expect("fixtures")).expect("json");
     v["items"]
         .as_array()
         .expect("items")
@@ -46,7 +50,11 @@ fn bench_store<K: DeserializeOwned + 'static>(
         let o = &objs[i % objs.len()];
         store.add(&i.to_string(), "1", || render(&fams, o));
     }
-    let w = MetricsWriter::new(kind, Arc::new(Headers::new(extract_headers(&fams))), vec![store]);
+    let w = MetricsWriter::new(
+        kind,
+        Arc::new(Headers::new(extract_headers(&fams))),
+        vec![store],
+    );
     c.bench_function(&format!("write_all/{kind} x10000"), |b| {
         b.iter(|| {
             let h = sanitize_headers(true, &[&w]);
@@ -65,7 +73,9 @@ fn benches(c: &mut Criterion) {
     bench_store(c, "Service", service::families);
     bench_store(c, "ConfigMap", configmap::families);
     c.bench_function("labels/sanitize+snake 1k keys", |b| {
-        let keys: Vec<String> = (0..1000).map(|i| format!("app.kubernetes.io/SomeKey-{i}")).collect();
+        let keys: Vec<String> = (0..1000)
+            .map(|i| format!("app.kubernetes.io/SomeKey-{i}"))
+            .collect();
         b.iter(|| {
             for k in &keys {
                 black_box(ksm_core::labels::label_name("label", k));

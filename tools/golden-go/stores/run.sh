@@ -28,7 +28,7 @@ for f in *_test.go; do
 done
 
 mkdir -p "$(dirname "$out")"; rm -f "$out.tmp"
-GOLDEN_UNITS_OUT="$(dirname "$out")/labels.jsonl" GOLDEN_OUT="$out.tmp" go test -count=1 -run 'Test' . >/dev/null || {
+TZ=UTC GOLDEN_UNITS_OUT="$(dirname "$out")/labels.jsonl" GOLDEN_OUT="$out.tmp" go test -count=1 -run 'Test' . >/dev/null || {
   echo "go test failed in the scratch copy" >&2; exit 1; }
 sort -u "$out.tmp" > "$out"
 rm -f "$out.tmp"

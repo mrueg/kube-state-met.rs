@@ -258,29 +258,6 @@ pub fn time_or_zero_f64(t: Option<&Time>) -> f64 {
     }
 }
 
-/// The `owner_kind`, `owner_name`, `owner_is_controller` samples of an
-/// object's owner references (a single empty sample when there are none).
-pub fn owner_metrics(m: &ObjectMeta) -> Vec<Metric> {
-    const KEYS: &[&str] = &["owner_kind", "owner_name", "owner_is_controller"];
-    match m.owner_references.as_deref() {
-        None | Some([]) => vec![mk(
-            KEYS,
-            vec![String::new(), String::new(), String::new()],
-            1.0,
-        )],
-        Some(owners) => owners
-            .iter()
-            .map(|o| {
-                let ctrl = match o.controller {
-                    Some(c) => c.to_string(),
-                    None => "false".to_owned(),
-                };
-                mk(KEYS, vec![o.kind.clone(), o.name.clone(), ctrl], 1.0)
-            })
-            .collect(),
-    }
-}
-
 /// Go `strconv.FormatBool` of an optional bool, `""` when unset.
 pub fn opt_bool_string(b: Option<bool>) -> String {
     b.map(|b| b.to_string()).unwrap_or_default()
@@ -386,4 +363,77 @@ pub fn go_ip_family(s: &str) -> Option<&'static str> {
         }
         _ => None,
     }
+}
+
+/// The `_owner` samples: `owner_kind`, `owner_name` and, with
+/// `with_controller`, `owner_is_controller` ("false" when unset). Without
+/// owners, one sample with empty values.
+pub fn owner_metrics(m: &ObjectMeta, with_controller: bool) -> Vec<Metric> {
+    let keys: &[&'static str] = if with_controller {
+        &["owner_kind", "owner_name", "owner_is_controller"]
+    } else {
+        &["owner_kind", "owner_name"]
+    };
+    let owners = m.owner_references.as_deref().unwrap_or_default();
+    if owners.is_empty() {
+        return vec![mk(keys, vec![String::new(); keys.len()], 1.0)];
+    }
+    owners
+        .iter()
+        .map(|o| {
+            let mut values = vec![o.kind.clone(), o.name.clone()];
+            if with_controller {
+                values.push(o.controller.unwrap_or(false).to_string());
+            }
+            mk(keys, values, 1.0)
+        })
+        .collect()
+}
+
+/// `intstr.GetScaledValueFromIntOrPercent`: an int, or a percentage of
+/// `total` rounded up or down; `None` where Go returns an error.
+#[expect(
+    clippy::cast_precision_loss,
+    clippy::cast_possible_truncation,
+    reason = "Go converts between int and float64 the same way"
+)]
+pub fn scaled_value_from_int_or_percent(
+    v: Option<&k8s_openapi::apimachinery::pkg::util::intstr::IntOrString>,
+    total: i64,
+    round_up: bool,
+) -> Option<i64> {
+    use k8s_openapi::apimachinery::pkg::util::intstr::IntOrString;
+    match v? {
+        IntOrString::Int(i) => Some(i64::from(*i)),
+        IntOrString::String(s) => {
+            let value: i64 = s.strip_suffix('%')?.parse().ok()?;
+            let scaled = value as f64 * total as f64 / 100.0;
+            Some(if round_up {
+                scaled.ceil()
+            } else {
+                scaled.floor()
+            } as i64)
+        }
+    }
+}
+
+/// An optional count as a sample, none when unset (Go checks `!= nil`).
+pub fn opt_i32_metric(v: Option<i32>) -> Vec<Metric> {
+    v.map(|v| vec![Metric::value(f64::from(v))])
+        .unwrap_or_default()
+}
+
+/// A time as a sample, none when unset (Go checks `!= nil`, not `IsZero`).
+pub fn opt_time_metric(t: Option<&Time>) -> Vec<Metric> {
+    t.map(|t| vec![Metric::value(time_f64(t))])
+        .unwrap_or_default()
+}
+
+/// `float64` of an `int64` (Go's conversion).
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "Go converts int64 to float64 the same way"
+)]
+pub fn i64_f64(v: i64) -> f64 {
+    v as f64
 }
