@@ -1,0 +1,95 @@
+# HELP http_request_duration_seconds A histogram of requests for kube-state-metrics metrics handler.
+# TYPE http_request_duration_seconds histogram
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="0.005"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="0.01"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="0.025"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="0.05"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="0.1"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="0.25"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="0.5"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="1"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="2.5"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="5"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="10"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="get",le="+Inf"} 1
+http_request_duration_seconds_sum{handler="metrics",method="get"} 0.000212058
+http_request_duration_seconds_count{handler="metrics",method="get"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="0.005"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="0.01"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="0.025"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="0.05"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="0.1"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="0.25"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="0.5"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="1"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="2.5"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="5"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="10"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="head",le="+Inf"} 2
+http_request_duration_seconds_sum{handler="metrics",method="head"} 0.00020505
+http_request_duration_seconds_count{handler="metrics",method="head"} 2
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="0.005"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="0.01"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="0.025"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="0.05"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="0.1"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="0.25"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="0.5"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="1"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="2.5"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="5"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="10"} 1
+http_request_duration_seconds_bucket{handler="metrics",method="post",le="+Inf"} 1
+http_request_duration_seconds_sum{handler="metrics",method="post"} 0.000211695
+http_request_duration_seconds_count{handler="metrics",method="post"} 1
+# HELP kube_state_metrics_build_info A metric with a constant '1' value labeled by version, revision, branch, goversion from which kube_state_metrics was built, and the goos and goarch for the build.
+# TYPE kube_state_metrics_build_info gauge
+kube_state_metrics_build_info{branch="main",client_go_version="v0.37.2",goarch="amd64",goos="linux",goversion="go1.27.4",revision="abc123",tags="unknown",version="v2.99.0"} 1
+# HELP kube_state_metrics_custom_resource_state_add_events_total Number of times that the CRD informer triggered the add event.
+# TYPE kube_state_metrics_custom_resource_state_add_events_total counter
+kube_state_metrics_custom_resource_state_add_events_total 0
+# HELP kube_state_metrics_custom_resource_state_cache Net amount of CRDs affecting the cache currently.
+# TYPE kube_state_metrics_custom_resource_state_cache gauge
+kube_state_metrics_custom_resource_state_cache 0
+# HELP kube_state_metrics_custom_resource_state_delete_events_total Number of times that the CRD informer triggered the remove event.
+# TYPE kube_state_metrics_custom_resource_state_delete_events_total counter
+kube_state_metrics_custom_resource_state_delete_events_total 0
+# HELP kube_state_metrics_custom_resource_state_update_events_total Number of times that the CRD informer triggered the update event.
+# TYPE kube_state_metrics_custom_resource_state_update_events_total counter
+kube_state_metrics_custom_resource_state_update_events_total 0
+# HELP kube_state_metrics_shard_ordinal Current sharding ordinal/index of this instance
+# TYPE kube_state_metrics_shard_ordinal gauge
+kube_state_metrics_shard_ordinal{shard_ordinal="0"} 0
+# HELP kube_state_metrics_total_shards Number of total shards this instance is aware of
+# TYPE kube_state_metrics_total_shards gauge
+kube_state_metrics_total_shards 1
+# HELP kube_state_metrics_watch_total Number of total resource watch calls in kube-state-metrics
+# TYPE kube_state_metrics_watch_total counter
+kube_state_metrics_watch_total{resource="*v1.ConfigMap",result="success"} 1
+# HELP process_cpu_seconds_total Total user and system CPU time spent in seconds.
+# TYPE process_cpu_seconds_total counter
+process_cpu_seconds_total 0.11
+# HELP process_max_fds Maximum number of open file descriptors.
+# TYPE process_max_fds gauge
+process_max_fds 524288
+# HELP process_network_receive_bytes_total Number of bytes received by the process over the network.
+# TYPE process_network_receive_bytes_total counter
+process_network_receive_bytes_total 1.3402415867e+10
+# HELP process_network_transmit_bytes_total Number of bytes sent by the process over the network.
+# TYPE process_network_transmit_bytes_total counter
+process_network_transmit_bytes_total 1.2018226041e+10
+# HELP process_open_fds Number of open file descriptors.
+# TYPE process_open_fds gauge
+process_open_fds 11
+# HELP process_resident_memory_bytes Resident memory size in bytes.
+# TYPE process_resident_memory_bytes gauge
+process_resident_memory_bytes 5.4370304e+07
+# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
+# TYPE process_start_time_seconds gauge
+process_start_time_seconds 1.79572964268e+09
+# HELP process_virtual_memory_bytes Virtual memory size in bytes.
+# TYPE process_virtual_memory_bytes gauge
+process_virtual_memory_bytes 1.919868928e+09
+# HELP process_virtual_memory_max_bytes Maximum amount of virtual memory available in bytes.
+# TYPE process_virtual_memory_max_bytes gauge
+process_virtual_memory_max_bytes 1.8446744073709552e+19

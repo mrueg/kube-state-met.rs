@@ -664,6 +664,22 @@
 {"in":"1.7976931348623157e308","ok":true,"value":0,"milli":0,"approx":"1.7976931348623157e+308","ksm_float":"0","string":"179769313486231570e291"}
 {"in":"2e308","ok":true,"value":0,"milli":0,"approx":"+Inf","ksm_float":"0","string":"200e306"}
 {"in":"1e-9223372036854775808","ok":true,"value":1,"milli":1000,"approx":"1","ksm_float":"1","string":"1e-9223372036854775808"}
+{"in":"100000000000000000e1","ok":true,"value":1000000000000000000,"milli":0,"approx":"1e+18","ksm_float":"1e+18","string":"1e18"}
+{"in":"100000000000000000e2","ok":true,"value":-8446744073709551616,"milli":0,"approx":"1e+19","ksm_float":"0","string":"10e18"}
+{"in":"100000000000000000e4","ok":true,"value":0,"milli":0,"approx":"1e+21","ksm_float":"0","string":"1e21"}
+{"in":"100000000000000000e5","ok":true,"value":0,"milli":0,"approx":"1e+22","ksm_float":"0","string":"10e21"}
+{"in":"100000000000000000e6","ok":true,"value":200376420520689664,"milli":-2537764290115403776,"approx":"1e+23","ksm_float":"2.0037642052068966e+17","string":"100e21"}
+{"in":"100000000000000000e7","ok":true,"value":0,"milli":0,"approx":"1e+24","ksm_float":"0","string":"1e24"}
+{"in":"100000000000000000e8","ok":true,"value":0,"milli":0,"approx":"1e+25","ksm_float":"0","string":"10e24"}
+{"in":"100000000000000000e9","ok":true,"value":-2537764290115403776,"milli":0,"approx":"1e+26","ksm_float":"0","string":"100e24"}
+{"in":"-100000000000000000k","ok":true,"value":-7766279631452241920,"milli":-200376420520689664,"approx":"-1e+20","ksm_float":"-2.0037642052068966e+14","string":"-100E"}
+{"in":"-922337203685477580","ok":true,"value":-922337203685477580,"milli":800,"approx":"-9.223372036854776e+17","ksm_float":"0.8","string":"-922337203685477580"}
+{"in":"-9223372036854775k","ok":true,"value":-9223372036854775000,"milli":808000,"approx":"-9.223372036854776e+18","ksm_float":"808","string":"-9223372036854775k"}
+{"in":"9223372036854775808k","ok":true,"value":0,"milli":0,"approx":"9.223372036854777e+21","ksm_float":"0","string":"9223372036854775808k"}
+{"in":"922337203685477581e1","ok":true,"value":-9223372036854775806,"milli":0,"approx":"9.223372036854776e+18","ksm_float":"0","string":"9223372036854775810"}
+{"in":"92233720368547759e2","ok":true,"value":-9223372036854775716,"milli":0,"approx":"9.223372036854776e+18","ksm_float":"0","string":"9223372036854775900"}
+{"in":"9223372036854776e3","ok":true,"value":-9223372036854775616,"milli":192000,"approx":"9.223372036854776e+18","ksm_float":"192","string":"9223372036854776e3"}
+{"in":"922337203685478e4","ok":true,"value":0,"milli":0,"approx":"9.22337203685478e+18","ksm_float":"0","string":"9223372036854780e3"}
 {"in":"1e+3","ok":true,"value":1000,"milli":1000000,"approx":"1000","ksm_float":"1000","string":"1e+3"}
 {"in":"1E+3","ok":true,"value":1000,"milli":1000000,"approx":"1000","ksm_float":"1000","string":"1E+3"}
 {"in":"1E-3","ok":true,"value":1,"milli":1,"approx":"0.001","ksm_float":"0.001","string":"1E-3"}
@@ -721,6 +737,17 @@
 {"in":"+.5","ok":true,"value":1,"milli":500,"approx":"0.5","ksm_float":"0.5","string":"500m"}
 {"in":"1..","ok":false,"err":"quantities must match the regular expression '^([+-]?[0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'"}
 {"in":"e","ok":false,"err":"unable to parse quantity's suffix"}
+{"in":".e-10","ok":false,"err":"unable to parse numeric part of quantity"}
+{"in":"-.e-10","ok":false,"err":"unable to parse numeric part of quantity"}
+{"in":"0.e-10","ok":true,"value":0,"milli":0,"approx":"0","ksm_float":"0","string":"0"}
+{"in":".Ei","ok":false,"err":"unable to parse numeric part of quantity"}
+{"in":"Ei","ok":false,"err":"unable to parse numeric part of quantity"}
+{"in":"-Ei","ok":false,"err":"unable to parse numeric part of quantity"}
+{"in":"Pi","ok":false,"err":"unable to parse numeric part of quantity"}
+{"in":"+.Pi","ok":false,"err":"unable to parse numeric part of quantity"}
+{"in":"e-10","ok":false,"err":"unable to parse numeric part of quantity"}
+{"in":".Ki","ok":true,"value":0,"milli":0,"approx":"0","ksm_float":"0","string":"0"}
+{"in":"Ti","ok":true,"value":0,"milli":0,"approx":"0","ksm_float":"0","string":"0"}
 {"in":"","ok":false,"err":"quantities must match the regular expression '^([+-]?[0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'"}
 {"in":" ","ok":false,"err":"quantities must match the regular expression '^([+-]?[0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'"}
 {"in":" 1","ok":false,"err":"quantities must match the regular expression '^([+-]?[0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$'"}

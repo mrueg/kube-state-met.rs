@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/*"]
+members = ["crates/*", "tools/fake-apiserver"]
 
 [workspace.package]
 version = "2.19.0"

@@ -200,7 +200,7 @@ pub fn format_go_g(buf: &mut Vec<u8>, f: f64) {
     }
     let digits = &digits[..nd];
     let dp = exp + 1; // position of the decimal point relative to the digits
-    if exp < -4 || exp >= 6 {
+    if !(-4..6).contains(&exp) {
         buf.push(digits[0]);
         if nd > 1 {
             buf.push(b'.');

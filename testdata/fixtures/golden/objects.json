@@ -1,0 +1,7272 @@
+{
+ "apiVersion": "v1",
+ "kind": "List",
+ "items": [
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "labels": {
+     "app": "mysql-server",
+     "excluded": "me"
+    },
+    "name": "clusterrolebinding1",
+    "resourceVersion": "BBBBB",
+    "uid": "golden-0001-"
+   },
+   "roleRef": {
+    "apiGroup": "rbac.authorization.k8s.io",
+    "kind": "Role",
+    "name": "role"
+   },
+   "apiVersion": "rbac.authorization.k8s.io/v1",
+   "kind": "ClusterRoleBinding"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "clusterrolebinding2",
+    "resourceVersion": "10596",
+    "uid": "golden-0002-"
+   },
+   "roleRef": {
+    "apiGroup": "rbac.authorization.k8s.io",
+    "kind": "Role",
+    "name": "role"
+   },
+   "apiVersion": "rbac.authorization.k8s.io/v1",
+   "kind": "ClusterRoleBinding"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "labels": {
+     "app": "mysql-server",
+     "excluded": "me"
+    },
+    "name": "role1",
+    "resourceVersion": "BBBBB",
+    "uid": "golden-0003-"
+   },
+   "rules": null,
+   "apiVersion": "rbac.authorization.k8s.io/v1",
+   "kind": "ClusterRole"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "role2",
+    "resourceVersion": "10596",
+    "uid": "golden-0004-"
+   },
+   "rules": null,
+   "apiVersion": "rbac.authorization.k8s.io/v1",
+   "kind": "ClusterRole"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "labels": {
+     "app": "mysql-server",
+     "excluded": "me"
+    },
+    "name": "configmap1",
+    "namespace": "ns1",
+    "resourceVersion": "BBBBB",
+    "uid": "golden-0005-"
+   },
+   "apiVersion": "v1",
+   "kind": "ConfigMap"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "configmap2",
+    "namespace": "ns2",
+    "resourceVersion": "10596",
+    "uid": "golden-0006-"
+   },
+   "apiVersion": "v1",
+   "kind": "ConfigMap"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "generation": 1,
+    "labels": {
+     "app": "example-active-running-1"
+    },
+    "name": "ActiveRunningCronJob1",
+    "namespace": "ns1",
+    "resourceVersion": "11111",
+    "uid": "golden-0007-"
+   },
+   "spec": {
+    "concurrencyPolicy": "Forbid",
+    "failedJobsHistoryLimit": 1,
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "0 */6 * * *",
+    "startingDeadlineSeconds": 300,
+    "successfulJobsHistoryLimit": 3,
+    "suspend": false
+   },
+   "status": {
+    "active": [
+     {
+      "name": "FakeJob1"
+     },
+     {
+      "name": "FakeJob2"
+     }
+    ],
+    "lastScheduleTime": "2018-03-11T04:34:56Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "generation": 1,
+    "labels": {
+     "app": "example-active-running-with-tz-1"
+    },
+    "name": "ActiveRunningCronJobWithTZ1",
+    "namespace": "ns1",
+    "resourceVersion": "11111",
+    "uid": "golden-0008-"
+   },
+   "spec": {
+    "concurrencyPolicy": "Forbid",
+    "failedJobsHistoryLimit": 1,
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "0 */6 * * *",
+    "startingDeadlineSeconds": 300,
+    "successfulJobsHistoryLimit": 3,
+    "suspend": false,
+    "timeZone": "Asia/Shanghai"
+   },
+   "status": {
+    "active": [
+     {
+      "name": "FakeJob1"
+     },
+     {
+      "name": "FakeJob2"
+     }
+    ],
+    "lastScheduleTime": "2018-03-11T04:34:56Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2018-03-11T11:04:56Z",
+    "generation": 1,
+    "labels": {
+     "app": "example-active-nil-suspend"
+    },
+    "name": "ActiveCronJobNilSuspend",
+    "namespace": "ns1",
+    "resourceVersion": "44444",
+    "uid": "golden-0009-"
+   },
+   "spec": {
+    "concurrencyPolicy": "Forbid",
+    "failedJobsHistoryLimit": 1,
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "25 * * * *",
+    "startingDeadlineSeconds": 300,
+    "successfulJobsHistoryLimit": 3
+   },
+   "status": {},
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2018-03-11T11:04:56Z",
+    "generation": 1,
+    "labels": {
+     "app": "example-active-no-last-scheduled-1"
+    },
+    "name": "ActiveCronJob1NoLastScheduled",
+    "namespace": "ns1",
+    "resourceVersion": "33333",
+    "uid": "golden-0010-"
+   },
+   "spec": {
+    "concurrencyPolicy": "Forbid",
+    "failedJobsHistoryLimit": 1,
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "25 * * * *",
+    "startingDeadlineSeconds": 300,
+    "successfulJobsHistoryLimit": 3,
+    "suspend": false
+   },
+   "status": {},
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "generation": 1,
+    "labels": {
+     "app": "example-suspended-1"
+    },
+    "name": "SuspendedCronJob1",
+    "namespace": "ns1",
+    "resourceVersion": "22222",
+    "uid": "golden-0011-"
+   },
+   "spec": {
+    "concurrencyPolicy": "Forbid",
+    "failedJobsHistoryLimit": 1,
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "0 */3 * * *",
+    "startingDeadlineSeconds": 300,
+    "successfulJobsHistoryLimit": 3,
+    "suspend": true
+   },
+   "status": {
+    "lastScheduleTime": "2018-03-11T10:04:56Z",
+    "lastSuccessfulTime": "2018-03-11T10:04:56Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "generation": 1,
+    "labels": {
+     "app": "example-suspended-1"
+    },
+    "name": "SuspendedCronJob1",
+    "namespace": "ns1",
+    "resourceVersion": "22222",
+    "uid": "golden-0012-"
+   },
+   "spec": {
+    "concurrencyPolicy": "Forbid",
+    "failedJobsHistoryLimit": 1,
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "0 */3 * * *",
+    "startingDeadlineSeconds": 300,
+    "successfulJobsHistoryLimit": 3,
+    "suspend": true,
+    "timeZone": "Asia/Shanghai"
+   },
+   "status": {
+    "lastScheduleTime": "2018-03-11T10:04:56Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "name": "InvalidTimeZoneCronJob",
+    "namespace": "ns1",
+    "uid": "golden-0013-"
+   },
+   "spec": {
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "0 */6 * * *",
+    "timeZone": "Invalid/Zone"
+   },
+   "status": {
+    "lastScheduleTime": "2018-03-11T04:34:56Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "name": "NamedTimeZoneCronJob",
+    "namespace": "ns1",
+    "uid": "golden-0014-"
+   },
+   "spec": {
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "0 */6 * * *",
+    "timeZone": "Asia/Singapore"
+   },
+   "status": {
+    "lastScheduleTime": "2018-03-11T04:34:56Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "name": "UnparseableScheduleCronJob",
+    "namespace": "ns1",
+    "uid": "golden-0015-"
+   },
+   "spec": {
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "*/0 * * * *"
+   },
+   "status": {
+    "lastScheduleTime": "2018-03-11T04:34:56Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "name": "UnparseableScheduleCronJob",
+    "namespace": "ns1",
+    "uid": "golden-0016-"
+   },
+   "spec": {
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "60 * * * *"
+   },
+   "status": {
+    "lastScheduleTime": "2018-03-11T04:34:56Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "name": "ValidScheduleCronJob",
+    "namespace": "ns1",
+    "uid": "golden-0017-"
+   },
+   "spec": {
+    "jobTemplate": {
+     "metadata": {},
+     "spec": {
+      "template": {
+       "metadata": {},
+       "spec": {
+        "containers": null
+       }
+      }
+     }
+    },
+    "schedule": "0 */6 * * *"
+   },
+   "status": {
+    "lastScheduleTime": "2018-03-11T04:34:56Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "CronJob"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 1,
+    "labels": {
+     "cert": "test"
+    },
+    "name": "certificate-test",
+    "uid": "golden-0018-"
+   },
+   "spec": {
+    "request": null,
+    "signerName": "signer"
+   },
+   "status": {},
+   "apiVersion": "certificates.k8s.io/v1",
+   "kind": "CertificateSigningRequest"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 1,
+    "labels": {
+     "cert": "test"
+    },
+    "name": "certificate-test",
+    "uid": "golden-0019-"
+   },
+   "spec": {
+    "request": null,
+    "signerName": "signer"
+   },
+   "status": {
+    "certificate": "anVzdCBmb3IgdGVzdA==",
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Approved"
+     }
+    ]
+   },
+   "apiVersion": "certificates.k8s.io/v1",
+   "kind": "CertificateSigningRequest"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 1,
+    "labels": {
+     "cert": "test"
+    },
+    "name": "certificate-test",
+    "uid": "golden-0020-"
+   },
+   "spec": {
+    "request": null,
+    "signerName": "signer"
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Approved"
+     }
+    ]
+   },
+   "apiVersion": "certificates.k8s.io/v1",
+   "kind": "CertificateSigningRequest"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 1,
+    "labels": {
+     "cert": "test"
+    },
+    "name": "certificate-test",
+    "uid": "golden-0021-"
+   },
+   "spec": {
+    "request": null,
+    "signerName": "signer"
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Approved"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Denied"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Approved"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Denied"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Failed"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Failed"
+     }
+    ]
+   },
+   "apiVersion": "certificates.k8s.io/v1",
+   "kind": "CertificateSigningRequest"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 1,
+    "labels": {
+     "cert": "test"
+    },
+    "name": "certificate-test",
+    "uid": "golden-0022-"
+   },
+   "spec": {
+    "request": null,
+    "signerName": "signer"
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Approved"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Denied"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Failed"
+     }
+    ]
+   },
+   "apiVersion": "certificates.k8s.io/v1",
+   "kind": "CertificateSigningRequest"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 1,
+    "labels": {
+     "cert": "test"
+    },
+    "name": "certificate-test",
+    "uid": "golden-0023-"
+   },
+   "spec": {
+    "request": null,
+    "signerName": "signer"
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Denied"
+     }
+    ]
+   },
+   "apiVersion": "certificates.k8s.io/v1",
+   "kind": "CertificateSigningRequest"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 1,
+    "labels": {
+     "cert": "test"
+    },
+    "name": "certificate-test",
+    "uid": "golden-0024-"
+   },
+   "spec": {
+    "request": null,
+    "signerName": "signer"
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "",
+      "type": "Failed"
+     }
+    ]
+   },
+   "apiVersion": "certificates.k8s.io/v1",
+   "kind": "CertificateSigningRequest"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "generation": 21,
+    "labels": {
+     "app": "example1"
+    },
+    "name": "ds1",
+    "namespace": "ns1",
+    "uid": "golden-0025-"
+   },
+   "spec": {
+    "selector": null,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    },
+    "updateStrategy": {}
+   },
+   "status": {
+    "currentNumberScheduled": 15,
+    "desiredNumberScheduled": 5,
+    "numberMisscheduled": 10,
+    "numberReady": 5,
+    "observedGeneration": 2
+   },
+   "apiVersion": "apps/v1",
+   "kind": "DaemonSet"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "deletionTimestamp": "2027-01-15T08:00:00Z",
+    "generation": 14,
+    "labels": {
+     "app": "example4"
+    },
+    "name": "ds4",
+    "namespace": "ns4",
+    "uid": "golden-0026-"
+   },
+   "spec": {
+    "selector": null,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    },
+    "updateStrategy": {}
+   },
+   "status": {
+    "currentNumberScheduled": 10,
+    "desiredNumberScheduled": 0,
+    "numberMisscheduled": 5,
+    "numberReady": 0
+   },
+   "apiVersion": "apps/v1",
+   "kind": "DaemonSet"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 14,
+    "labels": {
+     "app": "example2"
+    },
+    "name": "ds2",
+    "namespace": "ns2",
+    "uid": "golden-0027-"
+   },
+   "spec": {
+    "selector": null,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    },
+    "updateStrategy": {}
+   },
+   "status": {
+    "currentNumberScheduled": 10,
+    "desiredNumberScheduled": 0,
+    "numberMisscheduled": 5,
+    "numberReady": 0
+   },
+   "apiVersion": "apps/v1",
+   "kind": "DaemonSet"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 15,
+    "labels": {
+     "app": "example3"
+    },
+    "name": "ds3",
+    "namespace": "ns3",
+    "uid": "golden-0028-"
+   },
+   "spec": {
+    "selector": null,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    },
+    "updateStrategy": {}
+   },
+   "status": {
+    "currentNumberScheduled": 10,
+    "desiredNumberScheduled": 15,
+    "numberAvailable": 5,
+    "numberMisscheduled": 5,
+    "numberReady": 5,
+    "numberUnavailable": 5,
+    "updatedNumberScheduled": 5
+   },
+   "apiVersion": "apps/v1",
+   "kind": "DaemonSet"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "company.io/team": "my-brilliant-team"
+    },
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 21,
+    "labels": {
+     "app": "example1"
+    },
+    "name": "depl1",
+    "namespace": "ns1",
+    "uid": "golden-0029-"
+   },
+   "spec": {
+    "replicas": 200,
+    "selector": null,
+    "strategy": {
+     "rollingUpdate": {
+      "maxSurge": 10,
+      "maxUnavailable": 10
+     }
+    },
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 10,
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "reason": "MinimumReplicasAvailable",
+      "status": "True",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "reason": "NewReplicaSetAvailable",
+      "status": "True",
+      "type": "Progressing"
+     }
+    ],
+    "observedGeneration": 111,
+    "readyReplicas": 10,
+    "replicas": 15,
+    "terminatingReplicas": 3,
+    "unavailableReplicas": 5,
+    "updatedReplicas": 2
+   },
+   "apiVersion": "apps/v1",
+   "kind": "Deployment"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2020-09-13T12:26:40Z",
+    "deletionTimestamp": "2027-01-15T08:00:00Z",
+    "generation": 22,
+    "labels": {
+     "app": "example4"
+    },
+    "name": "deployment-terminating",
+    "namespace": "ns4",
+    "uid": "golden-0030-"
+   },
+   "spec": {
+    "paused": true,
+    "replicas": 10,
+    "selector": null,
+    "strategy": {},
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {},
+   "apiVersion": "apps/v1",
+   "kind": "Deployment"
+  },
+  {
+   "metadata": {
+    "generation": 14,
+    "labels": {
+     "app": "example2"
+    },
+    "name": "depl2",
+    "namespace": "ns2",
+    "uid": "golden-0031-"
+   },
+   "spec": {
+    "paused": true,
+    "replicas": 5,
+    "selector": null,
+    "strategy": {
+     "rollingUpdate": {
+      "maxSurge": "20%",
+      "maxUnavailable": "25%"
+     }
+    },
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 5,
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "reason": "MinimumReplicasUnavailable",
+      "status": "False",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "reason": "ProgressDeadlineExceeded",
+      "status": "False",
+      "type": "Progressing"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "reason": "ReplicaSetCreateError",
+      "status": "True",
+      "type": "ReplicaFailure"
+     }
+    ],
+    "observedGeneration": 1111,
+    "readyReplicas": 5,
+    "replicas": 10,
+    "updatedReplicas": 1
+   },
+   "apiVersion": "apps/v1",
+   "kind": "Deployment"
+  },
+  {
+   "metadata": {
+    "name": "depl3",
+    "namespace": "ns3",
+    "uid": "golden-0032-"
+   },
+   "spec": {
+    "replicas": 1,
+    "selector": null,
+    "strategy": {},
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "reason": "ThisReasonIsNotAllowed",
+      "status": "False",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": null,
+      "lastUpdateTime": null,
+      "status": "True",
+      "type": "Progressing"
+     }
+    ]
+   },
+   "apiVersion": "apps/v1",
+   "kind": "Deployment"
+  },
+  {
+   "metadata": {
+    "name": "deployment-malformed-rollingupdate-values",
+    "namespace": "ns8",
+    "uid": "golden-0033-"
+   },
+   "spec": {
+    "replicas": 1,
+    "selector": null,
+    "strategy": {
+     "rollingUpdate": {
+      "maxSurge": "abc%",
+      "maxUnavailable": "not-a-percentage"
+     }
+    },
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {},
+   "apiVersion": "apps/v1",
+   "kind": "Deployment"
+  },
+  {
+   "metadata": {
+    "name": "deployment-nil-replicas",
+    "namespace": "ns6",
+    "uid": "golden-0034-"
+   },
+   "spec": {
+    "selector": null,
+    "strategy": {
+     "rollingUpdate": {
+      "maxSurge": 10,
+      "maxUnavailable": 10
+     }
+    },
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {},
+   "apiVersion": "apps/v1",
+   "kind": "Deployment"
+  },
+  {
+   "metadata": {
+    "name": "deployment-nil-rollingupdate-values",
+    "namespace": "ns7",
+    "uid": "golden-0035-"
+   },
+   "spec": {
+    "replicas": 1,
+    "selector": null,
+    "strategy": {
+     "rollingUpdate": {}
+    },
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {},
+   "apiVersion": "apps/v1",
+   "kind": "Deployment"
+  },
+  {
+   "metadata": {
+    "name": "deployment-without-owner",
+    "namespace": "ns5",
+    "uid": "golden-0036-"
+   },
+   "spec": {
+    "replicas": 200,
+    "selector": null,
+    "strategy": {},
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {},
+   "apiVersion": "apps/v1",
+   "kind": "Deployment"
+  },
+  {
+   "metadata": {
+    "name": "deployment-with-owner",
+    "namespace": "ns5",
+    "ownerReferences": [
+     {
+      "apiVersion": "",
+      "controller": true,
+      "kind": "Application",
+      "name": "my-app",
+      "uid": ""
+     }
+    ],
+    "uid": "golden-0037-"
+   },
+   "spec": {
+    "replicas": 200,
+    "selector": null,
+    "strategy": {},
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {},
+   "apiVersion": "apps/v1",
+   "kind": "Deployment"
+  },
+  {
+   "addressType": "IPv4",
+   "endpoints": [
+    {
+     "addresses": [
+      "10.0.0.1",
+      "192.168.1.10"
+     ],
+     "conditions": {
+      "ready": true,
+      "serving": true,
+      "terminating": false
+     },
+     "hints": {
+      "forZones": [
+       {
+        "name": "zone1"
+       }
+      ]
+     },
+     "hostname": "host",
+     "nodeName": "node",
+     "zone": "west"
+    }
+   ],
+   "metadata": {
+    "name": "test_endpointslice-endpoints",
+    "namespace": "test",
+    "uid": "golden-0038-"
+   },
+   "ports": null,
+   "apiVersion": "discovery.k8s.io/v1",
+   "kind": "EndpointSlice"
+  },
+  {
+   "addressType": "IPv4",
+   "endpoints": [
+    {
+     "addresses": [
+      "10.0.0.1",
+      "192.168.1.10"
+     ],
+     "conditions": {
+      "ready": true,
+      "serving": true,
+      "terminating": false
+     },
+     "hostname": "host",
+     "nodeName": "node",
+     "zone": "west"
+    }
+   ],
+   "metadata": {
+    "name": "test_endpointslice-endpoints",
+    "namespace": "test",
+    "uid": "golden-0039-"
+   },
+   "ports": null,
+   "apiVersion": "discovery.k8s.io/v1",
+   "kind": "EndpointSlice"
+  },
+  {
+   "addressType": "IPv4",
+   "endpoints": null,
+   "metadata": {
+    "annotations": {
+     "foo": "baz"
+    },
+    "labels": {
+     "foo": "bar"
+    },
+    "name": "test_endpointslice-labels",
+    "namespace": "test",
+    "uid": "golden-0040-"
+   },
+   "ports": null,
+   "apiVersion": "discovery.k8s.io/v1",
+   "kind": "EndpointSlice"
+  },
+  {
+   "addressType": "IPv4",
+   "endpoints": null,
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "test_kube_endpointslice-created",
+    "namespace": "test",
+    "uid": "golden-0041-"
+   },
+   "ports": null,
+   "apiVersion": "discovery.k8s.io/v1",
+   "kind": "EndpointSlice"
+  },
+  {
+   "addressType": "IPv4",
+   "endpoints": null,
+   "metadata": {
+    "name": "test_endpointslice-info",
+    "namespace": "test",
+    "uid": "golden-0042-"
+   },
+   "ports": null,
+   "apiVersion": "discovery.k8s.io/v1",
+   "kind": "EndpointSlice"
+  },
+  {
+   "addressType": "IPv4",
+   "endpoints": null,
+   "metadata": {
+    "name": "test_endpointslice-ports",
+    "namespace": "test",
+    "uid": "golden-0043-"
+   },
+   "ports": [
+    {
+     "name": "http",
+     "port": 80,
+     "protocol": "TCP"
+    }
+   ],
+   "apiVersion": "discovery.k8s.io/v1",
+   "kind": "EndpointSlice"
+  },
+  {
+   "addressType": "IPv4",
+   "endpoints": null,
+   "metadata": {
+    "name": "test_endpointslice-ports-without-number",
+    "namespace": "test",
+    "uid": "golden-0044-"
+   },
+   "ports": [
+    {
+     "name": "http",
+     "protocol": "TCP"
+    }
+   ],
+   "apiVersion": "discovery.k8s.io/v1",
+   "kind": "EndpointSlice"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "foobar"
+    },
+    "name": "test-endpoint",
+    "namespace": "default",
+    "uid": "golden-0045-"
+   },
+   "subsets": [
+    {
+     "addresses": [
+      {
+       "ip": "127.0.0.1"
+      },
+      {
+       "ip": "10.0.0.1"
+      }
+     ],
+     "notReadyAddresses": [
+      {
+       "ip": "10.0.0.10"
+      }
+     ],
+     "ports": [
+      {
+       "name": "http",
+       "port": 8080,
+       "protocol": "TCP"
+      },
+      {
+       "name": "app",
+       "port": 8081,
+       "protocol": "TCP"
+      }
+     ]
+    },
+    {
+     "addresses": [
+      {
+       "ip": "172.22.23.202"
+      }
+     ],
+     "ports": [
+      {
+       "name": "https",
+       "port": 8443,
+       "protocol": "TCP"
+      },
+      {
+       "name": "prometheus",
+       "port": 9090,
+       "protocol": "TCP"
+      }
+     ]
+    },
+    {
+     "notReadyAddresses": [
+      {
+       "ip": "192.168.1.3"
+      },
+      {
+       "ip": "192.168.2.2"
+      }
+     ],
+     "ports": [
+      {
+       "name": "syslog",
+       "port": 1234,
+       "protocol": "UDP"
+      },
+      {
+       "name": "syslog-tcp",
+       "port": 5678,
+       "protocol": "TCP"
+      }
+     ]
+    }
+   ],
+   "apiVersion": "v1",
+   "kind": "Endpoints"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "single-foobar"
+    },
+    "name": "single-port-endpoint",
+    "namespace": "default",
+    "uid": "golden-0046-"
+   },
+   "subsets": [
+    {
+     "addresses": [
+      {
+       "ip": "127.0.0.1"
+      },
+      {
+       "ip": "10.0.0.1"
+      }
+     ],
+     "notReadyAddresses": [
+      {
+       "ip": "10.0.0.10"
+      }
+     ],
+     "ports": [
+      {
+       "port": 8080,
+       "protocol": "TCP"
+      }
+     ]
+    }
+   ],
+   "apiVersion": "v1",
+   "kind": "Endpoints"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "foobar"
+    },
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "foobar"
+    },
+    "name": "test-endpoint",
+    "namespace": "default",
+    "uid": "golden-0047-"
+   },
+   "subsets": [
+    {
+     "addresses": [
+      {
+       "ip": "127.0.0.1"
+      },
+      {
+       "ip": "10.0.0.1"
+      }
+     ],
+     "notReadyAddresses": [
+      {
+       "ip": "10.0.0.10"
+      }
+     ],
+     "ports": [
+      {
+       "name": "http",
+       "port": 8080,
+       "protocol": "TCP"
+      },
+      {
+       "name": "app",
+       "port": 8081,
+       "protocol": "TCP"
+      }
+     ]
+    },
+    {
+     "addresses": [
+      {
+       "ip": "172.22.23.202"
+      }
+     ],
+     "ports": [
+      {
+       "name": "https",
+       "port": 8443,
+       "protocol": "TCP"
+      },
+      {
+       "name": "prometheus",
+       "port": 9090,
+       "protocol": "TCP"
+      }
+     ]
+    },
+    {
+     "notReadyAddresses": [
+      {
+       "ip": "192.168.1.3"
+      },
+      {
+       "ip": "192.168.2.2"
+      }
+     ],
+     "ports": [
+      {
+       "name": "syslog",
+       "port": 1234,
+       "protocol": "UDP"
+      },
+      {
+       "name": "syslog-tcp",
+       "port": 5678,
+       "protocol": "TCP"
+      }
+     ]
+    }
+   ],
+   "apiVersion": "v1",
+   "kind": "Endpoints"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "single-foobar"
+    },
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "single-foobar"
+    },
+    "name": "single-port-endpoint",
+    "namespace": "default",
+    "uid": "golden-0048-"
+   },
+   "subsets": [
+    {
+     "addresses": [
+      {
+       "ip": "127.0.0.1"
+      },
+      {
+       "ip": "10.0.0.1"
+      }
+     ],
+     "notReadyAddresses": [
+      {
+       "ip": "10.0.0.10"
+      }
+     ],
+     "ports": [
+      {
+       "port": 8080,
+       "protocol": "TCP"
+      }
+     ]
+    }
+   ],
+   "apiVersion": "v1",
+   "kind": "Endpoints"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "deletionTimestamp": "2027-01-15T08:00:00Z",
+    "generation": 2,
+    "labels": {
+     "app": "foobar"
+    },
+    "name": "hpa2",
+    "namespace": "ns1",
+    "uid": "golden-0049-"
+   },
+   "spec": {
+    "maxReplicas": 4,
+    "metrics": [
+     {
+      "resource": {
+       "name": "memory",
+       "target": {
+        "averageUtilization": 75,
+        "type": ""
+       }
+      },
+      "type": "Resource"
+     },
+     {
+      "resource": {
+       "name": "cpu",
+       "target": {
+        "averageUtilization": 80,
+        "type": ""
+       }
+      },
+      "type": "Resource"
+     },
+     {
+      "external": {
+       "metric": {
+        "name": "traefik_backend_requests_per_second"
+       },
+       "target": {
+        "type": "",
+        "value": "100"
+       }
+      },
+      "type": "External"
+     },
+     {
+      "external": {
+       "metric": {
+        "name": "traefik_backend_errors_per_second"
+       },
+       "target": {
+        "type": "",
+        "value": "100"
+       }
+      },
+      "type": "External"
+     }
+    ],
+    "minReplicas": 2,
+    "scaleTargetRef": {
+     "kind": "Deployment",
+     "name": "deployment1"
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "reason": "reason",
+      "status": "True",
+      "type": "AbleToScale"
+     }
+    ],
+    "currentMetrics": [
+     {
+      "resource": {
+       "current": {
+        "averageUtilization": 28,
+        "averageValue": "847775744"
+       },
+       "name": "memory"
+      },
+      "type": "Resource"
+     },
+     {
+      "resource": {
+       "current": {
+        "averageUtilization": 6,
+        "averageValue": "62m"
+       },
+       "name": "cpu"
+      },
+      "type": "Resource"
+     },
+     {
+      "containerResource": {
+       "container": "container1",
+       "current": {
+        "averageUtilization": 10,
+        "averageValue": "80m"
+       },
+       "name": "cpu"
+      },
+      "type": "ContainerResource"
+     },
+     {
+      "external": {
+       "current": {
+        "averageValue": "2900m",
+        "value": "0"
+       },
+       "metric": {
+        "name": "traefik_backend_requests_per_second"
+       }
+      },
+      "type": "External"
+     },
+     {
+      "external": {
+       "current": {
+        "value": "0"
+       },
+       "metric": {
+        "name": "traefik_backend_errors_per_second"
+       }
+      },
+      "type": "External"
+     }
+    ],
+    "currentReplicas": 2,
+    "desiredReplicas": 2
+   },
+   "apiVersion": "autoscaling/v2",
+   "kind": "HorizontalPodAutoscaler"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "deletionTimestamp": "2027-01-15T08:00:00Z",
+    "generation": 2,
+    "labels": {
+     "app": "foobar"
+    },
+    "name": "hpa1",
+    "namespace": "ns1",
+    "uid": "golden-0050-"
+   },
+   "spec": {
+    "maxReplicas": 4,
+    "metrics": [
+     {
+      "object": {
+       "describedObject": {
+        "kind": "",
+        "name": ""
+       },
+       "metric": {
+        "name": "hits"
+       },
+       "target": {
+        "averageValue": "12",
+        "type": "",
+        "value": "10"
+       }
+      },
+      "type": "Object"
+     },
+     {
+      "object": {
+       "describedObject": {
+        "kind": "",
+        "name": ""
+       },
+       "metric": {
+        "name": "connections"
+       },
+       "target": {
+        "averageValue": "700m",
+        "type": "",
+        "value": "500m"
+       }
+      },
+      "type": "Object"
+     },
+     {
+      "pods": {
+       "metric": {
+        "name": "transactions_processed"
+       },
+       "target": {
+        "averageValue": "33",
+        "type": ""
+       }
+      },
+      "type": "Pods"
+     },
+     {
+      "resource": {
+       "name": "cpu",
+       "target": {
+        "averageUtilization": 80,
+        "type": ""
+       }
+      },
+      "type": "Resource"
+     },
+     {
+      "resource": {
+       "name": "memory",
+       "target": {
+        "averageUtilization": 80,
+        "averageValue": "800Ki",
+        "type": ""
+       }
+      },
+      "type": "Resource"
+     },
+     {
+      "containerResource": {
+       "container": "container1",
+       "name": "cpu",
+       "target": {
+        "averageUtilization": 80,
+        "type": ""
+       }
+      },
+      "type": "ContainerResource"
+     },
+     {
+      "resource": {
+       "name": "disk",
+       "target": {
+        "type": ""
+       }
+      },
+      "type": "Resource"
+     },
+     {
+      "external": {
+       "metric": {
+        "name": "sqs_jobs"
+       },
+       "target": {
+        "type": "",
+        "value": "30"
+       }
+      },
+      "type": "External"
+     },
+     {
+      "external": {
+       "metric": {
+        "name": "events"
+       },
+       "target": {
+        "averageValue": "30",
+        "type": ""
+       }
+      },
+      "type": "External"
+     }
+    ],
+    "minReplicas": 2,
+    "scaleTargetRef": {
+     "apiVersion": "apps/v1",
+     "kind": "Deployment",
+     "name": "deployment1"
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "reason": "reason",
+      "status": "True",
+      "type": "AbleToScale"
+     }
+    ],
+    "currentMetrics": [
+     {
+      "resource": {
+       "current": {
+        "averageUtilization": 80,
+        "averageValue": "7m"
+       },
+       "name": "cpu"
+      },
+      "type": "Resource"
+     },
+     {
+      "resource": {
+       "current": {
+        "averageUtilization": 80,
+        "averageValue": "26335914666m"
+       },
+       "name": "memory"
+      },
+      "type": "Resource"
+     }
+    ],
+    "currentReplicas": 2,
+    "desiredReplicas": 2
+   },
+   "apiVersion": "autoscaling/v2",
+   "kind": "HorizontalPodAutoscaler"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 1,
+    "name": "hpa-container-resource",
+    "namespace": "default",
+    "uid": "golden-0051-"
+   },
+   "spec": {
+    "maxReplicas": 10,
+    "metrics": [
+     {
+      "containerResource": {
+       "container": "main",
+       "name": "cpu",
+       "target": {
+        "averageUtilization": 40,
+        "type": ""
+       }
+      },
+      "type": "ContainerResource"
+     },
+     {
+      "containerResource": {
+       "container": "sidecar",
+       "name": "cpu",
+       "target": {
+        "averageUtilization": 90,
+        "type": ""
+       }
+      },
+      "type": "ContainerResource"
+     },
+     {
+      "containerResource": {
+       "container": "main",
+       "name": "memory",
+       "target": {
+        "averageUtilization": 70,
+        "type": ""
+       }
+      },
+      "type": "ContainerResource"
+     }
+    ],
+    "minReplicas": 1,
+    "scaleTargetRef": {
+     "apiVersion": "apps/v1",
+     "kind": "Deployment",
+     "name": "test-app"
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "AbleToScale"
+     }
+    ],
+    "currentMetrics": [
+     {
+      "containerResource": {
+       "container": "main",
+       "current": {
+        "averageUtilization": 24,
+        "averageValue": "1442m"
+       },
+       "name": "cpu"
+      },
+      "type": "ContainerResource"
+     },
+     {
+      "containerResource": {
+       "container": "sidecar",
+       "current": {
+        "averageUtilization": 69,
+        "averageValue": "836m"
+       },
+       "name": "cpu"
+      },
+      "type": "ContainerResource"
+     }
+    ],
+    "currentReplicas": 2,
+    "desiredReplicas": 3
+   },
+   "apiVersion": "autoscaling/v2",
+   "kind": "HorizontalPodAutoscaler"
+  },
+  {
+   "metadata": {
+    "name": "hpa1",
+    "namespace": "ns1",
+    "uid": "golden-0052-"
+   },
+   "spec": {
+    "behavior": {
+     "scaleDown": {
+      "tolerance": "250m"
+     },
+     "scaleUp": {
+      "tolerance": "500m"
+     }
+    },
+    "maxReplicas": 4,
+    "scaleTargetRef": {
+     "kind": "",
+     "name": ""
+    }
+   },
+   "status": {
+    "currentMetrics": null,
+    "desiredReplicas": 0
+   },
+   "apiVersion": "autoscaling/v2",
+   "kind": "HorizontalPodAutoscaler"
+  },
+  {
+   "metadata": {
+    "name": "hpa-default-min-replicas",
+    "namespace": "ns1",
+    "uid": "golden-0053-"
+   },
+   "spec": {
+    "maxReplicas": 3,
+    "scaleTargetRef": {
+     "kind": "Deployment",
+     "name": "deployment-default-min"
+    }
+   },
+   "status": {
+    "currentMetrics": null,
+    "desiredReplicas": 0
+   },
+   "apiVersion": "autoscaling/v2",
+   "kind": "HorizontalPodAutoscaler"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "ingressclass.kubernetes.io/is-default-class": "true"
+    },
+    "labels": {
+     "foo": "bar"
+    },
+    "name": "test_ingressclass-labels",
+    "uid": "golden-0054-"
+   },
+   "spec": {
+    "controller": "controller"
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "IngressClass"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "test_kube_ingressclass-created",
+    "uid": "golden-0055-"
+   },
+   "spec": {
+    "controller": "controller"
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "IngressClass"
+  },
+  {
+   "metadata": {
+    "name": "test_ingressclass-info",
+    "uid": "golden-0056-"
+   },
+   "spec": {
+    "controller": "controller"
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "IngressClass"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "name": "ingress1",
+    "namespace": "ns1",
+    "resourceVersion": "000000",
+    "uid": "golden-0057-"
+   },
+   "spec": {},
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "kubernetes.io/ingress.class": "test"
+    },
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "ingress7",
+    "namespace": "ns7",
+    "resourceVersion": "123456",
+    "uid": "golden-0058-"
+   },
+   "spec": {},
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "labels": {
+     "test-3": "test-3"
+    },
+    "name": "ingress3",
+    "namespace": "ns3",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0059-"
+   },
+   "spec": {},
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "labels": {
+     "test-4": "test-4"
+    },
+    "name": "ingress4",
+    "namespace": "ns4",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0060-"
+   },
+   "spec": {
+    "rules": [
+     {
+      "host": "somehost",
+      "http": {
+       "paths": [
+        {
+         "backend": {
+          "service": {
+           "name": "someservice",
+           "port": {
+            "number": 1234
+           }
+          }
+         },
+         "path": "/somepath",
+         "pathType": "Exact"
+        },
+        {
+         "backend": {
+          "resource": {
+           "apiGroup": null,
+           "kind": "somekind",
+           "name": "somename"
+          }
+         },
+         "path": "/somepath2",
+         "pathType": null
+        }
+       ]
+      }
+     },
+     {
+      "host": "somehost2"
+     }
+    ]
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "labels": {
+     "test-5": "test-5"
+    },
+    "name": "ingress5",
+    "namespace": "ns5",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0061-"
+   },
+   "spec": {
+    "tls": [
+     {
+      "hosts": [
+       "somehost1",
+       "somehost2"
+      ],
+      "secretName": "somesecret"
+     }
+    ]
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "ingress2",
+    "namespace": "ns2",
+    "resourceVersion": "123456",
+    "uid": "golden-0062-"
+   },
+   "spec": {},
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "ingress6",
+    "namespace": "ns6",
+    "resourceVersion": "123456",
+    "uid": "golden-0063-"
+   },
+   "spec": {
+    "ingressClassName": "test"
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "Ingress"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 1,
+    "labels": {
+     "app": "example-running-1"
+    },
+    "name": "RunningJob1",
+    "namespace": "ns1",
+    "ownerReferences": [
+     {
+      "apiVersion": "",
+      "controller": true,
+      "kind": "CronJob",
+      "name": "cronjob-name",
+      "uid": ""
+     }
+    ],
+    "uid": "golden-0064-"
+   },
+   "spec": {
+    "activeDeadlineSeconds": 900,
+    "completions": 1,
+    "parallelism": 1,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "active": 1,
+    "startTime": "2017-05-26T12:00:07Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "generation": 1,
+    "labels": {
+     "app": "example-failed-1"
+    },
+    "name": "FailedJob1",
+    "namespace": "ns1",
+    "uid": "golden-0065-"
+   },
+   "spec": {
+    "activeDeadlineSeconds": 900,
+    "completions": 1,
+    "parallelism": 1,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "completionTime": "2017-05-26T15:00:07Z",
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "reason": "BackoffLimitExceeded",
+      "status": "True",
+      "type": "Failed"
+     }
+    ],
+    "failed": 1,
+    "startTime": "2017-05-26T14:00:07Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "generation": 1,
+    "labels": {
+     "app": "example-successful-1"
+    },
+    "name": "SuccessfulJob1",
+    "namespace": "ns1",
+    "uid": "golden-0066-"
+   },
+   "spec": {
+    "activeDeadlineSeconds": 900,
+    "completions": 1,
+    "parallelism": 1,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "completionTime": "2017-05-26T13:00:07Z",
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "Complete"
+     }
+    ],
+    "startTime": "2017-05-26T12:00:07Z",
+    "succeeded": 1
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "generation": 1,
+    "labels": {
+     "app": "example-successful-2"
+    },
+    "name": "SuccessfulJob2NoActiveDeadlineSeconds",
+    "namespace": "ns1",
+    "uid": "golden-0067-"
+   },
+   "spec": {
+    "completions": 1,
+    "parallelism": 1,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "completionTime": "2017-05-26T13:10:07Z",
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "Complete"
+     }
+    ],
+    "startTime": "2017-05-26T12:10:07Z",
+    "succeeded": 1
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "generation": 1,
+    "name": "SuspendedNoActiveDeadlineSeconds",
+    "namespace": "ns1",
+    "uid": "golden-0068-"
+   },
+   "spec": {
+    "completions": 1,
+    "parallelism": 1,
+    "suspend": true,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "Suspended"
+     }
+    ],
+    "startTime": "2017-05-26T12:10:07Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "generation": 1,
+    "name": "UnsuspendedNoActiveDeadlineSeconds",
+    "namespace": "ns1",
+    "uid": "golden-0069-"
+   },
+   "spec": {
+    "completions": 1,
+    "parallelism": 1,
+    "suspend": false,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "False",
+      "type": "Suspended"
+     }
+    ],
+    "startTime": "2017-05-26T12:10:07Z"
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "name": "FailedJobFailedIndexes",
+    "namespace": "ns1",
+    "uid": "golden-0070-"
+   },
+   "spec": {
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "reason": "FailedIndexes",
+      "status": "True",
+      "type": "Failed"
+     }
+    ],
+    "failed": 2
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "name": "FailedJobMaxFailedIndexesExceeded",
+    "namespace": "ns1",
+    "uid": "golden-0071-"
+   },
+   "spec": {
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "reason": "MaxFailedIndexesExceeded",
+      "status": "True",
+      "type": "Failed"
+     }
+    ],
+    "failed": 2
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "name": "FailedJobPodFailurePolicy",
+    "namespace": "ns1",
+    "uid": "golden-0072-"
+   },
+   "spec": {
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "reason": "PodFailurePolicy",
+      "status": "True",
+      "type": "Failed"
+     }
+    ],
+    "failed": 2
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "name": "FailedJobUnknownReason",
+    "namespace": "ns1",
+    "uid": "golden-0073-"
+   },
+   "spec": {
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "reason": "PodInitializing",
+      "status": "True",
+      "type": "Failed"
+     }
+    ],
+    "failed": 1
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "name": "FailedJobWithNoConditions",
+    "namespace": "ns1",
+    "uid": "golden-0074-"
+   },
+   "spec": {
+    "activeDeadlineSeconds": 900,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "failed": 1
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "name": "JobFailedConditionFalse",
+    "namespace": "ns1",
+    "uid": "golden-0075-"
+   },
+   "spec": {
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "reason": "BackoffLimitExceeded",
+      "status": "False",
+      "type": "Failed"
+     }
+    ]
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "name": "job-with-ready-pods",
+    "namespace": "ns1",
+    "uid": "golden-0076-job-123"
+   },
+   "spec": {
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "active": 2,
+    "ready": 1
+   },
+   "apiVersion": "batch/v1",
+   "kind": "Job"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 2,
+    "name": "kube-master",
+    "namespace": "default",
+    "ownerReferences": [
+     {
+      "apiVersion": "",
+      "kind": "Node",
+      "name": "kube-master",
+      "uid": ""
+     }
+    ],
+    "uid": "golden-0077-"
+   },
+   "spec": {
+    "holderIdentity": "kube-master",
+    "renewTime": "2017-07-14T02:40:00.000000Z"
+   },
+   "apiVersion": "coordination.k8s.io/v1",
+   "kind": "Lease"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 2,
+    "name": "kube-master",
+    "namespace": "default",
+    "ownerReferences": [
+     {
+      "apiVersion": "",
+      "kind": "Node",
+      "name": "kube-master",
+      "uid": ""
+     }
+    ],
+    "uid": "golden-0078-"
+   },
+   "spec": {
+    "renewTime": "2017-07-14T02:40:00.000000Z"
+   },
+   "apiVersion": "coordination.k8s.io/v1",
+   "kind": "Lease"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "name": "quotaTest",
+    "namespace": "testNS",
+    "uid": "golden-0079-"
+   },
+   "spec": {
+    "limits": [
+     {
+      "default": {
+       "memory": "2100M"
+      },
+      "defaultRequest": {
+       "memory": "2100M"
+      },
+      "max": {
+       "memory": "2100M"
+      },
+      "maxLimitRequestRatio": {
+       "memory": "2100M"
+      },
+      "min": {
+       "memory": "2100M"
+      },
+      "type": "Pod"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "LimitRange"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "mutatingadmissionpolicybinding2",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0080-"
+   },
+   "spec": {
+    "policyName": "mutatingadmissionpolicy2"
+   },
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "MutatingAdmissionPolicyBinding"
+  },
+  {
+   "metadata": {
+    "name": "mutatingadmissionpolicybinding1",
+    "resourceVersion": "123456",
+    "uid": "golden-0081-"
+   },
+   "spec": {
+    "paramRef": {
+     "name": "param1",
+     "namespace": "ns1",
+     "parameterNotFoundAction": "Deny"
+    },
+    "policyName": "mutatingadmissionpolicy1"
+   },
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "MutatingAdmissionPolicyBinding"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "mutatingadmissionpolicy2",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0082-"
+   },
+   "spec": {
+    "failurePolicy": "Ignore",
+    "reinvocationPolicy": "IfNeeded"
+   },
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "MutatingAdmissionPolicy"
+  },
+  {
+   "metadata": {
+    "name": "mutatingadmissionpolicy1",
+    "resourceVersion": "123456",
+    "uid": "golden-0083-"
+   },
+   "spec": {
+    "failurePolicy": "Fail",
+    "paramKind": {
+     "apiVersion": "rules.example.com/v1",
+     "kind": "Rule"
+    },
+    "reinvocationPolicy": "Never"
+   },
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "MutatingAdmissionPolicy"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "mutatingwebhookconfiguration2",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0084-"
+   },
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "MutatingWebhookConfiguration"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "mutatingwebhookconfiguration3",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0085-"
+   },
+   "webhooks": [
+    {
+     "admissionReviewVersions": null,
+     "clientConfig": {
+      "service": {
+       "name": "svc",
+       "namespace": "ns"
+      }
+     },
+     "name": "webhook_with_service",
+     "sideEffects": null
+    },
+    {
+     "admissionReviewVersions": null,
+     "clientConfig": {
+      "url": "example.com"
+     },
+     "name": "webhook_with_external_url",
+     "sideEffects": null
+    }
+   ],
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "MutatingWebhookConfiguration"
+  },
+  {
+   "metadata": {
+    "name": "mutatingwebhookconfiguration1",
+    "resourceVersion": "123456",
+    "uid": "golden-0086-"
+   },
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "MutatingWebhookConfiguration"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "example1"
+    },
+    "name": "ns1",
+    "uid": "golden-0087-"
+   },
+   "spec": {
+    "finalizers": [
+     "kubernetes"
+    ]
+   },
+   "status": {
+    "phase": "Active"
+   },
+   "apiVersion": "v1",
+   "kind": "Namespace"
+  },
+  {
+   "metadata": {
+    "labels": {
+     "app": "example2",
+     "l2": "label2"
+    },
+    "name": "ns2",
+    "uid": "golden-0088-"
+   },
+   "spec": {
+    "finalizers": [
+     "kubernetes"
+    ]
+   },
+   "status": {
+    "phase": "Active"
+   },
+   "apiVersion": "v1",
+   "kind": "Namespace"
+  },
+  {
+   "metadata": {
+    "name": "nsActiveTest",
+    "uid": "golden-0089-"
+   },
+   "spec": {
+    "finalizers": [
+     "kubernetes"
+    ]
+   },
+   "status": {
+    "phase": "Active"
+   },
+   "apiVersion": "v1",
+   "kind": "Namespace"
+  },
+  {
+   "metadata": {
+    "name": "nsTerminateTest",
+    "uid": "golden-0090-"
+   },
+   "spec": {
+    "finalizers": [
+     "kubernetes"
+    ]
+   },
+   "status": {
+    "phase": "Terminating"
+   },
+   "apiVersion": "v1",
+   "kind": "Namespace"
+  },
+  {
+   "metadata": {
+    "name": "nsTerminateWithConditionTest",
+    "uid": "golden-0091-"
+   },
+   "spec": {
+    "finalizers": [
+     "kubernetes"
+    ]
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "NamespaceDeletionDiscoveryFailure"
+     },
+     {
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "NamespaceDeletionContentFailure"
+     },
+     {
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "NamespaceDeletionGroupVersionParsingFailure"
+     }
+    ],
+    "phase": "Terminating"
+   },
+   "apiVersion": "v1",
+   "kind": "Namespace"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "netpol1",
+    "namespace": "ns1",
+    "uid": "golden-0092-"
+   },
+   "spec": {
+    "egress": [
+     {},
+     {},
+     {}
+    ],
+    "ingress": [
+     {},
+     {}
+    ],
+    "podSelector": {}
+   },
+   "apiVersion": "networking.k8s.io/v1",
+   "kind": "NetworkPolicy"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "node-role.kubernetes.io/master": ""
+    },
+    "name": "127.0.0.1",
+    "uid": "golden-0093-"
+   },
+   "spec": {
+    "podCIDR": "172.24.10.0/24",
+    "providerID": "provider://i-randomidentifier",
+    "unschedulable": true
+   },
+   "status": {
+    "addresses": [
+     {
+      "address": "1.2.3.4",
+      "type": "InternalIP"
+     }
+    ],
+    "allocatable": {
+     "cpu": "3",
+     "ephemeral-storage": "3G",
+     "memory": "1G",
+     "nvidia.com/gpu": "1",
+     "pods": "555",
+     "storage": "2G"
+    },
+    "capacity": {
+     "cpu": "4300m",
+     "ephemeral-storage": "4G",
+     "memory": "10P",
+     "nvidia.com/gpu": "4",
+     "pods": "1k",
+     "storage": "3G"
+    },
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 0
+     }
+    },
+    "nodeInfo": {
+     "architecture": "",
+     "bootID": "",
+     "containerRuntimeVersion": "rkt",
+     "kernelVersion": "kernel",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "kubelet",
+     "machineID": "",
+     "operatingSystem": "",
+     "osImage": "osimage",
+     "systemUUID": "6a934e21-5207-4a84-baea-3a952d926c80"
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Node"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "node-role.kubernetes.io/master": ""
+    },
+    "name": "127.0.0.1",
+    "uid": "golden-0094-"
+   },
+   "spec": {
+    "podCIDR": "172.24.10.0/24",
+    "providerID": "provider://i-randomidentifier",
+    "unschedulable": true
+   },
+   "status": {
+    "addresses": [
+     {
+      "address": "1.2.3.4",
+      "type": "InternalIP"
+     }
+    ],
+    "allocatable": {
+     "cpu": "3",
+     "ephemeral-storage": "3G",
+     "memory": "1G",
+     "nvidia.com/gpu": "1",
+     "pods": "555",
+     "storage": "2G"
+    },
+    "capacity": {
+     "cpu": "4300m",
+     "ephemeral-storage": "4G",
+     "memory": "2G",
+     "nvidia.com/gpu": "4",
+     "pods": "1k",
+     "storage": "3G"
+    },
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 0
+     }
+    },
+    "nodeInfo": {
+     "architecture": "",
+     "bootID": "",
+     "containerRuntimeVersion": "rkt",
+     "kernelVersion": "kernel",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "kubelet",
+     "machineID": "",
+     "operatingSystem": "",
+     "osImage": "osimage",
+     "systemUUID": "6a934e21-5207-4a84-baea-3a952d926c80"
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Node"
+  },
+  {
+   "metadata": {
+    "name": "127.0.0.1",
+    "uid": "golden-0095-"
+   },
+   "spec": {
+    "podCIDR": "172.24.10.0/24",
+    "providerID": "provider://i-uniqueid"
+   },
+   "status": {
+    "addresses": [
+     {
+      "address": "1.2.3.4",
+      "type": "InternalIP"
+     }
+    ],
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 0
+     }
+    },
+    "nodeInfo": {
+     "architecture": "",
+     "bootID": "",
+     "containerRuntimeVersion": "rkt",
+     "kernelVersion": "kernel",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "kubelet",
+     "machineID": "",
+     "operatingSystem": "",
+     "osImage": "osimage",
+     "systemUUID": "6a934e21-5207-4a84-baea-3a952d926c80"
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Node"
+  },
+  {
+   "metadata": {
+    "name": "127.0.0.1",
+    "uid": "golden-0096-"
+   },
+   "spec": {
+    "podCIDRs": [
+     "10.244.0.0/24",
+     "2001:db8::/64"
+    ]
+   },
+   "status": {
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 0
+     }
+    },
+    "nodeInfo": {
+     "architecture": "",
+     "bootID": "",
+     "containerRuntimeVersion": "",
+     "kernelVersion": "",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "",
+     "machineID": "",
+     "operatingSystem": "",
+     "osImage": "",
+     "systemUUID": ""
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Node"
+  },
+  {
+   "metadata": {
+    "name": "127.0.0.1",
+    "uid": "golden-0097-"
+   },
+   "spec": {},
+   "status": {
+    "addresses": [
+     {
+      "address": "1.2.3.4",
+      "type": "InternalIP"
+     },
+     {
+      "address": "fc00::",
+      "type": "InternalIP"
+     },
+     {
+      "address": "5.6.7.8",
+      "type": "ExternalIP"
+     },
+     {
+      "address": "2001:db8::",
+      "type": "ExternalIP"
+     }
+    ],
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 0
+     }
+    },
+    "nodeInfo": {
+     "architecture": "",
+     "bootID": "",
+     "containerRuntimeVersion": "",
+     "kernelVersion": "",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "",
+     "machineID": "",
+     "operatingSystem": "",
+     "osImage": "",
+     "systemUUID": ""
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Node"
+  },
+  {
+   "metadata": {
+    "name": "127.0.0.1",
+    "uid": "golden-0098-"
+   },
+   "spec": {},
+   "status": {
+    "conditions": [
+     {
+      "lastHeartbeatTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "NetworkUnavailable"
+     },
+     {
+      "lastHeartbeatTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "Ready"
+     },
+     {
+      "lastHeartbeatTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "CustomizedType"
+     }
+    ],
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 0
+     }
+    },
+    "nodeInfo": {
+     "architecture": "",
+     "bootID": "",
+     "containerRuntimeVersion": "",
+     "kernelVersion": "",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "",
+     "machineID": "",
+     "operatingSystem": "",
+     "osImage": "",
+     "systemUUID": ""
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Node"
+  },
+  {
+   "metadata": {
+    "name": "127.0.0.1",
+    "uid": "golden-0099-"
+   },
+   "spec": {
+    "taints": [
+     {
+      "effect": "PreferNoSchedule",
+      "key": "node.kubernetes.io/memory-pressure",
+      "value": "true"
+     },
+     {
+      "effect": "PreferNoSchedule",
+      "key": "Accelerated",
+      "value": "gpu"
+     },
+     {
+      "effect": "PreferNoSchedule",
+      "key": "Dedicated"
+     }
+    ]
+   },
+   "status": {
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 0
+     }
+    },
+    "nodeInfo": {
+     "architecture": "",
+     "bootID": "",
+     "containerRuntimeVersion": "",
+     "kernelVersion": "",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "",
+     "machineID": "",
+     "operatingSystem": "",
+     "osImage": "",
+     "systemUUID": ""
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Node"
+  },
+  {
+   "metadata": {
+    "name": "127.0.0.2",
+    "uid": "golden-0100-"
+   },
+   "spec": {},
+   "status": {
+    "conditions": [
+     {
+      "lastHeartbeatTime": null,
+      "lastTransitionTime": null,
+      "status": "Unknown",
+      "type": "NetworkUnavailable"
+     },
+     {
+      "lastHeartbeatTime": null,
+      "lastTransitionTime": null,
+      "status": "Unknown",
+      "type": "Ready"
+     },
+     {
+      "lastHeartbeatTime": null,
+      "lastTransitionTime": null,
+      "status": "Unknown",
+      "type": "CustomizedType"
+     }
+    ],
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 0
+     }
+    },
+    "nodeInfo": {
+     "architecture": "",
+     "bootID": "",
+     "containerRuntimeVersion": "",
+     "kernelVersion": "",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "",
+     "machineID": "",
+     "operatingSystem": "",
+     "osImage": "",
+     "systemUUID": ""
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Node"
+  },
+  {
+   "metadata": {
+    "name": "127.0.0.3",
+    "uid": "golden-0101-"
+   },
+   "spec": {},
+   "status": {
+    "conditions": [
+     {
+      "lastHeartbeatTime": null,
+      "lastTransitionTime": null,
+      "status": "False",
+      "type": "NetworkUnavailable"
+     },
+     {
+      "lastHeartbeatTime": null,
+      "lastTransitionTime": null,
+      "status": "False",
+      "type": "Ready"
+     },
+     {
+      "lastHeartbeatTime": null,
+      "lastTransitionTime": null,
+      "status": "False",
+      "type": "CustomizedType"
+     }
+    ],
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 0
+     }
+    },
+    "nodeInfo": {
+     "architecture": "",
+     "bootID": "",
+     "containerRuntimeVersion": "",
+     "kernelVersion": "",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "",
+     "machineID": "",
+     "operatingSystem": "",
+     "osImage": "",
+     "systemUUID": ""
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Node"
+  },
+  {
+   "metadata": {
+    "name": "golden-102",
+    "uid": "golden-0102-"
+   },
+   "spec": {},
+   "status": {
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 0
+     }
+    },
+    "nodeInfo": {
+     "architecture": "",
+     "bootID": "",
+     "containerRuntimeVersion": "",
+     "kernelVersion": "",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "",
+     "machineID": "",
+     "operatingSystem": "",
+     "osImage": "",
+     "systemUUID": ""
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Node"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "name": "mysql-data",
+    "namespace": "default",
+    "uid": "golden-0103-"
+   },
+   "spec": {
+    "accessModes": [
+     "ReadWriteOnce"
+    ],
+    "resources": {
+     "requests": {
+      "storage": "1Gi"
+     }
+    },
+    "storageClassName": "rbd",
+    "volumeAttributesClassName": "gold",
+    "volumeMode": "Block",
+    "volumeName": "pvc-mysql-data"
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "Resizing"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "False",
+      "type": "FileSystemResizePending"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "CustomizedType"
+     }
+    ],
+    "phase": "Bound"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolumeClaim"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "deletionTimestamp": "2027-01-15T08:00:00Z",
+    "name": "terminating-data",
+    "uid": "golden-0104-"
+   },
+   "spec": {
+    "accessModes": [
+     "ReadWriteOnce"
+    ],
+    "resources": {
+     "requests": {
+      "storage": "1Gi"
+     }
+    },
+    "volumeMode": "Block",
+    "volumeName": "pvc-postgresql-data"
+   },
+   "status": {
+    "phase": "Bound"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolumeClaim"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "mysql-server"
+    },
+    "name": "mysql-data",
+    "namespace": "default",
+    "uid": "golden-0105-"
+   },
+   "spec": {
+    "accessModes": [
+     "ReadWriteOnce"
+    ],
+    "resources": {
+     "requests": {
+      "storage": "1Gi"
+     }
+    },
+    "storageClassName": "rbd",
+    "volumeAttributesClassName": "silver",
+    "volumeMode": "Block",
+    "volumeName": "pvc-mysql-data"
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "Resizing"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "False",
+      "type": "FileSystemResizePending"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "CustomizedType"
+     }
+    ],
+    "currentVolumeAttributesClassName": "silver",
+    "phase": "Bound"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolumeClaim"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "name": "mongo-data",
+    "uid": "golden-0106-"
+   },
+   "spec": {
+    "accessModes": [
+     "ReadWriteOnce"
+    ],
+    "resources": {},
+    "volumeMode": "Block"
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "False",
+      "type": "Resizing"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "True",
+      "type": "FileSystemResizePending"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "False",
+      "type": "CustomizedType"
+     }
+    ],
+    "phase": "Lost"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolumeClaim"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "name": "prometheus-data",
+    "namespace": "default",
+    "uid": "golden-0107-"
+   },
+   "spec": {
+    "accessModes": [
+     "ReadWriteOnce"
+    ],
+    "resources": {},
+    "storageClassName": "rbd",
+    "volumeAttributesClassName": "gold",
+    "volumeMode": "Block",
+    "volumeName": "pvc-prometheus-data"
+   },
+   "status": {
+    "currentVolumeAttributesClassName": "silver",
+    "modifyVolumeStatus": {
+     "status": "InProgress",
+     "targetVolumeAttributesClassName": "gold"
+    },
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolumeClaim"
+  },
+  {
+   "metadata": {
+    "name": "no-conditions-pvc",
+    "namespace": "default",
+    "uid": "golden-0108-"
+   },
+   "spec": {
+    "resources": {}
+   },
+   "status": {
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolumeClaim"
+  },
+  {
+   "metadata": {
+    "name": "unused-pvc",
+    "namespace": "default",
+    "uid": "golden-0109-"
+   },
+   "spec": {
+    "resources": {}
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2020-09-13T12:26:40Z",
+      "status": "True",
+      "type": "Unused"
+     }
+    ],
+    "phase": "Bound"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolumeClaim"
+  },
+  {
+   "metadata": {
+    "name": "used-pvc",
+    "namespace": "default",
+    "uid": "golden-0110-"
+   },
+   "spec": {
+    "resources": {}
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2023-11-14T22:13:20Z",
+      "status": "False",
+      "type": "Unused"
+     }
+    ],
+    "phase": "Bound"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolumeClaim"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app.k8s.io/owner": "mysql-server",
+     "foo": "bar"
+    },
+    "labels": {
+     "app": "mysql-server",
+     "hello": "world"
+    },
+    "name": "test-allowlisted-labels-annotations",
+    "uid": "golden-0111-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app.k8s.io/owner": "mysql-server",
+     "foo": "bar"
+    },
+    "labels": {
+     "app": "mysql-server",
+     "hello": "world"
+    },
+    "name": "test-defaul-labels-annotations",
+    "uid": "golden-0112-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "deletionTimestamp": "2027-01-15T08:00:00Z",
+    "name": "test-pv-terminating",
+    "uid": "golden-0113-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Bound"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "name": "test-pv-created",
+    "uid": "golden-0114-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "labels": {
+     "app": "mysql-server"
+    },
+    "name": "test-labeled-pv",
+    "uid": "golden-0115-"
+   },
+   "spec": {
+    "storageClassName": "test"
+   },
+   "status": {
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "labels": {
+     "fc_lun": "456"
+    },
+    "name": "test-pv-available",
+    "uid": "golden-0116-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-block-volumemode",
+    "uid": "golden-0117-"
+   },
+   "spec": {
+    "volumeMode": "Block"
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-claimed-pv",
+    "uid": "golden-0118-"
+   },
+   "spec": {
+    "claimRef": {
+     "apiVersion": "v1",
+     "kind": "PersistentVolumeClaim",
+     "name": "pv-claim",
+     "namespace": "default"
+    },
+    "storageClassName": "test"
+   },
+   "status": {
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-default-volumemode",
+    "uid": "golden-0119-"
+   },
+   "spec": {},
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-access-modes",
+    "uid": "golden-0120-"
+   },
+   "spec": {
+    "accessModes": [
+     "ReadWriteOnce",
+     "ReadOnlyMany"
+    ]
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0121-"
+   },
+   "spec": {
+    "awsElasticBlockStore": {
+     "volumeID": "aws://eu-west-1c/vol-012d34d567890123b"
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0122-"
+   },
+   "spec": {
+    "azureDisk": {
+     "diskName": "azure_disk_1",
+     "diskURI": ""
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0123-"
+   },
+   "spec": {
+    "csi": {
+     "driver": "test-driver",
+     "volumeAttributes": {
+      "mapOptions": "krbd:rxbounce",
+      "mounter": "rbd"
+     },
+     "volumeHandle": "test-volume-handle"
+    }
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0124-"
+   },
+   "spec": {
+    "csi": {
+     "driver": "test-driver",
+     "volumeHandle": "test-volume-handle"
+    }
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0125-"
+   },
+   "spec": {
+    "csi": {
+     "driver": "test-driver",
+     "volumeHandle": "test-volume-handle"
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0126-"
+   },
+   "spec": {
+    "fc": {
+     "lun": 123,
+     "targetWWNs": [
+      "0123456789abcdef",
+      "abcdef0123456789"
+     ]
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0127-"
+   },
+   "spec": {
+    "fc": {
+     "wwids": [
+      "0123456789abcdef",
+      "abcdef0123456789"
+     ]
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0128-"
+   },
+   "spec": {
+    "gcePersistentDisk": {
+     "pdName": "name"
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0129-"
+   },
+   "spec": {
+    "hostPath": {
+     "path": "/mnt/data"
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0130-"
+   },
+   "spec": {
+    "hostPath": {
+     "path": "/mnt/data",
+     "type": "Directory"
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0131-"
+   },
+   "spec": {
+    "iscsi": {
+     "initiatorName": "iqn.my.test.initiator:112233",
+     "iqn": "iqn.my.test.server.target00",
+     "lun": 123,
+     "targetPortal": "1.2.3.4:3260"
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0132-"
+   },
+   "spec": {
+    "iscsi": {
+     "iqn": "iqn.my.test.server.target00",
+     "lun": 123,
+     "targetPortal": "1.2.3.4:3260"
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0133-"
+   },
+   "spec": {
+    "local": {
+     "fsType": "ext4",
+     "path": "/mnt/data"
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0134-"
+   },
+   "spec": {
+    "local": {
+     "path": "/mnt/data"
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0135-"
+   },
+   "spec": {
+    "nfs": {
+     "path": "/myPath",
+     "server": "1.2.3.4"
+    }
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0136-"
+   },
+   "spec": {
+    "persistentVolumeReclaimPolicy": "Retain"
+   },
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-available",
+    "uid": "golden-0137-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-bound",
+    "uid": "golden-0138-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Bound"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-failed",
+    "uid": "golden-0139-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Failed"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-pending",
+    "uid": "golden-0140-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-pending",
+    "uid": "golden-0141-"
+   },
+   "spec": {
+    "storageClassName": "test"
+   },
+   "status": {
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv-released",
+    "uid": "golden-0142-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Released"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-pv",
+    "uid": "golden-0143-"
+   },
+   "spec": {
+    "capacity": {
+     "storage": "5Gi"
+    }
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-unclaimed-pv",
+    "uid": "golden-0144-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "name": "test-unlabeled-pv",
+    "uid": "golden-0145-"
+   },
+   "spec": {},
+   "status": {
+    "phase": "Available"
+   },
+   "apiVersion": "v1",
+   "kind": "PersistentVolume"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app.k8s.io/owner": "mysql-server",
+     "foo": "bar"
+    },
+    "labels": {
+     "app": "mysql-server",
+     "hello": "world"
+    },
+    "name": "pdb_with_allowed_labels_and_annotations",
+    "namespace": "ns",
+    "uid": "golden-0146-"
+   },
+   "spec": {},
+   "status": {
+    "currentHealthy": 0,
+    "desiredHealthy": 0,
+    "disruptionsAllowed": 0,
+    "expectedPods": 0
+   },
+   "apiVersion": "policy/v1",
+   "kind": "PodDisruptionBudget"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 21,
+    "name": "pdb1",
+    "namespace": "ns1",
+    "uid": "golden-0147-"
+   },
+   "spec": {},
+   "status": {
+    "currentHealthy": 12,
+    "desiredHealthy": 10,
+    "disruptionsAllowed": 2,
+    "expectedPods": 15,
+    "observedGeneration": 111
+   },
+   "apiVersion": "policy/v1",
+   "kind": "PodDisruptionBudget"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": "2027-01-15T08:00:00Z",
+    "generation": 14,
+    "name": "pdb3",
+    "namespace": "ns3",
+    "uid": "golden-0148-"
+   },
+   "spec": {},
+   "status": {
+    "currentHealthy": 8,
+    "desiredHealthy": 9,
+    "disruptionsAllowed": 0,
+    "expectedPods": 0
+   },
+   "apiVersion": "policy/v1",
+   "kind": "PodDisruptionBudget"
+  },
+  {
+   "metadata": {
+    "generation": 14,
+    "name": "pdb2",
+    "namespace": "ns2",
+    "uid": "golden-0149-"
+   },
+   "spec": {},
+   "status": {
+    "currentHealthy": 8,
+    "desiredHealthy": 9,
+    "disruptionsAllowed": 0,
+    "expectedPods": 10,
+    "observedGeneration": 1111
+   },
+   "apiVersion": "policy/v1",
+   "kind": "PodDisruptionBudget"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "example"
+    },
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0150-uid1"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "deletionTimestamp": "2027-01-15T08:00:00Z",
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0151-abc-123-xxx"
+   },
+   "spec": {
+    "containers": null,
+    "nodeName": "node1",
+    "priorityClassName": "system-node-critical"
+   },
+   "status": {
+    "hostIP": "1.1.1.1",
+    "podIP": "1.2.3.4",
+    "startTime": "2017-08-01T06:30:18Z"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0152-abc-123-xxx"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube2_spec",
+      "name": "",
+      "resources": {}
+     }
+    ],
+    "hostNetwork": true,
+    "nodeName": "node1",
+    "priorityClassName": "system-node-critical"
+   },
+   "status": {
+    "hostIP": "1.1.1.1",
+    "podIP": "1.2.3.4",
+    "podIPs": [
+     {
+      "ip": "1.2.3.4"
+     },
+     {
+      "ip": "fc00:1234:5678:90ab:cdef:cafe:f00d:d00d"
+     },
+     {
+      "ip": "::ffff:1.2.3.4"
+     }
+    ],
+    "startTime": "2017-08-01T06:30:18Z"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": null,
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0153-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Failed",
+    "reason": "OutOfcpu"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": null,
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0154-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Failed",
+    "reason": "OutOfmemory"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": null,
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0155-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Running",
+    "reason": "Evicted"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": null,
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0156-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Running",
+    "reason": "NodeAffinity"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": null,
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0157-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Running",
+    "reason": "NodeLost"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": null,
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0158-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Running",
+    "reason": "other reason"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": null,
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0159-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Running",
+    "reason": "PreemptionByScheduler"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": null,
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0160-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Running",
+    "reason": "Shutdown"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": null,
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0161-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Running",
+    "reason": "TerminationByKubelet"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": null,
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0162-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Running",
+    "reason": "UnexpectedAdmissionError"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "labels": {
+     "app": "example"
+    },
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0163-uid1"
+   },
+   "spec": {
+    "containers": null,
+    "runtimeClassName": "foo"
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "labels": {
+     "app": "example"
+    },
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0164-uid1"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "labels": {
+     "app": "example"
+    },
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0167-uid1"
+   },
+   "spec": {
+    "containers": null,
+    "volumes": [
+     {
+      "name": "myvol",
+      "persistentVolumeClaim": {
+       "claimName": "claim1"
+      }
+     },
+     {
+      "name": "my-readonly-vol",
+      "persistentVolumeClaim": {
+       "claimName": "claim2",
+       "readOnly": true
+      }
+     },
+     {
+      "ephemeral": {},
+      "name": "my-ephemeral-vol"
+     },
+     {
+      "emptyDir": {
+       "medium": "memory"
+      },
+      "name": "not-pvc-vol"
+     }
+    ]
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0168-uid1"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube1_spec",
+      "name": "container1",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "containerID": "docker://ab123",
+      "image": "k8s.gcr.io/hyperkube1",
+      "imageID": "docker://sha256:aaa",
+      "lastState": {},
+      "name": "container1",
+      "ready": false,
+      "restartCount": 0,
+      "state": {}
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0169-uid1"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube1_spec",
+      "name": "container1",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container1",
+      "ready": false,
+      "restartCount": 0,
+      "state": {}
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0170-uid1"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube1_spec",
+      "name": "container1",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container1",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "terminated": {
+        "exitCode": 0,
+        "finishedAt": null,
+        "reason": "Completed",
+        "startedAt": "2017-08-03T16:16:58Z"
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0171-uid1"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube1_spec",
+      "name": "container1",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container1",
+      "ready": true,
+      "restartCount": 0,
+      "state": {}
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0172-uid1"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube2_spec",
+      "name": "container1",
+      "resources": {}
+     }
+    ],
+    "initContainers": [
+     {
+      "image": "k8s.gcr.io/initfoo_spec",
+      "name": "initcontainer1",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container1",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "running": {
+        "startedAt": "2017-08-03T16:16:58Z"
+       }
+      }
+     }
+    ],
+    "initContainerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "initcontainer1",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "running": {
+        "startedAt": null
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0173-uid1"
+   },
+   "spec": {
+    "containers": [
+     {
+      "name": "pod1_con1",
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "ephemeral-storage": "300M",
+        "memory": "100M",
+        "nvidia.com/gpu": "1",
+        "storage": "400M"
+       },
+       "requests": {
+        "cpu": "200m",
+        "ephemeral-storage": "300M",
+        "memory": "100M",
+        "nvidia.com/gpu": "1",
+        "storage": "400M"
+       }
+      }
+     },
+     {
+      "name": "pod1_con2",
+      "resources": {
+       "limits": {
+        "cpu": "300m",
+        "memory": "200M"
+       },
+       "requests": {
+        "cpu": "300m",
+        "memory": "200M"
+       }
+      }
+     }
+    ],
+    "initContainers": [
+     {
+      "name": "pod1_initcon1",
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "ephemeral-storage": "300M",
+        "memory": "100M",
+        "nvidia.com/gpu": "1",
+        "storage": "400M"
+       },
+       "requests": {
+        "cpu": "200m",
+        "ephemeral-storage": "300M",
+        "memory": "100M",
+        "nvidia.com/gpu": "1",
+        "storage": "400M"
+       }
+      }
+     }
+    ]
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0174-uid1"
+   },
+   "spec": {
+    "containers": null,
+    "nodeSelector": {
+     "a": "b"
+    }
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0175-uid1"
+   },
+   "spec": {
+    "containers": null,
+    "resourceClaims": [
+     {
+      "name": "gpu",
+      "resourceClaimName": "shared-gpu-claim"
+     },
+     {
+      "name": "gpu-tmpl",
+      "resourceClaimTemplateName": "gpu-template"
+     }
+    ]
+   },
+   "status": {
+    "resourceClaimStatuses": [
+     {
+      "name": "gpu-tmpl",
+      "resourceClaimName": "pod1-gpu-tmpl-abcde"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0176-uid1"
+   },
+   "spec": {
+    "containers": null,
+    "schedulerName": "scheduler1"
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0177-uid1"
+   },
+   "spec": {
+    "containers": null,
+    "serviceAccountName": "service-account-name"
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0178-uid1"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2017-08-02T09:26:58Z",
+      "status": "False",
+      "type": "ContainersReady"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0179-uid1"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2017-08-02T09:26:58Z",
+      "status": "False",
+      "type": "Initialized"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0180-uid1"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2017-08-02T09:26:58Z",
+      "status": "True",
+      "type": "ContainersReady"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0181-uid1"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2017-08-02T09:26:58Z",
+      "status": "True",
+      "type": "Initialized"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0182-uid1"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2017-08-02T09:26:58Z",
+      "status": "True",
+      "type": "PodScheduled"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0183-uid1"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2017-08-02T09:26:58Z",
+      "status": "True",
+      "type": "Ready"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0184-uid1"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Running"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0185-uid1"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "qosClass": "BestEffort"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod1",
+    "namespace": "ns1",
+    "uid": "golden-0186-uid1"
+   },
+   "spec": {
+    "containers": null,
+    "tolerations": [
+     {
+      "effect": "NoSchedule",
+      "key": "key1",
+      "operator": "Equal",
+      "value": "value1"
+     },
+     {
+      "key": "key2",
+      "operator": "Exists"
+     },
+     {
+      "key": "key3",
+      "operator": "Equal",
+      "value": "value3"
+     },
+     {
+      "key": "key3",
+      "operator": "Equal",
+      "value": "value3"
+     },
+     {}
+    ]
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns1",
+    "uid": "golden-0187-uid6"
+   },
+   "spec": {
+    "containers": null,
+    "nodeSelector": {
+     "cloud.google.com/gke-accelerator": "nvidia-tesla-t4",
+     "kubernetes.io/os": "linux"
+    }
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "ownerReferences": [
+     {
+      "apiVersion": "",
+      "controller": true,
+      "kind": "ReplicaSet",
+      "name": "rs-name",
+      "uid": ""
+     }
+    ],
+    "uid": "golden-0188-abc-456-xxx"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube2_spec",
+      "name": "container2_1",
+      "resources": {}
+     },
+     {
+      "image": "k8s.gcr.io/hyperkube2_spec",
+      "name": "container2_2",
+      "resources": {}
+     },
+     {
+      "image": "k8s.gcr.io/hyperkube2_spec",
+      "name": "container2_3",
+      "resources": {}
+     }
+    ],
+    "nodeName": "node2"
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "containerID": "docker://cd456",
+      "image": "k8s.gcr.io/hyperkube2",
+      "imageID": "docker://sha256:bbb",
+      "lastState": {},
+      "name": "container2_1",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "terminated": {
+        "exitCode": 0,
+        "finishedAt": "2017-08-03T16:16:58Z",
+        "startedAt": null
+       }
+      }
+     },
+     {
+      "containerID": "docker://cd456",
+      "image": "k8s.gcr.io/hyperkube2",
+      "imageID": "docker://sha256:bbb",
+      "lastState": {},
+      "name": "container2_2",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "terminated": {
+        "exitCode": 0,
+        "finishedAt": "2017-08-04T23:06:58Z",
+        "startedAt": null
+       }
+      }
+     },
+     {
+      "containerID": "docker://cd456",
+      "image": "k8s.gcr.io/hyperkube2",
+      "imageID": "docker://sha256:bbb",
+      "lastState": {},
+      "name": "container2_3",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "terminated": {
+        "exitCode": 0,
+        "finishedAt": "2017-08-02T09:26:58Z",
+        "startedAt": null
+       }
+      }
+     }
+    ],
+    "hostIP": "1.1.1.1",
+    "podIP": "2.3.4.5"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0189-uid2"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube2_spec",
+      "name": "container2",
+      "resources": {}
+     },
+     {
+      "image": "k8s.gcr.io/hyperkube3_spec",
+      "name": "container3",
+      "resources": {}
+     }
+    ],
+    "initContainers": [
+     {
+      "image": "k8s.gcr.io/initfoo_spec",
+      "name": "initContainer",
+      "resources": {},
+      "restartPolicy": "Always"
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "containerID": "docker://cd456",
+      "image": "k8s.gcr.io/hyperkube2",
+      "imageID": "docker://sha256:bbb",
+      "lastState": {},
+      "name": "container2",
+      "ready": false,
+      "restartCount": 0,
+      "state": {}
+     },
+     {
+      "containerID": "docker://ef789",
+      "image": "k8s.gcr.io/hyperkube3",
+      "imageID": "docker://sha256:ccc",
+      "lastState": {},
+      "name": "container3",
+      "ready": false,
+      "restartCount": 0,
+      "state": {}
+     }
+    ],
+    "initContainerStatuses": [
+     {
+      "containerID": "docker://ef123",
+      "image": "k8s.gcr.io/initfoo",
+      "imageID": "docker://sha256:wxyz",
+      "lastState": {},
+      "name": "initContainer",
+      "ready": false,
+      "restartCount": 0,
+      "state": {}
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0190-uid2"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube2_spec",
+      "name": "container2",
+      "resources": {}
+     },
+     {
+      "image": "k8s.gcr.io/hyperkube3_spec",
+      "name": "container3",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container2",
+      "ready": false,
+      "restartCount": 0,
+      "state": {}
+     },
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container3",
+      "ready": false,
+      "restartCount": 1,
+      "state": {}
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0191-uid2"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube2_spec",
+      "name": "container2",
+      "resources": {}
+     },
+     {
+      "image": "k8s.gcr.io/hyperkube3_spec",
+      "name": "container3",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container2",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "terminated": {
+        "exitCode": 137,
+        "finishedAt": null,
+        "reason": "OOMKilled",
+        "startedAt": "2017-08-03T16:16:58Z"
+       }
+      }
+     },
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container3",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "waiting": {
+        "reason": "ContainerCreating"
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0192-uid2"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube2_spec",
+      "name": "container2",
+      "resources": {}
+     },
+     {
+      "image": "k8s.gcr.io/hyperkube3_spec",
+      "name": "container3",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container2",
+      "ready": true,
+      "restartCount": 0,
+      "state": {}
+     },
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container3",
+      "ready": false,
+      "restartCount": 0,
+      "state": {}
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0193-uid2"
+   },
+   "spec": {
+    "containers": [
+     {
+      "name": "pod2_con1",
+      "resources": {
+       "limits": {
+        "cpu": "400m",
+        "memory": "300M"
+       },
+       "requests": {
+        "cpu": "400m",
+        "memory": "300M"
+       }
+      }
+     },
+     {
+      "name": "pod2_con2",
+      "resources": {
+       "limits": {
+        "cpu": "500m",
+        "memory": "400M"
+       },
+       "requests": {
+        "cpu": "500m",
+        "memory": "400M"
+       }
+      }
+     },
+     {
+      "name": "pod2_con3",
+      "resources": {}
+     }
+    ],
+    "initContainers": [
+     {
+      "name": "pod2_initcon1",
+      "resources": {
+       "limits": {
+        "cpu": "400m",
+        "memory": "300M"
+       },
+       "requests": {
+        "cpu": "400m",
+        "memory": "300M"
+       }
+      }
+     }
+    ]
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0194-uid2"
+   },
+   "spec": {
+    "containers": null,
+    "initContainers": [
+     {
+      "image": "k8s.gcr.io/initfoo_spec",
+      "name": "initcontainer1",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "initContainerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "initcontainer1",
+      "ready": false,
+      "restartCount": 1,
+      "state": {}
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0195-uid2"
+   },
+   "spec": {
+    "containers": null,
+    "initContainers": [
+     {
+      "image": "k8s.gcr.io/initfoo_spec",
+      "name": "initcontainer2",
+      "resources": {}
+     },
+     {
+      "image": "k8s.gcr.io/initfoo_spec",
+      "name": "initcontainer3",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "initContainerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "initcontainer2",
+      "ready": false,
+      "restartCount": 0,
+      "state": {}
+     },
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "initcontainer3",
+      "ready": false,
+      "restartCount": 1,
+      "state": {}
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0196-uid2"
+   },
+   "spec": {
+    "containers": null,
+    "resourceClaims": [
+     {
+      "name": "pending",
+      "resourceClaimTemplateName": "gpu-template"
+     },
+     {
+      "name": "bad"
+     }
+    ]
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0197-uid2"
+   },
+   "spec": {
+    "containers": null,
+    "restartPolicy": "Always"
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0198-uid2"
+   },
+   "spec": {
+    "containers": null,
+    "restartPolicy": "OnFailure"
+   },
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0199-uid2"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2017-08-02T09:26:58Z",
+      "status": "False",
+      "type": "Ready"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0200-uid2"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "message": "0/3 nodes are available: 3 Insufficient cpu.",
+      "reason": "Unschedulable",
+      "status": "False",
+      "type": "PodScheduled"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0201-uid2"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "status": "False",
+      "type": "PodScheduled"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod2",
+    "namespace": "ns2",
+    "uid": "golden-0202-uid2"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod3",
+    "namespace": "ns3",
+    "uid": "golden-0203-uid3"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube2_spec",
+      "name": "container2",
+      "resources": {}
+     },
+     {
+      "image": "k8s.gcr.io/hyperkube3_spec",
+      "name": "container3",
+      "resources": {}
+     }
+    ],
+    "initContainers": [
+     {
+      "image": "k8s.gcr.io/initfoo_spec",
+      "name": "initcontainer1",
+      "resources": {}
+     },
+     {
+      "image": "k8s.gcr.io/initfoo_spec",
+      "name": "initcontainer2",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container2",
+      "ready": true,
+      "restartCount": 0,
+      "state": {}
+     },
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container3",
+      "ready": false,
+      "restartCount": 0,
+      "state": {}
+     }
+    ],
+    "initContainerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "initcontainer1",
+      "ready": true,
+      "restartCount": 0,
+      "state": {}
+     },
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "initcontainer2",
+      "ready": false,
+      "restartCount": 0,
+      "state": {}
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod3",
+    "namespace": "ns3",
+    "uid": "golden-0204-uid3"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube4_spec",
+      "name": "container4",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container4",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "waiting": {
+        "reason": "CrashLoopBackOff"
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod3",
+    "namespace": "ns3",
+    "uid": "golden-0205-uid3"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Unknown"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0206-uid4"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube5_spec",
+      "name": "container5",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container5",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "waiting": {
+        "reason": "ImagePullBackOff"
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0207-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "reason": "SchedulingGated",
+      "status": "False",
+      "type": "PodScheduled"
+     }
+    ],
+    "phase": "Pending"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod4",
+    "namespace": "ns4",
+    "uid": "golden-0208-uid4"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "phase": "Failed",
+    "reason": "TopologyAffinityError"
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod5",
+    "namespace": "ns5",
+    "uid": "golden-0209-uid5"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube1_spec",
+      "name": "container6",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container6",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "waiting": {
+        "reason": "ErrImagePull"
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod5",
+    "namespace": "ns5",
+    "uid": "golden-0210-uid5"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "reason": "EvictionByEvictionAPI",
+      "status": "",
+      "type": "DisruptionTarget"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod6",
+    "namespace": "ns6",
+    "uid": "golden-0211-uid6"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube7_spec",
+      "name": "container7",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {
+       "terminated": {
+        "exitCode": 137,
+        "finishedAt": "2017-08-03T16:59:07Z",
+        "reason": "OOMKilled",
+        "startedAt": null
+       }
+      },
+      "name": "container7",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "running": {
+        "startedAt": "2017-08-03T16:16:58Z"
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod6",
+    "namespace": "ns6",
+    "uid": "golden-0212-uid6"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "reason": "EvictionByEvictionAPI",
+      "status": "",
+      "type": "Ready"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod7disruption",
+    "namespace": "ns7",
+    "uid": "golden-0213-uid7"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": null,
+      "reason": "SomeFutureReason",
+      "status": "",
+      "type": "DisruptionTarget"
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod7",
+    "namespace": "ns7",
+    "uid": "golden-0214-uid7"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube1_spec",
+      "name": "container8",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "container8",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "waiting": {
+        "reason": "CreateContainerConfigError"
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod7",
+    "namespace": "ns7",
+    "uid": "golden-0215-uid7"
+   },
+   "spec": {
+    "containers": [
+     {
+      "image": "k8s.gcr.io/hyperkube7_spec",
+      "name": "container7",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {
+       "terminated": {
+        "exitCode": 143,
+        "finishedAt": "2017-08-03T16:59:07Z",
+        "reason": "DeadlineExceeded",
+        "startedAt": null
+       }
+      },
+      "name": "container7",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "running": {
+        "startedAt": "2017-08-03T16:16:58Z"
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod8",
+    "namespace": "ns8",
+    "uid": "golden-0216-uid8"
+   },
+   "spec": {
+    "containers": null,
+    "initContainers": [
+     {
+      "image": "k8s.gcr.io/init1_spec",
+      "name": "initcontainer1",
+      "resources": {}
+     },
+     {
+      "image": "k8s.gcr.io/init2_spec",
+      "name": "initcontainer2",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "initContainerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "initcontainer1",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "running": {
+        "startedAt": "2017-08-03T16:16:58Z"
+       }
+      }
+     },
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {},
+      "name": "initcontainer2",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "terminated": {
+        "exitCode": 0,
+        "finishedAt": null,
+        "startedAt": "2017-08-03T16:16:58Z"
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod9",
+    "namespace": "ns9",
+    "uid": "golden-0217-uid9"
+   },
+   "spec": {
+    "containers": null,
+    "initContainers": [
+     {
+      "image": "k8s.gcr.io/init1_spec",
+      "name": "initcontainer1",
+      "resources": {}
+     }
+    ]
+   },
+   "status": {
+    "initContainerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {
+       "terminated": {
+        "exitCode": 137,
+        "finishedAt": "2017-08-03T16:59:07Z",
+        "reason": "OOMKilled",
+        "startedAt": null
+       }
+      },
+      "name": "initcontainer1",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "running": {
+        "startedAt": "2017-08-03T16:16:58Z"
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "name": "pod_unknown",
+    "namespace": "ns",
+    "uid": "golden-0218-uid_unknown"
+   },
+   "spec": {
+    "containers": null
+   },
+   "status": {
+    "containerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {
+       "terminated": {
+        "exitCode": 137,
+        "finishedAt": null,
+        "reason": "ContainerStatusUnknown",
+        "startedAt": null
+       }
+      },
+      "name": "container",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "terminated": {
+        "exitCode": 137,
+        "finishedAt": null,
+        "reason": "ContainerStatusUnknown",
+        "startedAt": null
+       }
+      }
+     }
+    ],
+    "initContainerStatuses": [
+     {
+      "image": "",
+      "imageID": "",
+      "lastState": {
+       "terminated": {
+        "exitCode": 137,
+        "finishedAt": null,
+        "reason": "ContainerStatusUnknown",
+        "startedAt": null
+       }
+      },
+      "name": "init",
+      "ready": false,
+      "restartCount": 0,
+      "state": {
+       "terminated": {
+        "exitCode": 137,
+        "finishedAt": null,
+        "reason": "ContainerStatusUnknown",
+        "startedAt": null
+       }
+      }
+     }
+    ]
+   },
+   "apiVersion": "v1",
+   "kind": "Pod"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 21,
+    "labels": {
+     "app": "example1"
+    },
+    "name": "rs1",
+    "namespace": "ns1",
+    "ownerReferences": [
+     {
+      "apiVersion": "",
+      "controller": true,
+      "kind": "Deployment",
+      "name": "dp-name",
+      "uid": ""
+     }
+    ],
+    "uid": "golden-0219-"
+   },
+   "spec": {
+    "replicas": 5,
+    "selector": null,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "fullyLabeledReplicas": 10,
+    "observedGeneration": 1,
+    "readyReplicas": 5,
+    "replicas": 5,
+    "terminatingReplicas": 3
+   },
+   "apiVersion": "apps/v1",
+   "kind": "ReplicaSet"
+  },
+  {
+   "metadata": {
+    "generation": 14,
+    "labels": {
+     "app": "example2",
+     "env": "ex"
+    },
+    "name": "rs2",
+    "namespace": "ns2",
+    "uid": "golden-0220-"
+   },
+   "spec": {
+    "replicas": 0,
+    "selector": null,
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    }
+   },
+   "status": {
+    "fullyLabeledReplicas": 5,
+    "observedGeneration": 5,
+    "replicas": 0
+   },
+   "apiVersion": "apps/v1",
+   "kind": "ReplicaSet"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 21,
+    "name": "rc1",
+    "namespace": "ns1",
+    "ownerReferences": [
+     {
+      "apiVersion": "",
+      "controller": true,
+      "kind": "DeploymentConfig",
+      "name": "dc-name",
+      "uid": ""
+     }
+    ],
+    "uid": "golden-0221-"
+   },
+   "spec": {
+    "replicas": 5
+   },
+   "status": {
+    "availableReplicas": 3,
+    "fullyLabeledReplicas": 10,
+    "observedGeneration": 1,
+    "readyReplicas": 5,
+    "replicas": 5
+   },
+   "apiVersion": "v1",
+   "kind": "ReplicationController"
+  },
+  {
+   "metadata": {
+    "generation": 14,
+    "name": "rc2",
+    "namespace": "ns2",
+    "uid": "golden-0222-"
+   },
+   "spec": {
+    "replicas": 0
+   },
+   "status": {
+    "fullyLabeledReplicas": 5,
+    "observedGeneration": 5,
+    "replicas": 0
+   },
+   "apiVersion": "v1",
+   "kind": "ReplicationController"
+  },
+  {
+   "metadata": {
+    "generation": 5,
+    "name": "rc3",
+    "namespace": "ns3",
+    "ownerReferences": [
+     {
+      "apiVersion": "",
+      "kind": "DeploymentConfig",
+      "name": "dc-test",
+      "uid": ""
+     }
+    ],
+    "uid": "golden-0223-"
+   },
+   "spec": {
+    "replicas": 0
+   },
+   "status": {
+    "availableReplicas": 1,
+    "fullyLabeledReplicas": 5,
+    "observedGeneration": 1,
+    "readyReplicas": 2,
+    "replicas": 1
+   },
+   "apiVersion": "v1",
+   "kind": "ReplicationController"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "foo": "bar"
+    },
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "hello": "world"
+    },
+    "name": "quotaTest",
+    "namespace": "testNS",
+    "uid": "golden-0224-"
+   },
+   "spec": {},
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "ResourceQuota"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "name": "quotaTest",
+    "namespace": "testNS",
+    "uid": "golden-0225-"
+   },
+   "spec": {},
+   "status": {},
+   "apiVersion": "v1",
+   "kind": "ResourceQuota"
+  },
+  {
+   "metadata": {
+    "name": "quotaTest",
+    "namespace": "testNS",
+    "uid": "golden-0226-"
+   },
+   "spec": {
+    "hard": {
+     "configmaps": "4",
+     "cpu": "4300m",
+     "memory": "2100M",
+     "persistentvolumeclaims": "3",
+     "pods": "9",
+     "replicationcontrollers": "7",
+     "resourcequotas": "6",
+     "secrets": "5",
+     "services": "8",
+     "services.loadbalancers": "1",
+     "services.nodeports": "2",
+     "storage": "10G"
+    }
+   },
+   "status": {
+    "hard": {
+     "configmaps": "4",
+     "cpu": "4300m",
+     "memory": "2100M",
+     "persistentvolumeclaims": "3",
+     "pods": "9",
+     "replicationcontrollers": "7",
+     "resourcequotas": "6",
+     "secrets": "5",
+     "services": "8",
+     "services.loadbalancers": "1",
+     "services.nodeports": "2",
+     "storage": "10G"
+    },
+    "used": {
+     "configmaps": "3",
+     "cpu": "2100m",
+     "memory": "500M",
+     "persistentvolumeclaims": "2",
+     "pods": "8",
+     "replicationcontrollers": "6",
+     "resourcequotas": "5",
+     "secrets": "4",
+     "services": "7",
+     "services.loadbalancers": "0",
+     "services.nodeports": "1",
+     "storage": "9G"
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "ResourceQuota"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "labels": {
+     "app": "mysql-server",
+     "excluded": "me"
+    },
+    "name": "rolebinding1",
+    "namespace": "ns1",
+    "resourceVersion": "BBBBB",
+    "uid": "golden-0227-"
+   },
+   "roleRef": {
+    "apiGroup": "rbac.authorization.k8s.io",
+    "kind": "Role",
+    "name": "role"
+   },
+   "apiVersion": "rbac.authorization.k8s.io/v1",
+   "kind": "RoleBinding"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "rolebinding2",
+    "namespace": "ns2",
+    "resourceVersion": "10596",
+    "uid": "golden-0228-"
+   },
+   "roleRef": {
+    "apiGroup": "rbac.authorization.k8s.io",
+    "kind": "Role",
+    "name": "role"
+   },
+   "apiVersion": "rbac.authorization.k8s.io/v1",
+   "kind": "RoleBinding"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "app": "mysql-server",
+     "app.k8s.io/owner": "@foo"
+    },
+    "labels": {
+     "app": "mysql-server",
+     "excluded": "me"
+    },
+    "name": "role1",
+    "namespace": "ns1",
+    "resourceVersion": "BBBBB",
+    "uid": "golden-0229-"
+   },
+   "rules": null,
+   "apiVersion": "rbac.authorization.k8s.io/v1",
+   "kind": "Role"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "role2",
+    "namespace": "ns2",
+    "resourceVersion": "10596",
+    "uid": "golden-0230-"
+   },
+   "rules": null,
+   "apiVersion": "rbac.authorization.k8s.io/v1",
+   "kind": "Role"
+  },
+  {
+   "metadata": {
+    "annotations": {
+     "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"data\":{\"key\":\"dmFsdWU=\"},\"kind\":\"Secret\"}",
+     "team": "a"
+    },
+    "name": "secret0",
+    "namespace": "ns1",
+    "resourceVersion": "000000",
+    "uid": "golden-0231-"
+   },
+   "type": "Opaque",
+   "apiVersion": "v1",
+   "kind": "Secret"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "labels": {
+     "test-3": "test-3"
+    },
+    "name": "secret3",
+    "namespace": "ns3",
+    "resourceVersion": "0",
+    "uid": "golden-0232-"
+   },
+   "type": "kubernetes.io/dockercfg",
+   "apiVersion": "v1",
+   "kind": "Secret"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "labels": {
+     "test-4": "test-4"
+    },
+    "name": "secret4",
+    "namespace": "ns4",
+    "ownerReferences": [
+     {
+      "apiVersion": "",
+      "controller": true,
+      "kind": "ManagedSecret",
+      "name": "managed-secret4",
+      "uid": ""
+     }
+    ],
+    "resourceVersion": "0",
+    "uid": "golden-0233-"
+   },
+   "type": "Opaque",
+   "apiVersion": "v1",
+   "kind": "Secret"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "secret2",
+    "namespace": "ns2",
+    "resourceVersion": "123456B",
+    "uid": "golden-0234-"
+   },
+   "type": "kubernetes.io/service-account-token",
+   "apiVersion": "v1",
+   "kind": "Secret"
+  },
+  {
+   "metadata": {
+    "name": "secret1",
+    "namespace": "ns1",
+    "resourceVersion": "000000",
+    "uid": "golden-0235-"
+   },
+   "type": "Opaque",
+   "apiVersion": "v1",
+   "kind": "Secret"
+  },
+  {
+   "automountServiceAccountToken": true,
+   "imagePullSecrets": [
+    {
+     "name": "imagePullSecretName"
+    }
+   ],
+   "metadata": {
+    "annotations": {
+     "example.test/team": "test"
+    },
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "deletionTimestamp": "2065-01-24T05:20:00Z",
+    "labels": {
+     "app": "test"
+    },
+    "name": "serviceAccountName",
+    "namespace": "serviceAccountNS",
+    "uid": "golden-0236-serviceAccountUID"
+   },
+   "secrets": [
+    {
+     "apiVersion": "v1",
+     "kind": "Secret",
+     "name": "secretName",
+     "namespace": "serviceAccountNS"
+    }
+   ],
+   "apiVersion": "v1",
+   "kind": "ServiceAccount"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "deletionTimestamp": "2027-01-15T08:00:00Z",
+    "labels": {
+     "app": "example9"
+    },
+    "name": "test-service9",
+    "namespace": "default",
+    "uid": "golden-0237-uid9"
+   },
+   "spec": {
+    "clusterIP": "1.2.3.4",
+    "type": "ClusterIP"
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "v1",
+   "kind": "Service"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "example1"
+    },
+    "name": "test-service1",
+    "namespace": "default",
+    "uid": "golden-0238-uid1"
+   },
+   "spec": {
+    "clusterIP": "1.2.3.4",
+    "type": "ClusterIP"
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "v1",
+   "kind": "Service"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "example2"
+    },
+    "name": "test-service2",
+    "namespace": "default",
+    "uid": "golden-0239-uid2"
+   },
+   "spec": {
+    "clusterIP": "1.2.3.5",
+    "type": "NodePort"
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "v1",
+   "kind": "Service"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "example3"
+    },
+    "name": "test-service3",
+    "namespace": "default",
+    "uid": "golden-0240-uid3"
+   },
+   "spec": {
+    "clusterIP": "1.2.3.6",
+    "loadBalancerIP": "1.2.3.7",
+    "type": "LoadBalancer"
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "v1",
+   "kind": "Service"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "example4"
+    },
+    "name": "test-service4",
+    "namespace": "default",
+    "uid": "golden-0241-uid4"
+   },
+   "spec": {
+    "externalName": "www.example.com",
+    "type": "ExternalName"
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "v1",
+   "kind": "Service"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "example5"
+    },
+    "name": "test-service5",
+    "namespace": "default",
+    "uid": "golden-0242-uid5"
+   },
+   "spec": {
+    "type": "LoadBalancer"
+   },
+   "status": {
+    "loadBalancer": {
+     "ingress": [
+      {
+       "hostname": "www.example.com",
+       "ip": "1.2.3.8"
+      }
+     ]
+    }
+   },
+   "apiVersion": "v1",
+   "kind": "Service"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "example6"
+    },
+    "name": "test-service6",
+    "namespace": "default",
+    "uid": "golden-0243-uid6"
+   },
+   "spec": {
+    "externalIPs": [
+     "1.2.3.9",
+     "1.2.3.10"
+    ],
+    "type": "ClusterIP"
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "v1",
+   "kind": "Service"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "example7"
+    },
+    "name": "test-service7",
+    "namespace": "default",
+    "uid": "golden-0244-uid7"
+   },
+   "spec": {
+    "clusterIP": "1.2.3.11",
+    "externalTrafficPolicy": "Cluster",
+    "type": "ClusterIP"
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "v1",
+   "kind": "Service"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "labels": {
+     "app": "example8"
+    },
+    "name": "test-service8",
+    "namespace": "default",
+    "uid": "golden-0245-uid8"
+   },
+   "spec": {
+    "clusterIP": "1.2.3.12",
+    "externalTrafficPolicy": "Local",
+    "loadBalancerIP": "1.2.3.13",
+    "type": "LoadBalancer"
+   },
+   "status": {
+    "loadBalancer": {}
+   },
+   "apiVersion": "v1",
+   "kind": "Service"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-07-14T02:40:00Z",
+    "generation": 3,
+    "labels": {
+     "app": "example1"
+    },
+    "name": "statefulset1",
+    "namespace": "ns1",
+    "uid": "golden-0246-"
+   },
+   "spec": {
+    "replicas": 3,
+    "selector": null,
+    "serviceName": "statefulset1service",
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    },
+    "updateStrategy": {}
+   },
+   "status": {
+    "availableReplicas": 0,
+    "currentRevision": "cr1",
+    "observedGeneration": 1,
+    "replicas": 2,
+    "updateRevision": "ur1"
+   },
+   "apiVersion": "apps/v1",
+   "kind": "StatefulSet"
+  },
+  {
+   "metadata": {
+    "deletionTimestamp": "2027-01-15T08:00:00Z",
+    "generation": 1,
+    "labels": {
+     "app": "example6"
+    },
+    "name": "statefulset6",
+    "namespace": "ns6",
+    "uid": "golden-0247-"
+   },
+   "spec": {
+    "replicas": 1,
+    "selector": null,
+    "serviceName": "statefulset6service",
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    },
+    "updateStrategy": {}
+   },
+   "status": {
+    "availableReplicas": 0,
+    "replicas": 1
+   },
+   "apiVersion": "apps/v1",
+   "kind": "StatefulSet"
+  },
+  {
+   "metadata": {
+    "generation": 1,
+    "labels": {
+     "app": "example4"
+    },
+    "name": "statefulset4",
+    "namespace": "ns4",
+    "uid": "golden-0248-"
+   },
+   "spec": {
+    "persistentVolumeClaimRetentionPolicy": {
+     "whenDeleted": "Retain",
+     "whenScaled": "Delete"
+    },
+    "replicas": 3,
+    "selector": null,
+    "serviceName": "statefulset4service",
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    },
+    "updateStrategy": {}
+   },
+   "status": {
+    "availableReplicas": 0,
+    "currentRevision": "cr3",
+    "replicas": 7,
+    "updateRevision": "ur3"
+   },
+   "apiVersion": "apps/v1",
+   "kind": "StatefulSet"
+  },
+  {
+   "metadata": {
+    "generation": 1,
+    "labels": {
+     "app": "example5"
+    },
+    "name": "statefulset5",
+    "namespace": "ns5",
+    "uid": "golden-0249-"
+   },
+   "spec": {
+    "ordinals": {
+     "start": 2
+    },
+    "replicas": 3,
+    "selector": null,
+    "serviceName": "statefulset5service",
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    },
+    "updateStrategy": {}
+   },
+   "status": {
+    "availableReplicas": 0,
+    "currentRevision": "cr5",
+    "replicas": 3,
+    "updateRevision": "ur5"
+   },
+   "apiVersion": "apps/v1",
+   "kind": "StatefulSet"
+  },
+  {
+   "metadata": {
+    "generation": 21,
+    "labels": {
+     "app": "example2"
+    },
+    "name": "statefulset2",
+    "namespace": "ns2",
+    "uid": "golden-0250-"
+   },
+   "spec": {
+    "replicas": 6,
+    "selector": null,
+    "serviceName": "statefulset2service",
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    },
+    "updateStrategy": {}
+   },
+   "status": {
+    "availableReplicas": 4,
+    "currentReplicas": 2,
+    "currentRevision": "cr2",
+    "observedGeneration": 2,
+    "readyReplicas": 5,
+    "replicas": 5,
+    "updateRevision": "ur2",
+    "updatedReplicas": 3
+   },
+   "apiVersion": "apps/v1",
+   "kind": "StatefulSet"
+  },
+  {
+   "metadata": {
+    "generation": 36,
+    "labels": {
+     "app": "example3"
+    },
+    "name": "statefulset3",
+    "namespace": "ns3",
+    "uid": "golden-0251-"
+   },
+   "spec": {
+    "replicas": 9,
+    "selector": null,
+    "serviceName": "statefulset2service",
+    "template": {
+     "metadata": {},
+     "spec": {
+      "containers": null
+     }
+    },
+    "updateStrategy": {}
+   },
+   "status": {
+    "availableReplicas": 0,
+    "currentRevision": "cr3",
+    "replicas": 7,
+    "updateRevision": "ur3"
+   },
+   "apiVersion": "apps/v1",
+   "kind": "StatefulSet"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "test_kube_storageclass-created",
+    "uid": "golden-0252-"
+   },
+   "provisioner": "kubernetes.io/rbd",
+   "reclaimPolicy": "Delete",
+   "volumeBindingMode": "Immediate",
+   "apiVersion": "storage.k8s.io/v1",
+   "kind": "StorageClass"
+  },
+  {
+   "metadata": {
+    "labels": {
+     "foo": "bar"
+    },
+    "name": "test_storageclass-labels",
+    "uid": "golden-0253-"
+   },
+   "provisioner": "kubernetes.io/rbd",
+   "reclaimPolicy": "Delete",
+   "volumeBindingMode": "Immediate",
+   "apiVersion": "storage.k8s.io/v1",
+   "kind": "StorageClass"
+  },
+  {
+   "metadata": {
+    "name": "test_storageclass-default-info",
+    "uid": "golden-0254-"
+   },
+   "provisioner": "kubernetes.io/rbd",
+   "apiVersion": "storage.k8s.io/v1",
+   "kind": "StorageClass"
+  },
+  {
+   "metadata": {
+    "name": "test_storageclass-info",
+    "uid": "golden-0255-"
+   },
+   "provisioner": "kubernetes.io/rbd",
+   "reclaimPolicy": "Delete",
+   "volumeBindingMode": "Immediate",
+   "apiVersion": "storage.k8s.io/v1",
+   "kind": "StorageClass"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "validatingadmissionpolicybinding2",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0256-"
+   },
+   "spec": {
+    "policyName": "validatingadmissionpolicy2"
+   },
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "ValidatingAdmissionPolicyBinding"
+  },
+  {
+   "metadata": {
+    "name": "validatingadmissionpolicybinding1",
+    "resourceVersion": "123456",
+    "uid": "golden-0257-"
+   },
+   "spec": {
+    "paramRef": {
+     "name": "param1",
+     "namespace": "ns1",
+     "parameterNotFoundAction": "Deny"
+    },
+    "policyName": "validatingadmissionpolicy1",
+    "validationActions": [
+     "Deny",
+     "Warn"
+    ]
+   },
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "ValidatingAdmissionPolicyBinding"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "validatingadmissionpolicy2",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0258-"
+   },
+   "spec": {
+    "failurePolicy": "Ignore"
+   },
+   "status": {},
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "ValidatingAdmissionPolicy"
+  },
+  {
+   "metadata": {
+    "name": "validatingadmissionpolicy1",
+    "resourceVersion": "123456",
+    "uid": "golden-0259-"
+   },
+   "spec": {
+    "failurePolicy": "Fail",
+    "paramKind": {
+     "apiVersion": "rules.example.com/v1",
+     "kind": "Rule"
+    }
+   },
+   "status": {},
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "ValidatingAdmissionPolicy"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "validatingwebhookconfiguration2",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0260-"
+   },
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "ValidatingWebhookConfiguration"
+  },
+  {
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "validatingwebhookconfiguration3",
+    "resourceVersion": "abcdef",
+    "uid": "golden-0261-"
+   },
+   "webhooks": [
+    {
+     "admissionReviewVersions": null,
+     "clientConfig": {
+      "service": {
+       "name": "svc",
+       "namespace": "ns"
+      }
+     },
+     "name": "webhook_with_service",
+     "sideEffects": null
+    },
+    {
+     "admissionReviewVersions": null,
+     "clientConfig": {
+      "url": "example.com"
+     },
+     "name": "webhook_with_external_url",
+     "sideEffects": null
+    }
+   ],
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "ValidatingWebhookConfiguration"
+  },
+  {
+   "metadata": {
+    "name": "validatingwebhookconfiguration1",
+    "resourceVersion": "123456",
+    "uid": "golden-0262-"
+   },
+   "apiVersion": "admissionregistration.k8s.io/v1",
+   "kind": "ValidatingWebhookConfiguration"
+  },
+  {
+   "metadata": {
+    "generation": 2,
+    "labels": {
+     "app": "foobar"
+    },
+    "name": "csi-5ff16a1ad085261021e21c6cb3a6defb979a8794f25a4f90f6285664cff37224",
+    "uid": "golden-0263-"
+   },
+   "spec": {
+    "attacher": "cinder.csi.openstack.org",
+    "nodeName": "node1",
+    "source": {
+     "persistentVolumeName": "pvc-44f6ff3f-ba9b-49c4-9b95-8b01c4bd4bab"
+    }
+   },
+   "status": {
+    "attached": true,
+    "attachmentMetadata": {
+     "DevicePath": "/dev/sdd"
+    }
+   },
+   "apiVersion": "storage.k8s.io/v1",
+   "kind": "VolumeAttachment"
+  },
+  {
+   "driverName": "ebs.csi.aws.com",
+   "metadata": {
+    "annotations": {
+     "app.k8s.io/owner": "storage",
+     "ignored": "x"
+    },
+    "labels": {
+     "foo": "bar",
+     "ignored": "x"
+    },
+    "name": "test_volumeattributesclass-allowlisted",
+    "uid": "golden-0264-"
+   },
+   "apiVersion": "storage.k8s.io/v1",
+   "kind": "VolumeAttributesClass"
+  },
+  {
+   "driverName": "ebs.csi.aws.com",
+   "metadata": {
+    "creationTimestamp": "2017-08-01T06:30:18Z",
+    "name": "test_kube_volumeattributesclass-created",
+    "uid": "golden-0265-"
+   },
+   "apiVersion": "storage.k8s.io/v1",
+   "kind": "VolumeAttributesClass"
+  },
+  {
+   "driverName": "ebs.csi.aws.com",
+   "metadata": {
+    "labels": {
+     "foo": "bar"
+    },
+    "name": "test_volumeattributesclass-labels",
+    "uid": "golden-0266-"
+   },
+   "apiVersion": "storage.k8s.io/v1",
+   "kind": "VolumeAttributesClass"
+  },
+  {
+   "driverName": "ebs.csi.aws.com",
+   "metadata": {
+    "name": "test_volumeattributesclass-info",
+    "uid": "golden-0267-"
+   },
+   "apiVersion": "storage.k8s.io/v1",
+   "kind": "VolumeAttributesClass"
+  }
+ ]
+}
