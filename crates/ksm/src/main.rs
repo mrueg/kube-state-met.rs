@@ -31,12 +31,31 @@ fn main() -> ExitCode {
         Ok(Command::Version) => {
             println!(
                 "{}",
-                options::version_text(client::VERSION, server::revision(), option_env!("KSM_BRANCH").unwrap_or(""))
+                options::version_text(
+                    client::VERSION,
+                    server::revision(),
+                    option_env!("KSM_BRANCH").unwrap_or("")
+                )
             );
             return ExitCode::SUCCESS;
         }
-        Ok(Command::Completion(text)) => {
-            print!("{text}");
+        Ok(Command::Completion(shell)) => {
+            print!("{}", options::completion_text(&shell));
+            return ExitCode::SUCCESS;
+        }
+        Ok(Command::VersionHelp) => {
+            print!("{}", options::version_help_text());
+            return ExitCode::SUCCESS;
+        }
+        Ok(Command::HelpCommandHelp) => {
+            print!("{}", options::help_command_help_text());
+            return ExitCode::SUCCESS;
+        }
+        Ok(Command::CompletionHelp) => {
+            print!(
+                "{}",
+                options::completion_help_text(std::env::var("SHELL").ok().as_deref())
+            );
             return ExitCode::SUCCESS;
         }
         Ok(Command::Run(opts)) => opts,
@@ -47,10 +66,17 @@ fn main() -> ExitCode {
         }
     };
     logging::init(opts.verbosity);
-    let rt = match tokio::runtime::Builder::new_multi_thread().enable_all().build() {
+    let rt = match tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+    {
         Ok(rt) => rt,
         Err(e) => {
-            logging::error_go("main.go:36", "Running kube-state-metrics failed", &e.to_string());
+            logging::error_go(
+                "main.go:36",
+                "Running kube-state-metrics failed",
+                &e.to_string(),
+            );
             return ExitCode::FAILURE;
         }
     };
@@ -83,9 +109,12 @@ async fn run_wrapper(mut opts: options::Options) -> ExitCode {
                     }
                     Ok(()) => {
                         if !merged.custom_resource_config_file_deprecated.is_empty() {
-                            tracing::warn!("The 'custom_resource_config_file' config key is deprecated and will be removed in a future release; use 'custom_resource_state_config_file' instead");
+                            tracing::warn!(
+                                "The 'custom_resource_config_file' config key is deprecated and will be removed in a future release; use 'custom_resource_state_config_file' instead"
+                            );
                             if merged.custom_resource_config_file.is_empty() {
-                                merged.custom_resource_config_file = merged.custom_resource_config_file_deprecated.clone();
+                                merged.custom_resource_config_file =
+                                    merged.custom_resource_config_file_deprecated.clone();
                             }
                         }
                         opts.custom_resource_config_file = merged.custom_resource_config_file;
@@ -127,7 +156,11 @@ fn finish(r: Result<Result<(), String>, tokio::task::JoinError>) -> ExitCode {
             ExitCode::FAILURE
         }
         Err(e) => {
-            logging::error_go("wrapper.go:48", "Failed to run kube-state-metrics", &e.to_string());
+            logging::error_go(
+                "wrapper.go:48",
+                "Failed to run kube-state-metrics",
+                &e.to_string(),
+            );
             ExitCode::FAILURE
         }
     }
@@ -137,13 +170,14 @@ async fn shutdown_signal() {
     let ctrl_c = tokio::signal::ctrl_c();
     #[cfg(unix)]
     {
-        let mut term = match tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate()) {
-            Ok(s) => s,
-            Err(_) => {
-                let _ = ctrl_c.await;
-                return;
-            }
-        };
+        let mut term =
+            match tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate()) {
+                Ok(s) => s,
+                Err(_) => {
+                    let _ = ctrl_c.await;
+                    return;
+                }
+            };
         tokio::select! {
             _ = ctrl_c => {}
             _ = term.recv() => {}

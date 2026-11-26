@@ -306,7 +306,7 @@
     "labels": {
      "app": "example-suspended-1"
     },
-    "name": "SuspendedCronJob1",
+    "name": "SuspendedCronJob1-g12",
     "namespace": "ns1",
     "resourceVersion": "22222",
     "uid": "golden-0012-"
@@ -419,7 +419,7 @@
   },
   {
    "metadata": {
-    "name": "UnparseableScheduleCronJob",
+    "name": "UnparseableScheduleCronJob-g16",
     "namespace": "ns1",
     "uid": "golden-0016-"
    },
@@ -494,7 +494,7 @@
     "labels": {
      "cert": "test"
     },
-    "name": "certificate-test",
+    "name": "certificate-test-g19",
     "uid": "golden-0019-"
    },
    "spec": {
@@ -522,7 +522,7 @@
     "labels": {
      "cert": "test"
     },
-    "name": "certificate-test",
+    "name": "certificate-test-g20",
     "uid": "golden-0020-"
    },
    "spec": {
@@ -549,7 +549,7 @@
     "labels": {
      "cert": "test"
     },
-    "name": "certificate-test",
+    "name": "certificate-test-g21",
     "uid": "golden-0021-"
    },
    "spec": {
@@ -606,7 +606,7 @@
     "labels": {
      "cert": "test"
     },
-    "name": "certificate-test",
+    "name": "certificate-test-g22",
     "uid": "golden-0022-"
    },
    "spec": {
@@ -645,7 +645,7 @@
     "labels": {
      "cert": "test"
     },
-    "name": "certificate-test",
+    "name": "certificate-test-g23",
     "uid": "golden-0023-"
    },
    "spec": {
@@ -672,7 +672,7 @@
     "labels": {
      "cert": "test"
     },
-    "name": "certificate-test",
+    "name": "certificate-test-g24",
     "uid": "golden-0024-"
    },
    "spec": {
@@ -1181,7 +1181,7 @@
     }
    ],
    "metadata": {
-    "name": "test_endpointslice-endpoints",
+    "name": "test_endpointslice-endpoints-g39",
     "namespace": "test",
     "uid": "golden-0039-"
    },
@@ -1395,7 +1395,7 @@
     "labels": {
      "app": "foobar"
     },
-    "name": "test-endpoint",
+    "name": "test-endpoint-g47",
     "namespace": "default",
     "uid": "golden-0047-"
    },
@@ -1481,7 +1481,7 @@
     "labels": {
      "app": "single-foobar"
     },
-    "name": "single-port-endpoint",
+    "name": "single-port-endpoint-g48",
     "namespace": "default",
     "uid": "golden-0048-"
    },
@@ -1915,7 +1915,7 @@
   },
   {
    "metadata": {
-    "name": "hpa1",
+    "name": "hpa1-g52",
     "namespace": "ns1",
     "uid": "golden-0052-"
    },
@@ -2595,7 +2595,7 @@
    "metadata": {
     "creationTimestamp": "2017-07-14T02:40:00Z",
     "generation": 2,
-    "name": "kube-master",
+    "name": "kube-master-g78",
     "namespace": "default",
     "ownerReferences": [
      {
@@ -2947,7 +2947,7 @@
     "labels": {
      "node-role.kubernetes.io/master": ""
     },
-    "name": "127.0.0.1",
+    "name": "127.0.0.1-g94",
     "uid": "golden-0094-"
    },
    "spec": {
@@ -3001,7 +3001,7 @@
   },
   {
    "metadata": {
-    "name": "127.0.0.1",
+    "name": "127.0.0.1-g95",
     "uid": "golden-0095-"
    },
    "spec": {
@@ -3038,7 +3038,7 @@
   },
   {
    "metadata": {
-    "name": "127.0.0.1",
+    "name": "127.0.0.1-g96",
     "uid": "golden-0096-"
    },
    "spec": {
@@ -3071,7 +3071,7 @@
   },
   {
    "metadata": {
-    "name": "127.0.0.1",
+    "name": "127.0.0.1-g97",
     "uid": "golden-0097-"
    },
    "spec": {},
@@ -3117,7 +3117,7 @@
   },
   {
    "metadata": {
-    "name": "127.0.0.1",
+    "name": "127.0.0.1-g98",
     "uid": "golden-0098-"
    },
    "spec": {},
@@ -3165,7 +3165,7 @@
   },
   {
    "metadata": {
-    "name": "127.0.0.1",
+    "name": "127.0.0.1-g99",
     "uid": "golden-0099-"
    },
    "spec": {
@@ -3414,7 +3414,7 @@
     "labels": {
      "app": "mysql-server"
     },
-    "name": "mysql-data",
+    "name": "mysql-data-g105",
     "namespace": "default",
     "uid": "golden-0105-"
    },
@@ -3745,7 +3745,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g121",
     "uid": "golden-0121-"
    },
    "spec": {
@@ -3761,7 +3761,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g122",
     "uid": "golden-0122-"
    },
    "spec": {
@@ -3778,7 +3778,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g123",
     "uid": "golden-0123-"
    },
    "spec": {
@@ -3797,7 +3797,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g124",
     "uid": "golden-0124-"
    },
    "spec": {
@@ -3812,7 +3812,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g125",
     "uid": "golden-0125-"
    },
    "spec": {
@@ -3829,7 +3829,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g126",
     "uid": "golden-0126-"
    },
    "spec": {
@@ -3849,7 +3849,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g127",
     "uid": "golden-0127-"
    },
    "spec": {
@@ -3868,7 +3868,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g128",
     "uid": "golden-0128-"
    },
    "spec": {
@@ -3884,7 +3884,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g129",
     "uid": "golden-0129-"
    },
    "spec": {
@@ -3900,7 +3900,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g130",
     "uid": "golden-0130-"
    },
    "spec": {
@@ -3917,7 +3917,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g131",
     "uid": "golden-0131-"
    },
    "spec": {
@@ -3936,7 +3936,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g132",
     "uid": "golden-0132-"
    },
    "spec": {
@@ -3954,7 +3954,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g133",
     "uid": "golden-0133-"
    },
    "spec": {
@@ -3971,7 +3971,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g134",
     "uid": "golden-0134-"
    },
    "spec": {
@@ -3987,7 +3987,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g135",
     "uid": "golden-0135-"
    },
    "spec": {
@@ -4004,7 +4004,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g136",
     "uid": "golden-0136-"
    },
    "spec": {
@@ -4018,7 +4018,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-available",
+    "name": "test-pv-available-g137",
     "uid": "golden-0137-"
    },
    "spec": {},
@@ -4066,7 +4066,7 @@
   },
   {
    "metadata": {
-    "name": "test-pv-pending",
+    "name": "test-pv-pending-g141",
     "uid": "golden-0141-"
    },
    "spec": {
@@ -4227,7 +4227,7 @@
    "metadata": {
     "creationTimestamp": "2017-07-14T02:40:00Z",
     "deletionTimestamp": "2027-01-15T08:00:00Z",
-    "name": "pod1",
+    "name": "pod1-g151",
     "namespace": "ns1",
     "uid": "golden-0151-abc-123-xxx"
    },
@@ -4247,7 +4247,7 @@
   {
    "metadata": {
     "creationTimestamp": "2017-07-14T02:40:00Z",
-    "name": "pod1",
+    "name": "pod1-g152",
     "namespace": "ns1",
     "uid": "golden-0152-abc-123-xxx"
    },
@@ -4302,7 +4302,7 @@
   {
    "metadata": {
     "deletionTimestamp": null,
-    "name": "pod4",
+    "name": "pod4-g154",
     "namespace": "ns4",
     "uid": "golden-0154-uid4"
    },
@@ -4319,7 +4319,7 @@
   {
    "metadata": {
     "deletionTimestamp": null,
-    "name": "pod4",
+    "name": "pod4-g155",
     "namespace": "ns4",
     "uid": "golden-0155-uid4"
    },
@@ -4336,7 +4336,7 @@
   {
    "metadata": {
     "deletionTimestamp": null,
-    "name": "pod4",
+    "name": "pod4-g156",
     "namespace": "ns4",
     "uid": "golden-0156-uid4"
    },
@@ -4353,7 +4353,7 @@
   {
    "metadata": {
     "deletionTimestamp": null,
-    "name": "pod4",
+    "name": "pod4-g157",
     "namespace": "ns4",
     "uid": "golden-0157-uid4"
    },
@@ -4370,7 +4370,7 @@
   {
    "metadata": {
     "deletionTimestamp": null,
-    "name": "pod4",
+    "name": "pod4-g158",
     "namespace": "ns4",
     "uid": "golden-0158-uid4"
    },
@@ -4387,7 +4387,7 @@
   {
    "metadata": {
     "deletionTimestamp": null,
-    "name": "pod4",
+    "name": "pod4-g159",
     "namespace": "ns4",
     "uid": "golden-0159-uid4"
    },
@@ -4404,7 +4404,7 @@
   {
    "metadata": {
     "deletionTimestamp": null,
-    "name": "pod4",
+    "name": "pod4-g160",
     "namespace": "ns4",
     "uid": "golden-0160-uid4"
    },
@@ -4421,7 +4421,7 @@
   {
    "metadata": {
     "deletionTimestamp": null,
-    "name": "pod4",
+    "name": "pod4-g161",
     "namespace": "ns4",
     "uid": "golden-0161-uid4"
    },
@@ -4438,7 +4438,7 @@
   {
    "metadata": {
     "deletionTimestamp": null,
-    "name": "pod4",
+    "name": "pod4-g162",
     "namespace": "ns4",
     "uid": "golden-0162-uid4"
    },
@@ -4457,7 +4457,7 @@
     "labels": {
      "app": "example"
     },
-    "name": "pod1",
+    "name": "pod1-g163",
     "namespace": "ns1",
     "uid": "golden-0163-uid1"
    },
@@ -4474,7 +4474,7 @@
     "labels": {
      "app": "example"
     },
-    "name": "pod1",
+    "name": "pod1-g164",
     "namespace": "ns1",
     "uid": "golden-0164-uid1"
    },
@@ -4490,7 +4490,7 @@
     "labels": {
      "app": "example"
     },
-    "name": "pod1",
+    "name": "pod1-g167",
     "namespace": "ns1",
     "uid": "golden-0167-uid1"
    },
@@ -4528,7 +4528,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g168",
     "namespace": "ns1",
     "uid": "golden-0168-uid1"
    },
@@ -4560,7 +4560,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g169",
     "namespace": "ns1",
     "uid": "golden-0169-uid1"
    },
@@ -4591,7 +4591,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g170",
     "namespace": "ns1",
     "uid": "golden-0170-uid1"
    },
@@ -4629,7 +4629,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g171",
     "namespace": "ns1",
     "uid": "golden-0171-uid1"
    },
@@ -4660,7 +4660,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g172",
     "namespace": "ns1",
     "uid": "golden-0172-uid1"
    },
@@ -4717,7 +4717,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g173",
     "namespace": "ns1",
     "uid": "golden-0173-uid1"
    },
@@ -4784,7 +4784,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g174",
     "namespace": "ns1",
     "uid": "golden-0174-uid1"
    },
@@ -4800,7 +4800,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g175",
     "namespace": "ns1",
     "uid": "golden-0175-uid1"
    },
@@ -4830,7 +4830,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g176",
     "namespace": "ns1",
     "uid": "golden-0176-uid1"
    },
@@ -4844,7 +4844,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g177",
     "namespace": "ns1",
     "uid": "golden-0177-uid1"
    },
@@ -4858,7 +4858,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g178",
     "namespace": "ns1",
     "uid": "golden-0178-uid1"
    },
@@ -4880,7 +4880,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g179",
     "namespace": "ns1",
     "uid": "golden-0179-uid1"
    },
@@ -4902,7 +4902,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g180",
     "namespace": "ns1",
     "uid": "golden-0180-uid1"
    },
@@ -4924,7 +4924,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g181",
     "namespace": "ns1",
     "uid": "golden-0181-uid1"
    },
@@ -4946,7 +4946,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g182",
     "namespace": "ns1",
     "uid": "golden-0182-uid1"
    },
@@ -4968,7 +4968,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g183",
     "namespace": "ns1",
     "uid": "golden-0183-uid1"
    },
@@ -4990,7 +4990,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g184",
     "namespace": "ns1",
     "uid": "golden-0184-uid1"
    },
@@ -5005,7 +5005,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g185",
     "namespace": "ns1",
     "uid": "golden-0185-uid1"
    },
@@ -5020,7 +5020,7 @@
   },
   {
    "metadata": {
-    "name": "pod1",
+    "name": "pod1-g186",
     "namespace": "ns1",
     "uid": "golden-0186-uid1"
    },
@@ -5165,7 +5165,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g189",
     "namespace": "ns2",
     "uid": "golden-0189-uid2"
    },
@@ -5232,7 +5232,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g190",
     "namespace": "ns2",
     "uid": "golden-0190-uid2"
    },
@@ -5277,7 +5277,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g191",
     "namespace": "ns2",
     "uid": "golden-0191-uid2"
    },
@@ -5333,7 +5333,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g192",
     "namespace": "ns2",
     "uid": "golden-0192-uid2"
    },
@@ -5378,7 +5378,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g193",
     "namespace": "ns2",
     "uid": "golden-0193-uid2"
    },
@@ -5437,7 +5437,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g194",
     "namespace": "ns2",
     "uid": "golden-0194-uid2"
    },
@@ -5469,7 +5469,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g195",
     "namespace": "ns2",
     "uid": "golden-0195-uid2"
    },
@@ -5515,7 +5515,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g196",
     "namespace": "ns2",
     "uid": "golden-0196-uid2"
    },
@@ -5537,7 +5537,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g197",
     "namespace": "ns2",
     "uid": "golden-0197-uid2"
    },
@@ -5551,7 +5551,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g198",
     "namespace": "ns2",
     "uid": "golden-0198-uid2"
    },
@@ -5565,7 +5565,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g199",
     "namespace": "ns2",
     "uid": "golden-0199-uid2"
    },
@@ -5587,7 +5587,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g200",
     "namespace": "ns2",
     "uid": "golden-0200-uid2"
    },
@@ -5611,7 +5611,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g201",
     "namespace": "ns2",
     "uid": "golden-0201-uid2"
    },
@@ -5633,7 +5633,7 @@
   },
   {
    "metadata": {
-    "name": "pod2",
+    "name": "pod2-g202",
     "namespace": "ns2",
     "uid": "golden-0202-uid2"
    },
@@ -5725,7 +5725,7 @@
   },
   {
    "metadata": {
-    "name": "pod3",
+    "name": "pod3-g204",
     "namespace": "ns3",
     "uid": "golden-0204-uid3"
    },
@@ -5760,7 +5760,7 @@
   },
   {
    "metadata": {
-    "name": "pod3",
+    "name": "pod3-g205",
     "namespace": "ns3",
     "uid": "golden-0205-uid3"
    },
@@ -5775,7 +5775,7 @@
   },
   {
    "metadata": {
-    "name": "pod4",
+    "name": "pod4-g206",
     "namespace": "ns4",
     "uid": "golden-0206-uid4"
    },
@@ -5810,7 +5810,7 @@
   },
   {
    "metadata": {
-    "name": "pod4",
+    "name": "pod4-g207",
     "namespace": "ns4",
     "uid": "golden-0207-uid4"
    },
@@ -5834,7 +5834,7 @@
   },
   {
    "metadata": {
-    "name": "pod4",
+    "name": "pod4-g208",
     "namespace": "ns4",
     "uid": "golden-0208-uid4"
    },
@@ -5885,7 +5885,7 @@
   },
   {
    "metadata": {
-    "name": "pod5",
+    "name": "pod5-g210",
     "namespace": "ns5",
     "uid": "golden-0210-uid5"
    },
@@ -5950,7 +5950,7 @@
   },
   {
    "metadata": {
-    "name": "pod6",
+    "name": "pod6-g212",
     "namespace": "ns6",
     "uid": "golden-0212-uid6"
    },
@@ -6031,7 +6031,7 @@
   },
   {
    "metadata": {
-    "name": "pod7",
+    "name": "pod7-g215",
     "namespace": "ns7",
     "uid": "golden-0215-uid7"
    },
@@ -6400,7 +6400,7 @@
   {
    "metadata": {
     "creationTimestamp": "2017-07-14T02:40:00Z",
-    "name": "quotaTest",
+    "name": "quotaTest-g225",
     "namespace": "testNS",
     "uid": "golden-0225-"
    },
@@ -6411,7 +6411,7 @@
   },
   {
    "metadata": {
-    "name": "quotaTest",
+    "name": "quotaTest-g226",
     "namespace": "testNS",
     "uid": "golden-0226-"
    },

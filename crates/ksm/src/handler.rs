@@ -31,7 +31,9 @@ impl Format {
         match self {
             Format::Text => TEXT_CONTENT_TYPE.to_owned(),
             Format::OpenMetrics(v) => {
-                format!("application/openmetrics-text; version={v}; charset=utf-8; escaping=underscores")
+                format!(
+                    "application/openmetrics-text; version={v}; charset=utf-8; escaping=underscores"
+                )
             }
         }
     }
@@ -47,7 +49,9 @@ struct Accept<'a> {
 /// `expfmt.NegotiateAccept` with kube-state-metrics' format list; anything but
 /// OpenMetrics is served as text.
 pub fn negotiate(accept: Option<&str>) -> Format {
-    let Some(accept) = accept else { return Format::Text };
+    let Some(accept) = accept else {
+        return Format::Text;
+    };
     let mut clauses: Vec<Accept> = Vec::new();
     for (order, part) in accept.split(',').enumerate() {
         let mut params = part.split(';').map(str::trim);
@@ -63,7 +67,12 @@ pub fn negotiate(accept: Option<&str>) -> Format {
                 }
             }
         }
-        clauses.push(Accept { media, q, version, order });
+        clauses.push(Accept {
+            media,
+            q,
+            version,
+            order,
+        });
     }
     // goautoneg: by q, then specificity, then original order.
     let specificity = |m: &str| match m {
@@ -118,7 +127,8 @@ fn query_unescape(s: &str) -> String {
         match b[i] {
             b'+' => out.push(b' '),
             b'%' if i + 2 < b.len() => {
-                match u8::from_str_radix(std::str::from_utf8(&b[i + 1..i + 3]).unwrap_or("zz"), 16) {
+                match u8::from_str_radix(std::str::from_utf8(&b[i + 1..i + 3]).unwrap_or("zz"), 16)
+                {
                     Ok(v) => {
                         out.push(v);
                         i += 2;
@@ -135,7 +145,10 @@ fn query_unescape(s: &str) -> String {
 
 impl MetricsHandler {
     pub fn new(enable_gzip: bool) -> Self {
-        MetricsHandler { writers: RwLock::new(None), enable_gzip }
+        MetricsHandler {
+            writers: RwLock::new(None),
+            enable_gzip,
+        }
     }
 
     /// Replaces the writers served (also marks sharding as configured).
@@ -151,7 +164,10 @@ impl MetricsHandler {
     pub async fn serve(self: Arc<Self>, query: Option<String>, headers: HeaderMap) -> Response {
         let writers = self.writers.read().clone();
         let Some(writers) = writers else {
-            return plain_error(StatusCode::SERVICE_UNAVAILABLE, "metrics are not available yet: sharding is not configured");
+            return plain_error(
+                StatusCode::SERVICE_UNAVAILABLE,
+                "metrics are not available yet: sharding is not configured",
+            );
         };
         let format = negotiate(headers.get(header::ACCEPT).and_then(|v| v.to_str().ok()));
         let gzip = self.enable_gzip
@@ -159,7 +175,9 @@ impl MetricsHandler {
                 .get(header::ACCEPT_ENCODING)
                 .and_then(|v| v.to_str().ok())
                 .is_some_and(|v| {
-                    v.split(',').map(str::trim).any(|p| p == "gzip" || p.starts_with("gzip;"))
+                    v.split(',')
+                        .map(str::trim)
+                        .any(|p| p == "gzip" || p.starts_with("gzip;"))
                 });
         let mut requested = Vec::new();
         let mut excluded = Vec::new();
@@ -177,8 +195,16 @@ impl MetricsHandler {
             let active: Vec<&MetricsWriter> = writers
                 .iter()
                 .map(Arc::as_ref)
-                .filter(|w| requested.as_ref().is_none_or(|r| r.contains(&w.resource_name)))
-                .filter(|w| excluded.as_ref().is_none_or(|e| !e.contains(&w.resource_name)))
+                .filter(|w| {
+                    requested
+                        .as_ref()
+                        .is_none_or(|r| r.contains(&w.resource_name))
+                })
+                .filter(|w| {
+                    excluded
+                        .as_ref()
+                        .is_none_or(|e| !e.contains(&w.resource_name))
+                })
                 .collect();
             let sanitized = sanitize_headers(format == Format::Text, &active);
             let mut out = Vec::with_capacity(64 * 1024);
@@ -189,7 +215,10 @@ impl MetricsHandler {
                 out.extend_from_slice(b"# EOF\n");
             }
             if gzip {
-                let mut enc = flate2::write::GzEncoder::new(Vec::with_capacity(out.len() / 8), flate2::Compression::default());
+                let mut enc = flate2::write::GzEncoder::new(
+                    Vec::with_capacity(out.len() / 8),
+                    flate2::Compression::default(),
+                );
                 if enc.write_all(&out).is_ok()
                     && let Ok(z) = enc.finish()
                 {
@@ -205,7 +234,8 @@ impl MetricsHandler {
             resp.headers_mut().insert(header::CONTENT_TYPE, ct);
         }
         if gzip {
-            resp.headers_mut().insert(header::CONTENT_ENCODING, HeaderValue::from_static("gzip"));
+            resp.headers_mut()
+                .insert(header::CONTENT_ENCODING, HeaderValue::from_static("gzip"));
         }
         resp
     }
@@ -231,14 +261,24 @@ mod tests {
     #[test]
     fn negotiation() {
         assert_eq!(negotiate(None), Format::Text);
-        assert_eq!(negotiate(Some("application/openmetrics-text")), Format::OpenMetrics("0.0.1"));
-        assert_eq!(negotiate(Some("application/openmetrics-text; version=1.0.0")), Format::OpenMetrics("1.0.0"));
         assert_eq!(
-            negotiate(Some("application/openmetrics-text;version=0.0.1;q=0.5,text/plain;version=0.0.4;q=0.4")),
+            negotiate(Some("application/openmetrics-text")),
             Format::OpenMetrics("0.0.1")
         );
         assert_eq!(
-            negotiate(Some("application/vnd.google.protobuf;proto=io.prometheus.client.MetricFamily;encoding=delimited")),
+            negotiate(Some("application/openmetrics-text; version=1.0.0")),
+            Format::OpenMetrics("1.0.0")
+        );
+        assert_eq!(
+            negotiate(Some(
+                "application/openmetrics-text;version=0.0.1;q=0.5,text/plain;version=0.0.4;q=0.4"
+            )),
+            Format::OpenMetrics("0.0.1")
+        );
+        assert_eq!(
+            negotiate(Some(
+                "application/vnd.google.protobuf;proto=io.prometheus.client.MetricFamily;encoding=delimited"
+            )),
             Format::Text
         );
         assert_eq!(negotiate(Some("*/*")), Format::Text);

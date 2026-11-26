@@ -114,7 +114,9 @@ fn escape(p: &[char], i: usize, groups: usize, in_class: bool, out: &mut String)
             }
         },
         'x' => {
-            if p.get(i + 2).copied().is_some_and(is_hex) && p.get(i + 3).copied().is_some_and(is_hex) {
+            if p.get(i + 2).copied().is_some_and(is_hex)
+                && p.get(i + 3).copied().is_some_and(is_hex)
+            {
                 out.push_str("\\x");
                 out.push(p[i + 2]);
                 out.push(p[i + 3]);
@@ -144,7 +146,10 @@ fn escape(p: &[char], i: usize, groups: usize, in_class: bool, out: &mut String)
             3 + name.chars().count() + 1
         }
         '0'..='9' => {
-            let digits: String = p[i + 1..].iter().take_while(|c| c.is_ascii_digit()).collect();
+            let digits: String = p[i + 1..]
+                .iter()
+                .take_while(|c| c.is_ascii_digit())
+                .collect();
             let n: usize = digits.parse().unwrap_or(usize::MAX);
             if c != '0' && !in_class && n <= groups {
                 out.push('\\');
@@ -152,7 +157,11 @@ fn escape(p: &[char], i: usize, groups: usize, in_class: bool, out: &mut String)
                 return 1 + digits.len();
             }
             // Legacy octal: up to three octal digits (value <= 0o377), else a literal digit.
-            let oct: String = p[i + 1..].iter().take(3).take_while(|c| ('0'..='7').contains(*c)).collect();
+            let oct: String = p[i + 1..]
+                .iter()
+                .take(3)
+                .take_while(|c| ('0'..='7').contains(*c))
+                .collect();
             if oct.is_empty() {
                 lit(out, c);
                 return 2;
@@ -209,7 +218,8 @@ fn class(p: &[char], i: usize, groups: usize, out: &mut String) -> Result<usize,
                 continue;
             }
             '-' => {
-                let at_edge = out.ends_with('[') || out.ends_with('^') || p.get(j + 1) == Some(&']');
+                let at_edge =
+                    out.ends_with('[') || out.ends_with('^') || p.get(j + 1) == Some(&']');
                 if at_edge || prev_class_escape || is_class_escape(p, j + 1) || out.ends_with('-') {
                     out.push_str("\\-");
                 } else {
@@ -339,7 +349,11 @@ mod tests {
     #[test]
     fn rejected_like_regexp2() {
         for p in ["^(?P<n>ku)$", "^(?<a>x)(?<a>y)$", "^a++$", "^a*+$", "[abc"] {
-            assert!(ecma_to_fancy(p).is_err() || fancy_regex::Regex::new(&ecma_to_fancy(p).unwrap_or_default()).is_err(), "{p}");
+            assert!(
+                ecma_to_fancy(p).is_err()
+                    || fancy_regex::Regex::new(&ecma_to_fancy(p).unwrap_or_default()).is_err(),
+                "{p}"
+            );
         }
     }
 }

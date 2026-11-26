@@ -20,7 +20,9 @@ pub async fn build_config(apiserver: &str, kubeconfig: &str) -> Result<Config, S
             "invalid configuration: no configuration has been provided, try setting KUBERNETES_MASTER environment variable".to_owned()
         })?
     } else if kubeconfig.is_empty() {
-        let url = apiserver.parse().map_err(|e| format!("invalid apiserver URL {apiserver:?}: {e}"))?;
+        let url = apiserver
+            .parse()
+            .map_err(|e| format!("invalid apiserver URL {apiserver:?}: {e}"))?;
         Config::new(url)
     } else {
         let mut kc = Kubeconfig::read_from(kubeconfig).map_err(|e| e.to_string())?;
@@ -32,7 +34,11 @@ pub async fn build_config(apiserver: &str, kubeconfig: &str) -> Result<Config, S
                 .find(|c| c.name == ctx_name)
                 .and_then(|c| c.context.as_ref())
                 .map(|c| c.cluster.clone());
-            for nc in kc.clusters.iter_mut().filter(|c| Some(&c.name) == cluster_name.as_ref()) {
+            for nc in kc
+                .clusters
+                .iter_mut()
+                .filter(|c| Some(&c.name) == cluster_name.as_ref())
+            {
                 if let Some(c) = nc.cluster.as_mut() {
                     c.server = Some(apiserver.to_owned());
                 }
@@ -70,12 +76,12 @@ pub async fn create_client(apiserver: &str, kubeconfig: &str) -> Result<kube::Cl
     let config = build_config(apiserver, kubeconfig)
         .await
         .map_err(|e| format!("failed to build config from flags: {e}"))?;
-    let client = kube::Client::try_from(config).map_err(|e| format!("failed to create client: {e}"))?;
+    let client =
+        kube::Client::try_from(config).map_err(|e| format!("failed to create client: {e}"))?;
     tracing::info!("Tested communication with server");
-    let v = client
-        .apiserver_version()
-        .await
-        .map_err(|e| format!("failed to create client: error while trying to communicate with apiserver: {e}"))?;
+    let v = client.apiserver_version().await.map_err(|e| {
+        format!("failed to create client: error while trying to communicate with apiserver: {e}")
+    })?;
     tracing::info!(
         major = %v.major, minor = %v.minor, gitVersion = %v.git_version, gitTreeState = %v.git_tree_state,
         gitCommit = %v.git_commit, platform = %v.platform,

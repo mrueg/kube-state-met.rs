@@ -40,7 +40,7 @@ root = os.path.join(os.path.dirname(__file__), "..", "..")
 src = os.path.join(root, "testdata/golden/stores.jsonl")
 out_dir = os.path.join(root, "testdata/fixtures/golden")
 os.makedirs(out_dir, exist_ok=True)
-items, seen = [], set()
+items, seen, names = [], set(), set()
 for n, line in enumerate(open(src), 1):
     r = json.loads(line)
     av, kind = GO_TYPES[r["type"]]
@@ -53,6 +53,12 @@ for n, line in enumerate(open(src), 1):
     o["apiVersion"], o["kind"] = av, kind
     md = dict(o.get("metadata") or {})
     md.setdefault("name", f"golden-{n}")
+    # Names are unique per kind and namespace in a real cluster (client-go keys
+    # its WatchList buffer by namespace/name).
+    nkey = (kind, md.get("namespace", ""), md["name"])
+    if nkey in names:
+        md["name"] = f"{md['name']}-g{n}"
+    names.add((kind, md.get("namespace", ""), md["name"]))
     md["uid"] = f"golden-{n:04d}-{md.get('uid', '')}"
     o["metadata"] = md
     items.append(o)

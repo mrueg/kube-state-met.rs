@@ -5,13 +5,13 @@ use std::collections::BTreeMap;
 use std::fmt::Debug;
 use std::sync::Arc;
 
-use ksm_core::generator::{extract_headers, filter_families, FamilyFilter, FamilyGenerator};
+use ksm_core::generator::{FamilyFilter, FamilyGenerator, extract_headers, filter_families};
 use ksm_core::store::{Headers, MetricsStore, MetricsWriter};
 use ksm_stores::for_each_resource;
 use kube::Resource;
 use serde::de::DeserializeOwned;
 
-use crate::watch::{spawn, ScopeApi, WatchSettings};
+use crate::watch::{ScopeApi, WatchSettings, spawn};
 
 /// What every build of the stores needs.
 pub struct Builder {
@@ -64,7 +64,11 @@ impl Builder {
             }
         }
         Ok(match list.get("*") {
-            Some(all) => self.enabled.iter().map(|r| (r.clone(), all.clone())).collect(),
+            Some(all) => self
+                .enabled
+                .iter()
+                .map(|r| (r.clone(), all.clone()))
+                .collect(),
             None => list.clone(),
         })
     }
@@ -88,7 +92,11 @@ impl Builder {
         let headers = Arc::new(Headers::new(extract_headers(&fams)));
         let fams = Arc::new(fams);
         let all = [String::new()];
-        let namespaces: &[String] = if cluster_scoped { &all } else { &self.namespaces };
+        let namespaces: &[String] = if cluster_scoped {
+            &all
+        } else {
+            &self.namespaces
+        };
         let stores = namespaces
             .iter()
             .map(|ns| {

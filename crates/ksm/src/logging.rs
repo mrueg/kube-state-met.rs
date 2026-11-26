@@ -57,7 +57,12 @@ impl Visit for Fields {
             self.message = format!("{value:?}");
         } else {
             let v = format!("{value:?}");
-            let _ = write!(self.rest, " {}={}", field.name(), quote(v.trim_matches('"')));
+            let _ = write!(
+                self.rest,
+                " {}={}",
+                field.name(),
+                quote(v.trim_matches('"'))
+            );
         }
     }
     fn record_str(&mut self, field: &Field, value: &str) {
@@ -86,7 +91,12 @@ impl<S: Subscriber> Layer<S> for Klog {
             .and_then(|p| p.rsplit('/').next())
             .unwrap_or("main.rs");
         let line = event.metadata().line().unwrap_or(0);
-        eprintln!("{}{}{}", header(level, &format!("{file}:{line}")), quote(&f.message), f.rest);
+        eprintln!(
+            "{}{}{}",
+            header(level, &format!("{file}:{line}")),
+            quote(&f.message),
+            f.rest
+        );
     }
 }
 
@@ -103,5 +113,7 @@ pub fn init(verbosity: i32) {
         .with_target("kube_runtime", tracing::level_filters::LevelFilter::WARN)
         .with_target("hyper", tracing::level_filters::LevelFilter::WARN)
         .with_target("rustls", tracing::level_filters::LevelFilter::WARN);
-    let _ = tracing_subscriber::registry().with(Klog.with_filter(filter)).try_init();
+    let _ = tracing_subscriber::registry()
+        .with(Klog.with_filter(filter))
+        .try_init();
 }

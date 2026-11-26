@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use futures::StreamExt;
 use k8s_openapi::{ClusterResourceScope, NamespaceResourceScope};
-use ksm_core::generator::{render, FamilyGenerator};
+use ksm_core::generator::{FamilyGenerator, render};
 use ksm_core::sharding::Sharding;
 use ksm_core::store::{MetricsStore, Rendered};
 use kube::Resource;
@@ -31,7 +31,11 @@ impl ScopeApi for NamespaceResourceScope {
     where
         K: Resource<Scope = Self, DynamicType = ()>,
     {
-        if ns.is_empty() { Api::all(client) } else { Api::namespaced(client, ns) }
+        if ns.is_empty() {
+            Api::all(client)
+        } else {
+            Api::namespaced(client, ns)
+        }
     }
 }
 
@@ -94,7 +98,9 @@ pub fn spawn<K>(
         let mut buffer: Vec<(String, String, Rendered)> = Vec::new();
         let limit_mode = s.object_limit > 0;
         if limit_mode {
-            s.metrics.list_objects_limit.set(&[go_type], s.object_limit as f64);
+            s.metrics
+                .list_objects_limit
+                .set(&[go_type], s.object_limit as f64);
         }
         loop {
             let ev = tokio::select! {
@@ -115,7 +121,9 @@ pub fn spawn<K>(
                         // Go lists (and counts the list) only with an object limit;
                         // otherwise client-go streams the initial list over a watch.
                         s.metrics.list_total.inc(&["success", go_type]);
-                        let n = items.len().min(usize::try_from(s.object_limit).unwrap_or(usize::MAX));
+                        let n = items
+                            .len()
+                            .min(usize::try_from(s.object_limit).unwrap_or(usize::MAX));
                         s.metrics.list_objects.set(&[go_type], n as f64);
                     }
                     s.metrics.watch_total.inc(&["success", go_type]);

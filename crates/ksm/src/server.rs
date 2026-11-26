@@ -7,7 +7,7 @@ use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
 
 use axum::Router;
-use axum::extract::{Request, State};
+use axum::extract::Request;
 use axum::http::{StatusCode, header};
 use axum::response::{IntoResponse, Response};
 use futures::StreamExt;
@@ -25,7 +25,9 @@ use crate::builder::Builder;
 use crate::client::{VERSION, create_client, go_arch};
 use crate::handler::{MetricsHandler, plain_error};
 use crate::options::{Options, merge_field_selectors};
-use crate::telemetry::{DEF_BUCKETS, HistogramVec, ListWatchMetrics, Registry, ShardingMetrics, Vector};
+use crate::telemetry::{
+    DEF_BUCKETS, HistogramVec, ListWatchMetrics, Registry, ShardingMetrics, Vector,
+};
 use crate::watch::WatchSettings;
 
 /// Bound on how long in-flight requests may take once the servers shut down.
@@ -33,7 +35,11 @@ const SERVER_SHUTDOWN_TIMEOUT: Duration = Duration::from_secs(3);
 
 /// `version.Info()`.
 pub fn version_info() -> String {
-    format!("(version={VERSION}, branch={}, revision={})", option_env!("KSM_BRANCH").unwrap_or(""), revision())
+    format!(
+        "(version={VERSION}, branch={}, revision={})",
+        option_env!("KSM_BRANCH").unwrap_or(""),
+        revision()
+    )
 }
 
 pub fn revision() -> &'static str {
@@ -49,7 +55,9 @@ pub fn md5_hash_as_metric_value(data: &[u8]) -> f64 {
 }
 
 fn unix_now() -> f64 {
-    SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).map_or(0.0, |d| d.as_secs_f64())
+    SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .map_or(0.0, |d| d.as_secs_f64())
 }
 
 struct ConfigMetrics {
@@ -97,7 +105,11 @@ impl SelfMetrics {
             DEF_BUCKETS,
         );
         let config = ConfigMetrics {
-            hash: r.gauge_vec("kube_state_metrics_config_hash", "Hash of the currently loaded configuration.", &["type", "filename"]),
+            hash: r.gauge_vec(
+                "kube_state_metrics_config_hash",
+                "Hash of the currently loaded configuration.",
+                &["type", "filename"],
+            ),
             success: r.gauge_vec(
                 "kube_state_metrics_last_config_reload_successful",
                 "Whether the last configuration reload attempt was successful.",
@@ -121,10 +133,23 @@ impl SelfMetrics {
             "kube_state_metrics_custom_resource_state_delete_events_total",
             "Number of times that the CRD informer triggered the remove event.",
         );
-        let crd_cache = r.gauge("kube_state_metrics_custom_resource_state_cache", "Net amount of CRDs affecting the cache currently.");
+        let crd_cache = r.gauge(
+            "kube_state_metrics_custom_resource_state_cache",
+            "Net amount of CRDs affecting the cache currently.",
+        );
         let list_watch = ListWatchMetrics::new(&r);
         let sharding = ShardingMetrics::new(&r);
-        SelfMetrics { registry: r, durations, config, list_watch, sharding, crd_add, crd_update, crd_delete, crd_cache }
+        SelfMetrics {
+            registry: r,
+            durations,
+            config,
+            list_watch,
+            sharding,
+            crd_add,
+            crd_update,
+            crd_delete,
+            crd_cache,
+        }
     }
 }
 
@@ -152,18 +177,26 @@ fn clean_path(p: &str) -> String {
 
 /// Runs kube-state-metrics until `cancel` fires (Go: `RunKubeStateMetrics`).
 /// `reload` tells whether the cancellation is a config reload (no shutdown delay).
-pub async fn run(mut opts: Options, cancel: CancellationToken, reload: Arc<std::sync::atomic::AtomicBool>) -> Result<(), String> {
+pub async fn run(
+    mut opts: Options,
+    cancel: CancellationToken,
+    reload: Arc<std::sync::atomic::AtomicBool>,
+) -> Result<(), String> {
     let m = SelfMetrics::new();
 
     if !opts.config.is_empty() {
         let file = clean_path(&opts.config);
         match std::fs::read(&file) {
-            Err(e) => tracing::error!(error = %e, file = %opts.config, "encountered error while processing the file"),
+            Err(e) => {
+                tracing::error!(error = %e, file = %opts.config, "encountered error while processing the file")
+            }
             Ok(bytes) => {
                 let text = String::from_utf8_lossy(&bytes).into_owned();
                 if let Err(e) = opts.merge_config_yaml(&text) {
                     tracing::error!(error = %e, "failed to unmarshal opts config file");
-                    tracing::info!("misconfigured config detected, KSM will automatically reload on next write to the config");
+                    tracing::info!(
+                        "misconfigured config detected, KSM will automatically reload on next write to the config"
+                    );
                     tracing::info!("waiting for config to be fixed");
                     m.config.success.set(&["config", &file], 0.0);
                     cancel.cancelled().await;
@@ -171,7 +204,9 @@ pub async fn run(mut opts: Options, cancel: CancellationToken, reload: Arc<std::
                 }
                 m.config.success.set(&["config", &file], 1.0);
                 m.config.success_time.set(&["config", &file], unix_now());
-                m.config.hash.set(&["config", &file], md5_hash_as_metric_value(&bytes));
+                m.config
+                    .hash
+                    .set(&["config", &file], md5_hash_as_metric_value(&bytes));
                 opts.configure_resources_and_metrics(&text);
                 tracing::info!(file = %opts.config, "Using config file");
             }
@@ -196,7 +231,10 @@ pub async fn run(mut opts: Options, cancel: CancellationToken, reload: Arc<std::
     };
     let resources: Vec<String> = if opts.resources.is_empty() && !opts.custom_resources_only {
         tracing::info!("Used default resources");
-        crate::options::DEFAULT_RESOURCES.iter().map(|s| (*s).to_owned()).collect()
+        crate::options::DEFAULT_RESOURCES
+            .iter()
+            .map(|s| (*s).to_owned())
+            .collect()
     } else if opts.custom_resources_only {
         tracing::info!("Used CRD resources only");
         Vec::new()
@@ -205,7 +243,9 @@ pub async fn run(mut opts: Options, cancel: CancellationToken, reload: Arc<std::
         tracing::info!(resources = ?r, "Used resources");
         r
     };
-    builder.set_enabled(&resources).map_err(|e| format!("failed to set up resources: {e}"))?;
+    builder
+        .set_enabled(&resources)
+        .map_err(|e| format!("failed to set up resources: {e}"))?;
 
     let namespaces = opts.get_namespaces();
     let ns_selector = opts.exclude_ns_field_selector();
@@ -218,10 +258,14 @@ pub async fn run(mut opts: Options, cancel: CancellationToken, reload: Arc<std::
     let merged = merge_field_selectors(&[ns_selector.as_str(), node_selector.as_str()])?;
     builder.namespaces = namespaces;
 
-    let mut allow_deny = AllowDenyList::new(&opts.metric_allowlist, &opts.metric_denylist).map_err(|e| e.to_string())?;
-    allow_deny.parse().map_err(|e| format!("error initializing the allowdeny list: {e}"))?;
+    let mut allow_deny = AllowDenyList::new(&opts.metric_allowlist, &opts.metric_denylist)
+        .map_err(|e| e.to_string())?;
+    allow_deny
+        .parse()
+        .map_err(|e| format!("error initializing the allowdeny list: {e}"))?;
     tracing::info!(allowDenyStatus = %allow_deny.status(), "Metric allow-denylisting");
-    let opt_in = OptInFilter::new(&opts.metric_opt_in_list).map_err(|e| format!("error initializing the opt-in metric list: {e}"))?;
+    let opt_in = OptInFilter::new(&opts.metric_opt_in_list)
+        .map_err(|e| format!("error initializing the opt-in metric list: {e}"))?;
     if opt_in.count() > 0 {
         tracing::info!(optInMetricsFamilyStatus = %opt_in.status(), "Metrics which were opted into");
     }
@@ -275,11 +319,15 @@ pub async fn run(mut opts: Options, cancel: CancellationToken, reload: Arc<std::
     let (s1, s2) = (servers_stop.clone(), servers_stop.clone());
     tracing::info!(telemetryAddress = %telemetry_addr, "Started kube-state-metrics self metrics server");
     let telemetry = tokio::spawn(async move {
-        axum::serve(telemetry_listener, telemetry_app).with_graceful_shutdown(async move { s1.cancelled().await }).await
+        axum::serve(telemetry_listener, telemetry_app)
+            .with_graceful_shutdown(async move { s1.cancelled().await })
+            .await
     });
     tracing::info!(metricsServerAddress = %metrics_addr, "Started metrics server");
     let metrics_srv = tokio::spawn(async move {
-        axum::serve(metrics_listener, metrics_app).with_graceful_shutdown(async move { s2.cancelled().await }).await
+        axum::serve(metrics_listener, metrics_app)
+            .with_graceful_shutdown(async move { s2.cancelled().await })
+            .await
     });
 
     let sharding_task = {
@@ -319,7 +367,11 @@ pub async fn run(mut opts: Options, cancel: CancellationToken, reload: Arc<std::
 }
 
 fn listen_addr(host: &str, port: i64) -> Result<SocketAddr, String> {
-    let joined = if host.contains(':') { format!("[{host}]:{port}") } else { format!("{host}:{port}") };
+    let joined = if host.contains(':') {
+        format!("[{host}]:{port}")
+    } else {
+        format!("{host}:{port}")
+    };
     if let Ok(a) = joined.parse() {
         return Ok(a);
     }
@@ -343,10 +395,16 @@ impl ShardControl {
     /// `ConfigureSharding`: rebuilds every store for this shard.
     fn configure(&self, shard: i32, total: i64) {
         if total != 1 {
-            tracing::info!(shard, totalShards = total, "Configuring sharding of this instance to be shard index (zero-indexed) out of total shards");
+            tracing::info!(
+                shard,
+                totalShards = total,
+                "Configuring sharding of this instance to be shard index (zero-indexed) out of total shards"
+            );
         }
         self.metrics.ordinal.reset();
-        self.metrics.ordinal.set(&[&shard.to_string()], f64::from(shard));
+        self.metrics
+            .ordinal
+            .set(&[&shard.to_string()], f64::from(shard));
         self.metrics.total.set(&[], total as f64);
         let token = self.parent.child_token();
         let writers = {
@@ -363,10 +421,18 @@ impl ShardControl {
     }
 
     fn unchanged(&self, shard: i32, total: i64) -> bool {
-        self.current.lock().as_ref().is_some_and(|(s, t, _)| *s == shard && *t == total)
+        self.current
+            .lock()
+            .as_ref()
+            .is_some_and(|(s, t, _)| *s == shard && *t == total)
     }
 
-    async fn run(&self, opts: &Options, client: kube::Client, stop: CancellationToken) -> Result<(), String> {
+    async fn run(
+        &self,
+        opts: &Options,
+        client: kube::Client,
+        stop: CancellationToken,
+    ) -> Result<(), String> {
         if opts.pod.is_empty() || opts.namespace.is_empty() {
             tracing::info!("Autosharding disabled");
             self.configure(opts.shard, opts.total_shards);
@@ -405,7 +471,9 @@ impl ShardControl {
                         self.configure(shard, total);
                     }
                 }
-                Err(e) => tracing::error!(error = %e, "Detected sharding settings from StatefulSet"),
+                Err(e) => {
+                    tracing::error!(error = %e, "Detected sharding settings from StatefulSet")
+                }
             }
         }
     }
@@ -413,8 +481,9 @@ impl ShardControl {
 
 fn sharding_from_stateful_set(ss: &StatefulSet, pod: &str) -> Result<(i32, i64), String> {
     let name = ss.metadata.name.as_deref().unwrap_or("");
-    let nominal = detect_nominal_from_pod(name, pod).map_err(|e| format!("detecting Pod nominal: {e}"))?;
-    let total = ss.spec.as_ref().and_then(|s| s.replicas).map_or(1, i64::from);
+    let nominal =
+        detect_nominal_from_pod(name, pod).map_err(|e| format!("detecting Pod nominal: {e}"))?;
+    let total = ss.spec.replicas.map_or(1, i64::from);
     Ok((nominal, total))
 }
 
@@ -431,7 +500,10 @@ pub fn detect_nominal_from_pod(ss_name: &str, pod: &str) -> Result<i32, String> 
 
 async fn detect_stateful_set(client: &kube::Client, pod: &str, ns: &str) -> Result<String, String> {
     let pods: Api<Pod> = Api::namespaced(client.clone(), ns);
-    let p = pods.get(pod).await.map_err(|e| format!("retrieve pod {pod} for sharding: {e}"))?;
+    let p = pods
+        .get(pod)
+        .await
+        .map_err(|e| format!("retrieve pod {pod} for sharding: {e}"))?;
     for o in p.metadata.owner_references.unwrap_or_default() {
         if o.api_version != "apps/v1" || o.kind != "StatefulSet" || o.controller != Some(true) {
             continue;
@@ -442,7 +514,9 @@ async fn detect_stateful_set(client: &kube::Client, pod: &str, ns: &str) -> Resu
             .map_err(|e| format!("retrieve shard's StatefulSet: {ns}/{}: {e}", o.name))?;
         return Ok(o.name);
     }
-    Err(format!("no suitable statefulset found for auto detecting sharding for Pod {ns}/{pod}"))
+    Err(format!(
+        "no suitable statefulset found for auto detecting sharding for Pod {ns}/{pod}"
+    ))
 }
 
 fn landing(page: &'static str) -> Response {
@@ -459,17 +533,28 @@ async fn fallback(req: Request, page: &'static str) -> Response {
 }
 
 fn ok_text() -> Response {
-    (StatusCode::OK, [(header::CONTENT_TYPE, "text/plain; charset=utf-8")], "OK").into_response()
+    (
+        StatusCode::OK,
+        [(header::CONTENT_TYPE, "text/plain; charset=utf-8")],
+        "OK",
+    )
+        .into_response()
 }
 
 fn method_label(m: &http::Method) -> String {
     match m.as_str() {
-        "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "PATCH" | "TRACE" => m.as_str().to_lowercase(),
+        "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "PATCH" | "TRACE" => {
+            m.as_str().to_lowercase()
+        }
         _ => "unknown".to_owned(),
     }
 }
 
-fn metrics_router(handler: Arc<MetricsHandler>, durations: HistogramVec, client: kube::Client) -> Router {
+fn metrics_router(
+    handler: Arc<MetricsHandler>,
+    durations: HistogramVec,
+    client: kube::Client,
+) -> Router {
     let metrics = move |req: Request| {
         let handler = Arc::clone(&handler);
         let durations = durations.clone();
@@ -487,14 +572,22 @@ fn metrics_router(handler: Arc<MetricsHandler>, durations: HistogramVec, client:
         async move {
             let req = http::Request::get("/livez").body(Vec::new());
             let ok = match req {
-                Ok(r) => matches!(tokio::time::timeout(Duration::from_secs(10), client.request_text(r)).await, Ok(Ok(_))),
+                Ok(r) => matches!(
+                    tokio::time::timeout(Duration::from_secs(10), client.request_text(r)).await,
+                    Ok(Ok(_))
+                ),
                 Err(_) => false,
             };
             if ok {
                 ok_text()
             } else {
                 tracing::warn!("Failed to contact API server for /livez");
-                (StatusCode::SERVICE_UNAVAILABLE, [(header::CONTENT_TYPE, "text/plain; charset=utf-8")], "Service Unavailable").into_response()
+                (
+                    StatusCode::SERVICE_UNAVAILABLE,
+                    [(header::CONTENT_TYPE, "text/plain; charset=utf-8")],
+                    "Service Unavailable",
+                )
+                    .into_response()
             }
         }
     };
@@ -511,7 +604,14 @@ fn telemetry_router(registry: Registry) -> Router {
         let reg = reg.clone();
         async move {
             let body = reg.render(&crate::process::families());
-            ([(header::CONTENT_TYPE, "text/plain; version=0.0.4; charset=utf-8; escaping=underscores")], body).into_response()
+            (
+                [(
+                    header::CONTENT_TYPE,
+                    "text/plain; version=0.0.4; charset=utf-8; escaping=underscores",
+                )],
+                body,
+            )
+                .into_response()
         }
     };
     let readyz = move || {
@@ -532,7 +632,10 @@ fn telemetry_router(registry: Registry) -> Router {
 
 /// Resources set by default, sorted.
 pub fn default_resources() -> BTreeSet<String> {
-    crate::options::DEFAULT_RESOURCES.iter().map(|s| (*s).to_owned()).collect()
+    crate::options::DEFAULT_RESOURCES
+        .iter()
+        .map(|s| (*s).to_owned())
+        .collect()
 }
 
 #[cfg(test)]

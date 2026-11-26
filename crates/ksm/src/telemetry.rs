@@ -64,14 +64,24 @@ pub struct HistogramVec {
 }
 
 /// `prometheus.DefBuckets`.
-pub const DEF_BUCKETS: &[f64] = &[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0];
+pub const DEF_BUCKETS: &[f64] = &[
+    0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0,
+];
 
 impl Registry {
     pub fn new() -> Self {
         Self::default()
     }
 
-    fn register(&self, name: &str, help: &str, kind: Kind, labels: &[&str], const_labels: &[(&str, &str)], values: Values) {
+    fn register(
+        &self,
+        name: &str,
+        help: &str,
+        kind: Kind,
+        labels: &[&str],
+        const_labels: &[(&str, &str)],
+        values: Values,
+    ) {
         let mut l: Vec<String> = const_labels.iter().map(|(k, _)| (*k).to_owned()).collect();
         l.extend(labels.iter().map(|s| (*s).to_owned()));
         self.families.lock().insert(
@@ -87,13 +97,33 @@ impl Registry {
     }
 
     pub fn counter_vec(&self, name: &str, help: &str, labels: &[&str]) -> Vector {
-        self.register(name, help, Kind::Counter, labels, &[], Values::Scalar(BTreeMap::new()));
-        Vector { reg: self.clone(), name: name.to_owned() }
+        self.register(
+            name,
+            help,
+            Kind::Counter,
+            labels,
+            &[],
+            Values::Scalar(BTreeMap::new()),
+        );
+        Vector {
+            reg: self.clone(),
+            name: name.to_owned(),
+        }
     }
 
     pub fn gauge_vec(&self, name: &str, help: &str, labels: &[&str]) -> Vector {
-        self.register(name, help, Kind::Gauge, labels, &[], Values::Scalar(BTreeMap::new()));
-        Vector { reg: self.clone(), name: name.to_owned() }
+        self.register(
+            name,
+            help,
+            Kind::Gauge,
+            labels,
+            &[],
+            Values::Scalar(BTreeMap::new()),
+        );
+        Vector {
+            reg: self.clone(),
+            name: name.to_owned(),
+        }
     }
 
     /// A gauge without labels; exposed with value 0 from the start, as Go's.
@@ -110,16 +140,29 @@ impl Registry {
         v
     }
 
-    pub fn histogram_vec(&self, name: &str, help: &str, labels: &[&str], const_labels: &[(&str, &str)], bounds: &[f64]) -> HistogramVec {
+    pub fn histogram_vec(
+        &self,
+        name: &str,
+        help: &str,
+        labels: &[&str],
+        const_labels: &[(&str, &str)],
+        bounds: &[f64],
+    ) -> HistogramVec {
         self.register(
             name,
             help,
             Kind::Histogram,
             labels,
             const_labels,
-            Values::Histogram { bounds: bounds.to_vec(), data: BTreeMap::new() },
+            Values::Histogram {
+                bounds: bounds.to_vec(),
+                data: BTreeMap::new(),
+            },
         );
-        HistogramVec { reg: self.clone(), name: name.to_owned() }
+        HistogramVec {
+            reg: self.clone(),
+            name: name.to_owned(),
+        }
     }
 
     /// A constant gauge series (build info).
@@ -143,7 +186,10 @@ impl Registry {
     }
 
     /// The text exposition format (0.0.4) of every family with series.
-    pub fn render(&self, extra: &[(String, String, &str, Vec<(Vec<(String, String)>, f64)>)]) -> Vec<u8> {
+    pub fn render(
+        &self,
+        extra: &[(String, String, &str, Vec<(Vec<(String, String)>, f64)>)],
+    ) -> Vec<u8> {
         let fams = self.families.lock();
         let mut out = Vec::with_capacity(4096);
         // Extra families (process metrics) are merged into the sorted order.
@@ -159,7 +205,12 @@ impl Registry {
                 }
                 header(&mut out, name, help, ty);
                 for (labels, v) in series {
-                    sample(&mut out, name, labels.iter().map(|(k, v)| (k.as_str(), v.as_str())), *v);
+                    sample(
+                        &mut out,
+                        name,
+                        labels.iter().map(|(k, v)| (k.as_str(), v.as_str())),
+                        *v,
+                    );
                 }
             }
         }
@@ -185,7 +236,12 @@ fn header(out: &mut Vec<u8>, name: &str, help: &str, ty: &str) {
     out.push(b'\n');
 }
 
-fn sample<'a>(out: &mut Vec<u8>, name: &str, labels: impl Iterator<Item = (&'a str, &'a str)>, v: f64) {
+fn sample<'a>(
+    out: &mut Vec<u8>,
+    name: &str,
+    labels: impl Iterator<Item = (&'a str, &'a str)>,
+    v: f64,
+) {
     out.extend_from_slice(name.as_bytes());
     let mut first = true;
     for (k, val) in labels {
@@ -210,7 +266,12 @@ fn sorted_labels<'a>(f: &'a FamilyData, series: &'a [String]) -> Vec<(&'a str, &
         .labels
         .iter()
         .map(String::as_str)
-        .zip(f.const_values.iter().chain(series.iter()).map(String::as_str))
+        .zip(
+            f.const_values
+                .iter()
+                .chain(series.iter())
+                .map(String::as_str),
+        )
         .collect();
     l.sort_by(|a, b| a.0.cmp(b.0));
     l
@@ -222,7 +283,16 @@ fn render_family(out: &mut Vec<u8>, name: &str, f: &FamilyData) {
             if m.is_empty() {
                 return;
             }
-            header(out, name, &f.help, if f.kind == Kind::Counter { "counter" } else { "gauge" });
+            header(
+                out,
+                name,
+                &f.help,
+                if f.kind == Kind::Counter {
+                    "counter"
+                } else {
+                    "gauge"
+                },
+            );
             let mut rows: Vec<(Vec<(&str, &str)>, f64)> =
                 m.iter().map(|(s, v)| (sorted_labels(f, s), *v)).collect();
             rows.sort_by(|a, b| a.0.cmp(&b.0));
@@ -244,11 +314,26 @@ fn render_family(out: &mut Vec<u8>, name: &str, f: &FamilyData) {
                 for (i, b) in bounds.iter().enumerate() {
                     cumulative += d.buckets[i];
                     let le = ksm_core::metric::go_float_string(*b);
-                    sample(out, &bucket, labels.iter().copied().chain([("le", le.as_str())]), cumulative as f64);
+                    sample(
+                        out,
+                        &bucket,
+                        labels.iter().copied().chain([("le", le.as_str())]),
+                        cumulative as f64,
+                    );
                 }
-                sample(out, &bucket, labels.iter().copied().chain([("le", "+Inf")]), d.count as f64);
+                sample(
+                    out,
+                    &bucket,
+                    labels.iter().copied().chain([("le", "+Inf")]),
+                    d.count as f64,
+                );
                 sample(out, &format!("{name}_sum"), labels.iter().copied(), d.sum);
-                sample(out, &format!("{name}_count"), labels.iter().copied(), d.count as f64);
+                sample(
+                    out,
+                    &format!("{name}_count"),
+                    labels.iter().copied(),
+                    d.count as f64,
+                );
             }
         }
     }
@@ -257,7 +342,11 @@ fn render_family(out: &mut Vec<u8>, name: &str, f: &FamilyData) {
 impl Vector {
     fn update(&self, values: &[&str], f: impl FnOnce(&mut f64)) {
         let mut fams = self.reg.families.lock();
-        if let Some(FamilyData { values: Values::Scalar(m), .. }) = fams.get_mut(&self.name) {
+        if let Some(FamilyData {
+            values: Values::Scalar(m),
+            ..
+        }) = fams.get_mut(&self.name)
+        {
             let key: Series = values.iter().map(|s| (*s).to_owned()).collect();
             f(m.entry(key).or_insert(0.0));
         }
@@ -278,7 +367,11 @@ impl Vector {
     /// Removes every series (`Reset`).
     pub fn reset(&self) {
         let mut fams = self.reg.families.lock();
-        if let Some(FamilyData { values: Values::Scalar(m), .. }) = fams.get_mut(&self.name) {
+        if let Some(FamilyData {
+            values: Values::Scalar(m),
+            ..
+        }) = fams.get_mut(&self.name)
+        {
             m.clear();
         }
     }
@@ -287,10 +380,18 @@ impl Vector {
 impl HistogramVec {
     pub fn observe(&self, values: &[&str], v: f64) {
         let mut fams = self.reg.families.lock();
-        if let Some(FamilyData { values: Values::Histogram { bounds, data }, .. }) = fams.get_mut(&self.name) {
+        if let Some(FamilyData {
+            values: Values::Histogram { bounds, data },
+            ..
+        }) = fams.get_mut(&self.name)
+        {
             let key: Series = values.iter().map(|s| (*s).to_owned()).collect();
             let n = bounds.len();
-            let d = data.entry(key).or_insert_with(|| HistogramData { buckets: vec![0; n], sum: 0.0, count: 0 });
+            let d = data.entry(key).or_insert_with(|| HistogramData {
+                buckets: vec![0; n],
+                sum: 0.0,
+                count: 0,
+            });
             if let Some(i) = bounds.iter().position(|b| v <= *b) {
                 d.buckets[i] += 1;
             }
@@ -348,8 +449,15 @@ pub struct ShardingMetrics {
 impl ShardingMetrics {
     pub fn new(r: &Registry) -> Self {
         ShardingMetrics {
-            ordinal: r.gauge_vec("kube_state_metrics_shard_ordinal", "Current sharding ordinal/index of this instance", &["shard_ordinal"]),
-            total: r.gauge("kube_state_metrics_total_shards", "Number of total shards this instance is aware of"),
+            ordinal: r.gauge_vec(
+                "kube_state_metrics_shard_ordinal",
+                "Current sharding ordinal/index of this instance",
+                &["shard_ordinal"],
+            ),
+            total: r.gauge(
+                "kube_state_metrics_total_shards",
+                "Number of total shards this instance is aware of",
+            ),
         }
     }
 }
@@ -365,7 +473,13 @@ mod tests {
         c.inc(&["1", "2"]);
         let g = r.gauge("a_gauge", "A.");
         g.set(&[], 54_304_768.0);
-        let h = r.histogram_vec("h", "H.", &["method"], &[("handler", "metrics")], &[0.1, 1.0]);
+        let h = r.histogram_vec(
+            "h",
+            "H.",
+            &["method"],
+            &[("handler", "metrics")],
+            &[0.1, 1.0],
+        );
         h.observe(&["get"], 0.05);
         let out = String::from_utf8(r.render(&[])).unwrap();
         assert_eq!(

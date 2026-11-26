@@ -7,13 +7,12 @@ version = "2.19.0"
 edition = "2024"
 rust-version = "1.100"
 license = "Apache-2.0"
-repository = "https://github.com/kubernetes/kube-state-metrics"
 
 [workspace.dependencies]
 ksm-core = { path = "crates/ksm-core" }
 ksm-stores = { path = "crates/ksm-stores" }
 k8s-openapi = { version = "0.29", features = ["v1_37"] }
-kube = { version = "5.2", default-features = false, features = ["client", "config", "runtime", "rustls-tls", "gzip", "oidc", "http-proxy"] }
+kube = { version = "5.2", default-features = false, features = ["client", "config", "runtime", "rustls-tls", "ring", "gzip", "oidc", "http-proxy"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_yaml_ng = "0.10"
@@ -23,7 +22,6 @@ parking_lot = "0.12"
 tokio = { version = "1", features = ["full"] }
 axum = "0.8"
 tracing = "0.1"
-chrono = { version = "0.4", default-features = false, features = ["std", "clock"] }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
