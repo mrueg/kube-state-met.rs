@@ -1289,6 +1289,7 @@ dependencies = [
  "kube",
  "md-5",
  "parking_lot 0.12.5",
+ "rayon",
  "serde",
  "serde_json",
  "serde_yaml_ng",

@@ -96,6 +96,7 @@ pub fn spawn<K>(
         let stream = watcher(api, cfg);
         futures::pin_mut!(stream);
         let mut buffer: Vec<(String, String, Rendered)> = Vec::new();
+        let mut pending: Vec<(String, String, K)> = Vec::new();
         let limit_mode = s.object_limit > 0;
         if limit_mode {
             s.metrics
@@ -109,13 +110,20 @@ pub fn spawn<K>(
             };
             let Some(ev) = ev else { break };
             match ev {
-                Ok(watcher::Event::Init) => buffer.clear(),
+                Ok(watcher::Event::Init) => {
+                    buffer.clear();
+                    pending.clear();
+                }
                 Ok(watcher::Event::InitApply(obj)) => {
                     if let Some((uid, rv)) = keep(&s.sharding, &obj) {
-                        buffer.push((uid, rv, render(&families, &obj)));
+                        pending.push((uid, rv, obj));
+                        if pending.len() >= RENDER_BATCH {
+                            render_batch(&families, &mut pending, &mut buffer).await;
+                        }
                     }
                 }
                 Ok(watcher::Event::InitDone) => {
+                    render_batch(&families, &mut pending, &mut buffer).await;
                     let items = std::mem::take(&mut buffer);
                     if limit_mode {
                         // Go lists (and counts the list) only with an object limit;
@@ -156,6 +164,38 @@ pub fn spawn<K>(
             }
         }
     });
+}
+
+/// Objects rendered together during the initial sync.
+const RENDER_BATCH: usize = 512;
+
+/// Renders the buffered objects on all cores (Go renders them one by one in
+/// the store's transformer; the result is the same).
+async fn render_batch<K: Send + Sync + 'static>(
+    families: &Arc<Vec<FamilyGenerator<K>>>,
+    pending: &mut Vec<(String, String, K)>,
+    out: &mut Vec<(String, String, Rendered)>,
+) {
+    if pending.is_empty() {
+        return;
+    }
+    let batch = std::mem::take(pending);
+    let fams = Arc::clone(families);
+    let rendered = tokio::task::spawn_blocking(move || {
+        use rayon::prelude::*;
+        batch
+            .into_par_iter()
+            .map(|(uid, rv, obj)| {
+                let r = render(&fams, &obj);
+                (uid, rv, r)
+            })
+            .collect::<Vec<_>>()
+    })
+    .await;
+    match rendered {
+        Ok(r) => out.extend(r),
+        Err(e) => tracing::error!(error = %e, "rendering metrics failed"),
+    }
 }
 
 /// UID and resource version of an object this shard keeps.

@@ -10,6 +10,9 @@ use axum::response::{IntoResponse, Response};
 use ksm_core::store::{MetricsWriter, sanitize_headers};
 use parking_lot::RwLock;
 
+/// Size of the chunks a scrape is streamed in.
+const CHUNK: usize = 1 << 20;
+
 pub const TEXT_CONTENT_TYPE: &str = "text/plain; version=0.0.4; charset=utf-8";
 
 /// The writers currently served; `None` until sharding is configured.
@@ -187,45 +190,57 @@ impl MetricsHandler {
         }
         let requested = parse_resources(&requested.iter().map(String::as_str).collect::<Vec<_>>());
         let excluded = parse_resources(&excluded.iter().map(String::as_str).collect::<Vec<_>>());
-        let body = tokio::task::spawn_blocking(move || {
+        // Stream the body in chunks: a large cluster's output is hundreds of
+        // megabytes, which should not be held in memory at once.
+        let (tx, rx) = tokio::sync::mpsc::channel::<bytes::Bytes>(4);
+        tokio::task::spawn_blocking(move || {
             let active: Vec<&MetricsWriter> = writers
                 .iter()
                 .map(Arc::as_ref)
-                .filter(|w| {
-                    requested
-                        .as_ref()
-                        .is_none_or(|r| r.contains(&w.resource_name))
-                })
-                .filter(|w| {
-                    excluded
-                        .as_ref()
-                        .is_none_or(|e| !e.contains(&w.resource_name))
-                })
+                .filter(|w| requested.as_ref().is_none_or(|r| r.contains(&w.resource_name)))
+                .filter(|w| excluded.as_ref().is_none_or(|e| !e.contains(&w.resource_name)))
                 .collect();
             let sanitized = sanitize_headers(format == Format::Text, &active);
-            let mut out = Vec::with_capacity(64 * 1024);
+            let mut gz = gzip.then(|| {
+                flate2::write::GzEncoder::new(Vec::with_capacity(CHUNK), flate2::Compression::default())
+            });
+            let mut send = |buf: &mut Vec<u8>| {
+                let data = match gz.as_mut() {
+                    Some(enc) => {
+                        if enc.write_all(buf).is_err() {
+                            return;
+                        }
+                        buf.clear();
+                        if enc.get_ref().len() < CHUNK {
+                            return;
+                        }
+                        std::mem::take(enc.get_mut())
+                    }
+                    None => std::mem::replace(buf, Vec::with_capacity(CHUNK + CHUNK / 4)),
+                };
+                // A closed channel means the client went away; stop quietly.
+                let _ = tx.blocking_send(bytes::Bytes::from(data));
+            };
+            let mut out = Vec::with_capacity(CHUNK + CHUNK / 4);
             for (w, h) in active.iter().zip(&sanitized) {
-                w.write_all(h, &mut out);
+                w.write_all_chunked(h, &mut out, CHUNK, &mut send);
             }
             if matches!(format, Format::OpenMetrics(_)) {
                 out.extend_from_slice(b"# EOF\n");
             }
-            if gzip {
-                let mut enc = flate2::write::GzEncoder::new(
-                    Vec::with_capacity(out.len() / 8),
-                    flate2::Compression::default(),
-                );
-                if enc.write_all(&out).is_ok()
-                    && let Ok(z) = enc.finish()
-                {
-                    return z;
-                }
+            send(&mut out);
+            drop(send);
+            if let Some(enc) = gz
+                && let Ok(rest) = enc.finish()
+                && !rest.is_empty()
+            {
+                let _ = tx.blocking_send(bytes::Bytes::from(rest));
             }
-            out
-        })
-        .await
-        .unwrap_or_default();
-        let mut resp = Response::new(Body::from(body));
+        });
+        let stream = futures::stream::unfold(rx, |mut rx| async move {
+            rx.recv().await.map(|b| (Ok::<_, std::io::Error>(b), rx))
+        });
+        let mut resp = Response::new(Body::from_stream(stream));
         if let Ok(ct) = HeaderValue::from_str(&format.content_type()) {
             resp.headers_mut().insert(header::CONTENT_TYPE, ct);
         }
