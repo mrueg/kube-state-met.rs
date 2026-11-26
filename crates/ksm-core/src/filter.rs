@@ -127,8 +127,9 @@ impl FamilyFilter for AllowDenyList {
 /// Compiles a pattern the way `regexp2` in ECMAScript mode reads it, as far
 /// as `fancy-regex` allows (see docs/port/research/regex.md).
 pub fn compile_ecmascript(pattern: &str) -> Result<fancy_regex::Regex, FilterError> {
-    fancy_regex::RegexBuilder::new(pattern)
-        .backtrack_limit(10_000_000)
+    let translated = crate::ecma::ecma_to_fancy(pattern).map_err(|e| FilterError(format!("error parsing regexp: {e} in `{pattern}`")))?;
+    fancy_regex::RegexBuilder::new(&translated)
+        .backtrack_limit(1_000_000)
         .build()
         .map_err(|e| FilterError(format!("error parsing regexp: {e}")))
 }

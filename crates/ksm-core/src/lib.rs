@@ -3,6 +3,7 @@
 //! opt-in filters, sharding and label helpers. Nothing here talks to the
 //! Kubernetes API; see the `kube-state-metrics` binary crate for that.
 
+pub mod ecma;
 pub mod filter;
 pub mod generator;
 pub mod labels;

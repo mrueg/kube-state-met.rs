@@ -14,16 +14,16 @@ Generated plan: [analyze-whole-app.md](analyze-whole-app.md). Research: [researc
 
 | Wave | Unit (Go) | Rust home | State |
 | ---: | --- | --- | --- |
-| 0 | ground truth: Go golden harness, fake apiserver, app record | `tools/`, `testdata/golden/`, `rust/app-cases/` | open |
+| 0 | ground truth: Go golden harness, fake apiserver, app record | `tools/`, `testdata/golden/`, `rust/app-cases/` | goldens + fake apiserver done; app record open |
 | 0 | front door (Rust binary, proxies what isn't ported to Go) | `crates/ksm` | open |
-| 1 | `pkg/metric`, `pkg/metric_generator` | `ksm-core::metric`, `::generator` | open |
-| 1 | `pkg/metrics_store` | `ksm-core::store` | open |
-| 1 | `pkg/options` | `ksm-core::options` | open |
-| 1 | `pkg/allowdenylist`, `pkg/optin` | `ksm-core::filter` | open |
+| 1 | `pkg/metric`, `pkg/metric_generator` | `ksm-core::metric`, `::generator` | done |
+| 1 | `pkg/metrics_store` | `ksm-core::store` | done |
+| 1 | `pkg/options` | `ksm-core::options` | claimed by options agent 2026-11-26 |
+| 1 | `pkg/allowdenylist`, `pkg/optin` | `ksm-core::filter` | done |
 | 1 | `pkg/sharding`, `pkg/watch` | `ksm-core::sharding`, `ksm::watch` | open |
-| 1 | `internal/store/utils.go`, quantity, field selectors | `ksm-core::util`, `::quantity`, `::fields` | open |
-| 2 | `pkg/metricshandler`, `internal/store/builder.go`, `pkg/app` (server, telemetry) | `crates/ksm` | open |
-| 3 | `internal/store/*` (40 stores) | `ksm-stores` | open |
+| 1 | `internal/store/utils.go`, quantity, field selectors | `ksm-core::util`, `::quantity`, `::fields` | done (goldens: labels 911, float 3203, quantity 813) |
+| 2 | `pkg/metricshandler`, `internal/store/builder.go`, `pkg/app` (server, telemetry) | `crates/ksm` | claimed by main session 2026-11-26 |
+| 3 | `internal/store/*` (40 stores) | `ksm-stores` | done: 267/267 store goldens match Go |
 | 4 | `pkg/customresourcestate`, `internal/discovery` | `ksm-crs` | open |
 | 4 | auth filter, hot reload (`internal/wrapper.go`), TLS web config | `crates/ksm` | open |
 | 5 | lift, benchmarks report, container image | | open |
