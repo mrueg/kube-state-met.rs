@@ -197,12 +197,23 @@ impl MetricsHandler {
             let active: Vec<&MetricsWriter> = writers
                 .iter()
                 .map(Arc::as_ref)
-                .filter(|w| requested.as_ref().is_none_or(|r| r.contains(&w.resource_name)))
-                .filter(|w| excluded.as_ref().is_none_or(|e| !e.contains(&w.resource_name)))
+                .filter(|w| {
+                    requested
+                        .as_ref()
+                        .is_none_or(|r| r.contains(&w.resource_name))
+                })
+                .filter(|w| {
+                    excluded
+                        .as_ref()
+                        .is_none_or(|e| !e.contains(&w.resource_name))
+                })
                 .collect();
             let sanitized = sanitize_headers(format == Format::Text, &active);
             let mut gz = gzip.then(|| {
-                flate2::write::GzEncoder::new(Vec::with_capacity(CHUNK), flate2::Compression::default())
+                flate2::write::GzEncoder::new(
+                    Vec::with_capacity(CHUNK),
+                    flate2::Compression::default(),
+                )
             });
             let mut send = |buf: &mut Vec<u8>| {
                 let data = match gz.as_mut() {

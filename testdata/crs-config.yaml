@@ -1,0 +1,79 @@
+# Custom resource state config for the CRS app cases:
+#   tools/app-cases/compare.py --custom-resource-state-config-file=testdata/crs-config.yaml
+kind: CustomResourceStateMetrics
+spec:
+  resources:
+    - groupVersionKind:
+        group: myteam.io
+        kind: Foo
+        version: v1
+      labelsFromPath:
+        name: [metadata, name]
+        namespace: [metadata, namespace]
+      metrics:
+        - name: uptime
+          help: Foo uptime
+          each:
+            type: Gauge
+            gauge:
+              path: [status, uptime]
+        - name: active_count
+          help: Number Foo Bars active
+          each:
+            type: Gauge
+            gauge:
+              path: [status, active]
+              labelFromKey: type
+              nilIsZero: true
+        - name: condition
+          help: Foo conditions
+          each:
+            type: Gauge
+            gauge:
+              path: [status, conditions]
+              labelsFromPath:
+                cond: [name]
+              valueFrom: [value]
+        - name: status_phase
+          help: Foo status phase
+          each:
+            type: StateSet
+            stateSet:
+              labelName: phase
+              path: [status, phase]
+              list: [Pending, Running, Failed]
+        - name: version
+          help: Foo version
+          each:
+            type: Info
+            info:
+              labelsFromPath:
+                version: [spec, version]
+        - name: created
+          help: Creation time
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata, creationTimestamp]
+        - name: labels
+          help: Foo labels
+          each:
+            type: Info
+            info:
+              path: [metadata, labels]
+              labelsFromPath:
+                "*": []
+    - groupVersionKind:
+        group: example.com
+        version: "*"
+        kind: "*"
+      metricNamePrefix: example
+      metrics:
+        - name: info
+          help: example.com objects
+          each:
+            type: Info
+            info:
+              path: [metadata]
+              labelsFromPath:
+                name: [name]

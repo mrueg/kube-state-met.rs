@@ -1,0 +1,69 @@
+# The Foo example of docs/metrics/extend/customresourcestate-metrics.md, plus variants.
+kind: Foo
+apiVersion: myteam.io/v1
+metadata:
+  annotations:
+    bar: baz
+    qux: quxx
+  labels:
+    foo: bar
+  name: foo
+  namespace: default
+  creationTimestamp: "2024-01-02T03:04:05Z"
+spec:
+  version: v1.2.3
+  order:
+    - id: 1
+      value: true
+    - id: 3
+      value: false
+  replicas: 1
+  refs:
+    - my_other_foo
+    - foo_2
+    - foo_with_extensions
+status:
+  phase: Pending
+  active:
+    type-a: 1
+    type-b: 3
+  conditions:
+    - name: a
+      value: 45
+    - name: b
+      value: 66
+  sub:
+    type-a:
+      active: 1
+      ready: 2
+    type-b:
+      active: 3
+      ready: 4
+  uptime: 43.21
+---
+kind: Foo
+apiVersion: myteam.io/v1
+metadata:
+  labels:
+    foo: baz
+  name: foo-2
+  namespace: kube-system
+  creationTimestamp: "2025-06-07T08:09:10Z"
+spec:
+  version: v2.0.0
+  replicas: 3
+status:
+  phase: Running
+  active:
+    type-a: 0
+  conditions:
+    - name: a
+      value: 1.5
+  uptime: 1e10
+---
+kind: Foo
+apiVersion: myteam.io/v1
+metadata:
+  name: foo-empty
+  namespace: default
+spec: {}

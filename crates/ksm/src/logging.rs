@@ -42,7 +42,14 @@ fn quote(s: &str) -> String {
 
 /// An error line as Go's `klog.ErrorS(err, msg)` at `file` prints it.
 pub fn error_go(file: &str, msg: &str, err: &str) {
-    eprintln!("{}{} err={}", header('E', file), quote(msg), quote(err));
+    // klog prints a multi-line value as a `<` block of tab-indented lines.
+    let value = if err.contains('\n') {
+        let lines: String = err.lines().map(|l| format!("\t{l}\n")).collect();
+        format!("<\n{lines} >")
+    } else {
+        quote(err)
+    };
+    eprintln!("{}{} err={value}", header('E', file), quote(msg));
 }
 
 #[derive(Default)]

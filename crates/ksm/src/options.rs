@@ -7,7 +7,7 @@
 
 mod fields;
 mod flagset;
-mod goparse;
+pub(crate) mod goparse;
 mod yamlnode;
 
 use std::collections::{BTreeMap, BTreeSet};

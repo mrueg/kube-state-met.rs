@@ -8,7 +8,8 @@ Generated plan: [analyze-whole-app.md](analyze-whole-app.md). Research: [researc
 
 ## ADR index
 001 layout · 002 scope · 003 equivalence bar · 004 compatibility · 005 sharding hash · 006 libraries ·
-007 ground truth · 008 benchmarks · 009 targets/checkpoints/cutover · 010 telemetry · 011 watch semantics · 012 no proxying front door
+007 ground truth · 008 benchmarks · 009 targets/checkpoints/cutover · 010 telemetry · 011 watch semantics · 012 no proxying front door ·
+013 TLS web config on rustls
 
 ## Units
 
@@ -24,8 +25,10 @@ Generated plan: [analyze-whole-app.md](analyze-whole-app.md). Research: [researc
 | 1 | `internal/store/utils.go`, quantity, field selectors | `ksm-core::util`, `::quantity`, `::fields` | done (goldens: labels 911, float 3203, quantity 813) |
 | 2 | `pkg/metricshandler`, `internal/store/builder.go`, `pkg/app` (server, telemetry) | `crates/ksm` | claimed by main session 2026-11-26 |
 | 3 | `internal/store/*` (40 stores) | `ksm-stores` | done: 267/267 store goldens match Go |
-| 4 | `pkg/customresourcestate`, `internal/discovery` | `ksm-crs` | open |
-| 4 | auth filter, hot reload (`internal/wrapper.go`), TLS web config | `crates/ksm` | open |
+| 4 | `pkg/customresourcestate`, `internal/discovery` | `ksm-crs`, `ksm::{crs,discovery,watch_dynamic}` | done: CRD discovery, wildcard GVKs, CR watchers; `compare.py --custom-resource-state-config-file=testdata/crs-config.yaml` equal |
+| 4 | TLS web config (exporter-toolkit `web`) | `ksm::web` | done: all 49 exporter-toolkit test configs equal to Go (startup errors, HTTP/TLS answers); rustls limits in ADR-013 |
+| 4 | `--auth-filter` (controller-runtime `WithAuthenticationAndAuthorization`) | `ksm::auth` | done: 19 request cases equal to Go against the fake apiserver's TokenReview/SubjectAccessReview (`--auth-token`, `--auth-allow`); WebSocket-protocol tokens not ported |
+| 4 | hot reload (`internal/wrapper.go`, `internal/watch.go`) | `ksm::{main,reload}` | done: options config, CRS config and kubeconfig watched (parent dir, symlink swaps, movable watches), restart with reload flag + 3 s port wait, `--continue-without-*`; edit/break/fix/atomic-save sequence serves the same as Go at every step |
 | 5 | lift, benchmarks report, container image | | open |
 
 ## Open questions

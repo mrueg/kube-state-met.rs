@@ -2,7 +2,8 @@
 """Scrapes Go and Rust kube-state-metrics side by side against the fake API
 server and compares by ADR-003: same families in the same order with the same
 HELP/TYPE, the same multiset of lines inside each family.
-Usage: tools/app-cases/compare.py [--rust PATH] [--go PATH] [--fixtures DIR] [extra ksm args...]"""
+Usage: tools/app-cases/compare.py [--rust PATH] [--go PATH] [--fixtures DIR] [--resources LIST]
+       [--wait SECONDS] [extra ksm args...]"""
 import argparse, os, socket, subprocess, sys, tempfile, time, urllib.request
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -67,6 +68,11 @@ def main():
     ap.add_argument("--rust", default=os.path.join(ROOT, "target/debug/kube-state-metrics"))
     ap.add_argument("--go", default=os.path.join(ROOT, "target/ksm-go/kube-state-metrics"))
     ap.add_argument("--fixtures", default=os.path.join(ROOT, "testdata/fixtures"))
+    ap.add_argument("--resources", default=ALL, help="--resources value passed to both ('' omits the flag)")
+    ap.add_argument("--wait", type=float, default=4, help="seconds to wait before scraping")
+    ap.add_argument("--path", action="append", default=[], help="extra /metrics path (with query) to compare")
+    ap.add_argument("--telemetry-prefix", action="append", default=[],
+                    help="compare the telemetry sample lines starting with this prefix")
     a, extra = ap.parse_known_args()
     tmp = tempfile.mkdtemp()
     kc = os.path.join(tmp, "kc.yaml")
@@ -77,17 +83,20 @@ def main():
     try:
         while not os.path.exists(kc):
             time.sleep(0.05)
-        ports = {}
+        ports, tports = {}, {}
         for name, binary in (("go", a.go), ("rust", a.rust)):
             p = port()
             ports[name] = p
-            args = [binary, "--kubeconfig", kc, "--port", str(p), "--telemetry-port", str(port()), "--host", "127.0.0.1",
-                    "--telemetry-host", "127.0.0.1", "--resources=" + ALL, "--enable-gzip-encoding"] + extra
+            tports[name] = port()
+            args = [binary, "--kubeconfig", kc, "--port", str(p), "--telemetry-port", str(tports[name]), "--host", "127.0.0.1",
+                    "--telemetry-host", "127.0.0.1", "--enable-gzip-encoding"]
+            args += (["--resources=" + a.resources] if a.resources else []) + extra
             procs.append(subprocess.Popen(args, stdout=log, stderr=log, env=env))
-        time.sleep(4)
+        time.sleep(a.wait)
         ok = True
         for path, hdr in [("/metrics", None), ("/metrics", {"Accept": "application/openmetrics-text; version=1.0.0"}),
-                          ("/metrics?resources=pods,nodes", None), ("/metrics?exclude_resources=pods", None)]:
+                          ("/metrics?resources=pods,nodes", None), ("/metrics?exclude_resources=pods", None)] + \
+                [(p, None) for p in a.path]:
             g, r = get(ports["go"], path, hdr), get(ports["rust"], path, hdr)
             label = path + (" (openmetrics)" if hdr else "")
             if g[0] != r[0] or g[1].get("content-type") != r[1].get("content-type"):
@@ -100,6 +109,12 @@ def main():
             norm = lambda t: re.sub(r"Version: \(version=[^)]*\)", "Version: (VERSION)", t)
             same = g[0] == r[0] and norm(g[2]) == norm(r[2]) and g[1].get("content-type") == r[1].get("content-type")
             print(f"  {path}: {'equal' if same else f'differs: go {g[0]} {g[2][:60]!r} rust {r[0]} {r[2][:60]!r}'}")
+            ok &= same
+        for prefix in a.telemetry_prefix:
+            sel = lambda t: sorted(l for l in t.splitlines() if l.startswith(prefix))
+            g, r = sel(get(tports["go"], "/metrics")[2]), sel(get(tports["rust"], "/metrics")[2])
+            same = g == r
+            print(f"  telemetry {prefix}*: {'equal (%d lines)' % len(g) if same else f'differs: go {g} rust {r}'}")
             ok &= same
         return 0 if ok else 1
     finally:

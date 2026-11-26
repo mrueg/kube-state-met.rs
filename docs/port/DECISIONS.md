@@ -68,4 +68,10 @@ Consequences: List and watch counters on the telemetry port count kube-rs list/w
 Status: accepted (2026-11-26)
 Context: The whole-app recipe puts a front door in front of the original that proxies whatever isn't ported yet. Here, every store was ported and golden-checked (267/267) before the binary first ran, and `/metrics` is one route covering every resource.
 Decision: The Rust binary owns every route from the start. Features not ported yet (custom resource state metrics, `--tls-config`, `--auth-filter`, config hot reload) fail clearly at startup instead of falling back to Go. The fallback rate is the share of recorded app cases that use one of those features, and it drops to zero with wave 4.
-Consequences: No Go process runs beside the Rust binary, and `app front-door`/`app wire` are not used. `app record`/`app replay` still hold the binary to the recorded cases.
+Consequences: No Go process runs beside the Rust binary, and `app front-door`/`app wire` are not used. `app record`/`app replay` still hold the binary to the recorded cases. Wave 4 (2026-11-27) ported all four features, so nothing fails at startup any more.
+
+## ADR-013: TLS web config on rustls
+Status: accepted (2026-11-27)
+Context: exporter-toolkit runs on Go crypto/tls; the port uses rustls (ADR-006), which has no TLS 1.0/1.1, no CBC or RSA-key-exchange suites and no P-521.
+Decision: The `--tls-config` schema, startup validation and error texts follow exporter-toolkit v0.21.0 (Go `tls.CipherSuites()` names are accepted). Settings rustls cannot honor are accepted and narrowed: `min_version` TLS10/TLS11 means TLS 1.2, `max_version` below TLS12 fails every handshake, CBC suites in `cipher_suites` are dropped (TLS 1.3 suites stay, as in Go), and a `curve_preferences` list with only CurveP521 keeps the default groups. A client certificate that is itself one of the client CAs is accepted, as Go does. YAML type errors other than unknown fields and the custom value errors are mapped to yaml.v2 text on a best-effort basis.
+Consequences: Clients that only speak TLS 1.0/1.1, CBC suites or P-521 cannot connect to the Rust binary. All 49 exporter-toolkit test configs give the same startup errors and HTTP answers as Go (scratch harness against both binaries).
