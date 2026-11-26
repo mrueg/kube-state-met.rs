@@ -1,0 +1,951 @@
+# Golden cases for custom resource state metrics (ADR-007), run by
+# zz_golden_test.go through Go's own decoder and generators.
+#
+# objects: named objects (JSON). "cr" is registry_factory_test.go's test
+# object and "docs-foo" the object of docs/metrics/extend/customresourcestate-metrics.md;
+# both are filled in by the harness.
+# cases: a name, a config (one YAML stream, decoded like the binary does) and
+# the objects to generate metrics for.
+# tofloat: values passed to toFloat64 directly.
+# flect: kinds passed to flect.Pluralize.
+
+objects:
+  wildcard: |
+    {"metadata":{"labels":{"":"empty","1password.com/vault":"a","__name__":"evil","customresource_kind":"Spoofed","customresource.group":"spoofed.io","team":"copied","a.b":"first","a_b":"second","ok":"yes"}}}
+  wildcard-ann: |
+    {"metadata":{"labels":{"":"empty","1password.com/vault":"a","__name__":"evil","customresource_kind":"Spoofed","customresource.group":"spoofed.io","team":"copied","a.b":"first","a_b":"second","ok":"yes"},"annotations":{"ok":"annotation","a_b":"annotation"}}}
+  keeps-common: |
+    {"metadata":{"labels":{"team":"copied","env":"copied","app":"foo"}}}
+  vpa: |
+    {"apiVersion":"autoscaling.k8s.io/v1","kind":"VerticalPodAutoscaler","metadata":{"name":"vpa-example","namespace":"namespace-example","labels":{"app":"hamster","app.kubernetes.io/name":"x"},"annotations":{"foo":"123","bar":"baz"}},"spec":{"targetRef":{"apiVersion":"apps/v1","kind":"Deployment","name":"target-name-example"},"updatePolicy":{"updateMode":"Auto"},"resourcePolicy":{"containerPolicies":[{"containerName":"consumer","minAllowed":{"cpu":"50m","memory":"100Mi"},"maxAllowed":{"cpu":"2","memory":"2Gi"}},{"containerName":"*","minAllowed":{"cpu":"0","memory":"0"}}]}},"status":{"recommendation":{"containerRecommendations":[{"containerName":"consumer","lowerBound":{"cpu":"100m","memory":"262144k"},"target":{"cpu":"587m","memory":"262144k"},"uncappedTarget":{"cpu":"587m","memory":"262144k"},"upperBound":{"cpu":"21147m","memory":"387863636"}}]}}}
+  vpa-empty: |
+    {"apiVersion":"autoscaling.k8s.io/v1","kind":"VerticalPodAutoscaler","metadata":{"name":"empty","namespace":"ns"},"spec":{}}
+  values: |
+    {"metadata":{"name":"values","labels":{"a":"b"}},"spec":{"ints":{"i0":0,"i1":1,"neg":-7,"big":9007199254740993,"huge":18446744073709551615,"max":9223372036854775807},"floats":{"f1":1.5,"f2":1e21,"f3":1e-7,"f4":100000000.0,"f5":0.000123,"f6":1e6,"f7":123456789012,"f8":-0.0,"f9":2.0},"strings":{"t":"TRUE","y":"Yes","f":"False","n":"NO","u":"Unknown","ts":"2021-01-01T00:00:00+01:00","tsfrac":"2021-01-01T00:00:00.123456789Z","tsbad":"2021-02-30T00:00:00Z","q1":"1.5Gi","q2":"100m","q3":"1e3","q4":"12k","q5":"-1Ki","p1":"50%","p2":"0%","p3":"5.5%","inf":"inf","nan":"NaN","hex":"0x1p-2","e":"","sp":" 1","word":"hello","under":"1_000","plus":"+5"},"bools":{"t":true,"f":false},"nulls":{"a":null,"b":1},"nested":{"m":{"x":1,"y":[1,"two",null,true,{"k":"v"}]},"arr":[1.5,2,"x"],"empty":{},"emptyarr":[]}},"status":{"conditions":[{"type":"Ready","status":"True","reason":"r1","n":1},{"type":"Synced","status":"False","reason":"r2","n":2.0},{"type":"Other","status":"Unknown","n":"3"},{"type":"Bool","status":true},"not-a-map",null],"phase":"Running","list":["a","b",null,3]}}
+  weird-labels: |
+    {"metadata":{"name":"we\"ird\\name\nline","labels":{"ünïcode":"ü","dash-key":"v1","dot.key":"v2","slash/key":"v3","9digit":"v4","nilval":null,"num":1.25,"obj":{"a":1},"arr":[1,2]},"annotations":{"__x":"y","_ok":"z"}},"spec":{"m":{"":1,"k=v":2,"a,b":3}}}
+
+cases:
+  # --- registry_factory_test.go: Test_values (each compiled metric as a config) ---
+  - name: Test_values
+    objects: [cr]
+    config: |
+      kind: CustomResourceStateMetrics
+      spec:
+        resources:
+          - groupVersionKind: {group: myteam.io, version: v1, kind: Foo}
+            metrics:
+              - name: single
+                each: {type: Gauge, gauge: {path: [spec, replicas]}}
+              - name: obj
+                each: {type: Gauge, gauge: {path: [status, active], labelFromKey: type}}
+              - name: deep_obj
+                each: {type: Gauge, gauge: {path: [status, sub], labelsFromPath: {active: [active]}, labelFromKey: type, valueFrom: [ready]}}
+              - name: path_relative_valuefrom_value
+                each: {type: Gauge, gauge: {path: [metadata], labelsFromPath: {name: [name]}, valueFrom: [creationTimestamp]}}
+              - name: non_existent_path
+                each: {type: Gauge, gauge: {path: [foo], labelsFromPath: {name: [name]}, valueFrom: [creationTimestamp]}}
+              - name: non_numeric_value
+                each: {type: Gauge, gauge: {path: [metadata, name]}}
+              - name: nil_element_in_array
+                each: {type: Gauge, gauge: {path: [status, sparse]}}
+              - name: non_existent_path_with_nil_is_zero
+                each: {type: Gauge, gauge: {path: [status, non-existent], valueFrom: [value], nilIsZero: true}}
+              - name: nil_value_at_valuefrom_key_in_map
+                each: {type: Gauge, gauge: {path: [status, nullable], labelFromKey: key, valueFrom: [value]}}
+              - name: nil_value_at_valuefrom_key_in_map_with_nil_is_zero
+                each: {type: Gauge, gauge: {path: [status, nullable], labelFromKey: key, valueFrom: [value], nilIsZero: true}}
+              - name: exist_path_but_valuefrom_non_existent_single
+                each: {type: Gauge, gauge: {path: [spec, replicas], valueFrom: [non-existent]}}
+              - name: exist_path_but_valuefrom_non_existent_array
+                each: {type: Gauge, gauge: {path: [status, condition_values], labelsFromPath: {name: [name]}, valueFrom: [non-existent]}}
+              - name: array
+                each: {type: Gauge, gauge: {path: [status, condition_values], labelsFromPath: {name: [name]}, valueFrom: [value]}}
+              - name: timestamp
+                each: {type: Gauge, gauge: {path: [metadata, creationTimestamp]}}
+              - name: quantity_milli
+                each: {type: Gauge, gauge: {path: [status, quantity_milli]}}
+              - name: quantity_binarysi
+                each: {type: Gauge, gauge: {path: [status, quantity_binarySI]}}
+              - name: percentage
+                each: {type: Gauge, gauge: {path: [status, percentage]}}
+              - name: path_relative_valuefrom_percentage
+                each: {type: Gauge, gauge: {path: [metadata], labelsFromPath: {name: [name]}, valueFrom: [percentage]}}
+              - name: boolean_string
+                each: {type: Gauge, gauge: {path: [spec, paused], nilIsZero: true}}
+              - name: info
+                each: {type: Info, info: {labelsFromPath: {version: [spec, version]}}}
+              - name: info_nil_path
+                each: {type: Info, info: {path: [does, not, exist]}}
+              - name: info_label_from_key
+                each: {type: Info, info: {path: [status, active], labelFromKey: type}}
+              - name: info_label_from_path
+                each: {type: Info, info: {path: [status, sub], labelsFromPath: {active: [active]}}}
+              - name: stateset
+                each: {type: StateSet, stateSet: {path: [status, phase], labelName: phase, list: [foo, bar]}}
+              - name: stateset_nil_path
+                each: {type: StateSet, stateSet: {path: [does, not, exist], labelName: phase, list: [foo, bar]}}
+              - name: stateset_nil_valuefrom
+                each: {type: StateSet, stateSet: {path: [status], valueFrom: [does, not, exist], labelName: phase, list: [foo, bar]}}
+              - name: stateset_non_string_value
+                each: {type: StateSet, stateSet: {path: [spec, replicas], labelName: phase, list: ["1", "2"]}}
+              - name: stateset_non_string_valuefrom
+                each: {type: StateSet, stateSet: {path: [status], valueFrom: [uptime], labelName: phase, list: [foo, bar]}}
+              - name: status_conditions
+                each: {type: Gauge, gauge: {path: [status, conditions, "[type=Ready]", status]}}
+              - name: status_conditions_all
+                each: {type: Gauge, gauge: {path: [status, conditions], labelsFromPath: {type: [type]}, valueFrom: [status]}}
+              - name: eq_expression_matching
+                each: {type: Info, info: {labelsFromPath: {bar: [metadata, annotations, "bar=baz"]}}}
+
+  # --- Test_valuePath_Get ---
+  - name: Test_valuePath_Get
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: myteam.io, version: v1, kind: Foo}
+            metrics:
+              - name: get_info
+                each:
+                  type: Info
+                  info:
+                    labelsFromPath:
+                      obj: [spec, replicas]
+                      array: [status, condition_values, "[name=b]", value]
+                      array_index: [spec, order, "0", value]
+                      string: [metadata, labels, foo]
+                      match_number: [spec, order, "[id=3]", value]
+                      match_bool: [spec, order, "[value=false]", id]
+
+  # --- Test_addPathLabels ---
+  - name: Test_addPathLabels/all
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: myteam.io, version: v1, kind: Foo}
+            metrics:
+              - name: all_info
+                each:
+                  type: Info
+                  info:
+                    labelsFromPath:
+                      bool: [spec, order, "-1", value]
+                      number: [spec, replicas]
+                      string: [metadata, labels, foo]
+  - name: Test_addPathLabels/star
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: myteam.io, version: v1, kind: Foo}
+            metrics:
+              - name: star_info
+                each:
+                  type: Info
+                  info:
+                    labelsFromPath:
+                      "*1": [metadata, annotations]
+                      bar: [metadata, labels, foo]
+                      "label_object_*": [metadata, annotations]
+              - name: star_resource_level
+                labelsFromPath:
+                  "*1": [metadata, annotations]
+                  bar: [metadata, labels, foo]
+                  "label_object_*": [metadata, annotations]
+                each: {type: Gauge, gauge: {path: [spec, replicas]}}
+  - name: Test_addPathLabels_wildcardKeys
+    objects: [wildcard, wildcard-ann]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: myteam.io, version: v1, kind: Foo}
+            commonLabels: {team: common}
+            metrics:
+              - name: star_info
+                each: {type: Info, info: {labelsFromPath: {"*": [metadata, labels]}}}
+              - name: prefix_info
+                each: {type: Info, info: {labelsFromPath: {"p_*": [metadata, labels]}}}
+              - name: two_stars_info
+                each: {type: Info, info: {labelsFromPath: {"*": [metadata, labels], "*2": [metadata, annotations], "a_b": [metadata, labels, ok]}}}
+              - name: family_level
+                labelsFromPath: {"*": [metadata, labels], "p_*": [metadata, labels]}
+                each: {type: Gauge, gauge: {path: [metadata, labels, ok]}}
+  - name: Test_addPathLabels_indexOutOfRange
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: myteam.io, version: v1, kind: Foo}
+            metrics:
+              - name: idx_info
+                each: {type: Info, info: {labelsFromPath: {idx: [spec, order, "5"], ok: [metadata, name]}}}
+
+  # --- Test_newCompiledMetric_compileError ---
+  - name: compileError/gauge_path
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: Gauge, gauge: {path: [status, conditions, "[Ready]"]}}}]}]}
+  - name: compileError/info_path
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: Info, info: {path: [status, conditions, "[Ready]"]}}}]}]}
+  - name: compileError/stateSet_path
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: StateSet, stateSet: {path: [status, conditions, "[Ready]"]}}}]}]}
+  - name: compileError/gauge_labelsFromPath
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: Gauge, gauge: {labelsFromPath: {cond: [status, conditions, "[Ready]"]}}}}]}]}
+  - name: compileError/info_labelsFromPath
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: Info, info: {labelsFromPath: {cond: [status, conditions, "[Ready]"]}}}}]}]}
+  - name: compileError/stateSet_labelsFromPath
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: StateSet, stateSet: {labelsFromPath: {cond: [status, conditions, "[Ready]"]}}}}]}]}
+  - name: compileError/gauge_valueFrom
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: Gauge, gauge: {valueFrom: ["[]"]}}}]}]}
+  - name: compileError/stateSet_valueFrom
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: StateSet, stateSet: {valueFrom: ["[a]"]}}}]}]}
+  - name: compileError/family_labelsFromPath
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, labelsFromPath: {x: ["[nokey]"]}, each: {type: Gauge, gauge: {path: [a]}}}]}]}
+  - name: compileError/resource_labelsFromPath
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, labelsFromPath: {x: ["[nokey]"]}, metrics: [{name: m, each: {type: Gauge, gauge: {path: [a]}}}]}]}
+  - name: compileError/nil_gauge
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: ok, each: {type: Info, info: {}}}, {name: m, each: {type: Gauge, info: {}}}]}]}
+  - name: compileError/nil_info
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: info}}]}]}
+  - name: compileError/nil_stateset
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: STATESET, gauge: {}}}]}]}
+  - name: compileError/unknown_type
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: {type: Counter, gauge: {}}}]}]}
+  - name: compileError/empty_type
+    config: |
+      spec: {resources: [{groupVersionKind: {group: g, version: v1, kind: K}, metrics: [{name: m, each: ~}]}]}
+  - name: compileError/second_resource_only
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: g, version: v1, kind: Good}
+            metrics: [{name: m, each: {type: Gauge, gauge: {path: [spec, replicas]}}}]
+          - groupVersionKind: {group: g, version: v1, kind: Bad}
+            metrics: [{name: m, each: {type: Gauge}}]
+
+  # --- Test_compiledFamily_BaseLabels ---
+  - name: Test_compiledFamily_BaseLabels
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: myteam.io, version: v1, kind: Foo}
+            commonLabels: {hello: world}
+            labelsFromPath: {foo: [metadata, annotations, bar]}
+            metrics:
+              - name: base
+                each: {type: Gauge, gauge: {path: [spec, replicas]}}
+
+  # --- Test_fullName ---
+  - name: Test_fullName/defaults
+    objects: [cr]
+    config: |
+      spec: {resources: [{groupVersionKind: {group: apps, version: v1, kind: Deployment}, metrics: [{name: count, each: {type: Gauge, gauge: {path: [spec, replicas]}}}]}]}
+  - name: Test_fullName/no_prefix
+    objects: [cr]
+    config: |
+      spec: {resources: [{metricNamePrefix: "", groupVersionKind: {group: apps, version: v1, kind: Deployment}, metrics: [{name: count, each: {type: Gauge, gauge: {path: [spec, replicas]}}}]}]}
+  - name: Test_fullName/custom
+    objects: [cr]
+    config: |
+      spec: {resources: [{metricNamePrefix: bar_baz, groupVersionKind: {group: apps, version: v1, kind: Deployment}, metrics: [{name: count, each: {type: Gauge, gauge: {path: [spec, replicas]}}}]}]}
+  - name: Test_fullName/null_prefix
+    objects: [cr]
+    config: |
+      spec: {resources: [{metricNamePrefix: ~, groupVersionKind: {group: apps, version: v1, kind: Deployment}, metrics: [{name: count, each: {type: Gauge, gauge: {path: [spec, replicas]}}}]}]}
+
+  # --- Test_compile_doesNotShareCommonLabels ---
+  - name: Test_compile_doesNotShareCommonLabels
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: myteam.io, version: v1, kind: Foo}
+            commonLabels: {team: myteam}
+            metrics: &m
+              - name: foo
+                each: {type: Gauge, gauge: {path: [status]}}
+          - groupVersionKind: {group: myteam.io, version: v2, kind: Bar}
+            commonLabels: {team: myteam}
+            metrics: *m
+
+  # --- Test_generate_wildcardKeepsCommonLabels ---
+  - name: Test_generate_wildcardKeepsCommonLabels
+    objects: [keeps-common]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: myteam.io, version: v1, kind: Foo}
+            commonLabels: {team: common, env: common}
+            metrics:
+              - name: foo_info
+                each:
+                  type: Info
+                  info:
+                    labelsFromPath:
+                      "*": [metadata, labels]
+                      env: [metadata, labels, env]
+
+  # --- custom_resource_metrics_test.go: TestNewCustomResourceMetrics ---
+  - name: TestNewCustomResourceMetrics/dynamic_metric_type
+    objects: [cr, vpa]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: apps, version: v1, kind: Deployment}
+            labelsFromPath: {name: [metadata, name]}
+            commonLabels: {hello: world}
+            metrics:
+              - name: test_metrics
+                help: metrics for testing
+                each: {type: Info, info: {path: [metadata, annotations], labelFromKey: test}}
+  - name: TestNewCustomResourceMetrics/custom_prefix
+    objects: [cr, vpa]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: apps, version: v1, kind: Deployment}
+            labelsFromPath: {name: [metadata, name]}
+            commonLabels: {hello: world}
+            metricNamePrefix: apps_deployment
+            metrics:
+              - name: test_metrics
+                help: metrics for testing
+                each: {type: Info, info: {path: [metadata, annotations], labelFromKey: test}}
+
+  # --- Value conversions, label formatting, path operators ---
+  - name: values/gauges
+    objects: [values, cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: v.io, version: v1, kind: Values}
+            labelsFromPath: {name: [metadata, name]}
+            metrics:
+              - {name: ints, each: {type: Gauge, gauge: {path: [spec, ints], labelFromKey: k}}}
+              - {name: floats, each: {type: Gauge, gauge: {path: [spec, floats], labelFromKey: k}}}
+              - {name: strings, each: {type: Gauge, gauge: {path: [spec, strings], labelFromKey: k}}}
+              - {name: bools, each: {type: Gauge, gauge: {path: [spec, bools], labelFromKey: k}}}
+              - {name: nulls, each: {type: Gauge, gauge: {path: [spec, nulls], labelFromKey: k}}}
+              - {name: nulls_zero, each: {type: Gauge, gauge: {path: [spec, nulls], labelFromKey: k, nilIsZero: true}}}
+              - {name: nested, each: {type: Gauge, gauge: {path: [spec, nested], labelFromKey: k}}}
+              - {name: nested_arr, each: {type: Gauge, gauge: {path: [spec, nested, arr]}}}
+              - {name: nested_obj_value, each: {type: Gauge, gauge: {path: [spec, nested, m]}}}
+              - {name: list, each: {type: Gauge, gauge: {path: [status, list]}}}
+              - {name: list_zero, each: {type: Gauge, gauge: {path: [status, list], nilIsZero: true}}}
+              - {name: valuefrom_key, each: {type: Gauge, gauge: {path: [spec, ints], labelFromKey: k, valueFrom: [i1]}}}
+              - {name: valuefrom_key_null, each: {type: Gauge, gauge: {path: [spec, nulls], labelFromKey: k, valueFrom: [a]}}}
+              - {name: valuefrom_key_null_zero, each: {type: Gauge, gauge: {path: [spec, nulls], labelFromKey: k, valueFrom: [a], nilIsZero: true}}}
+              - {name: valuefrom_key_bad, each: {type: Gauge, gauge: {path: [spec, strings], labelFromKey: k, valueFrom: [word]}}}
+              - {name: valuefrom_key_zero, each: {type: Gauge, gauge: {path: [spec, strings], labelFromKey: k, valueFrom: [nokey], nilIsZero: true}}}
+              - {name: valuefrom_two, each: {type: Gauge, gauge: {path: [spec, nested], labelFromKey: k, valueFrom: [m, x]}}}
+              - {name: valuefrom_comma, each: {type: Gauge, gauge: {path: [spec, nested], labelFromKey: k, valueFrom: ["a,b"]}}}
+              - {name: valuefrom_empty_part, each: {type: Gauge, gauge: {path: [spec, ints], labelFromKey: k, valueFrom: [""]}}}
+              - {name: no_label_from_key, each: {type: Gauge, gauge: {path: [spec, ints]}}}
+              - {name: conditions, each: {type: Gauge, gauge: {path: [status, conditions], labelsFromPath: {type: [type], reason: [reason], whole: []}, valueFrom: [status]}}}
+              - {name: conditions_n, each: {type: Gauge, gauge: {path: [status, conditions], labelsFromPath: {type: [type]}, valueFrom: [n]}}}
+              - {name: lookup_str, each: {type: Gauge, gauge: {path: [status, conditions, "[type=Synced]", n]}}}
+              - {name: lookup_num, each: {type: Gauge, gauge: {path: [status, conditions, "[n=2]", n]}}}
+              - {name: lookup_num_str, each: {type: Gauge, gauge: {path: [status, conditions, "[n=3.0]", n]}}}
+              - {name: lookup_bool_word, each: {type: Info, info: {path: [status, conditions, "[status=true]"], labelsFromPath: {type: [type]}}}}
+              - {name: lookup_bool_t, each: {type: Info, info: {path: [status, conditions, "[status=t]"], labelsFromPath: {type: [type]}}}}
+              - {name: lookup_yes, each: {type: Info, info: {path: [status, conditions, "[status=yes]"], labelsFromPath: {type: [type]}}}}
+              - {name: lookup_none, each: {type: Info, info: {path: [status, conditions, "[type=None]"], labelsFromPath: {type: [type]}}}}
+              - {name: lookup_eq_in_value, each: {type: Info, info: {path: [status, conditions, "[type=a=b]"], labelsFromPath: {type: [type]}}}}
+              - {name: lookup_on_map, each: {type: Info, info: {path: [spec, "[a=b]"], labelsFromPath: {x: []}}}}
+              - {name: kv_match, each: {type: Info, info: {labelsFromPath: {phase: [status, "phase=Running"], nophase: [status, "phase=Other"], kv: [spec, m, "k=v"]}}}}
+              - {name: neg_index, each: {type: Info, info: {labelsFromPath: {last: [status, list, "-1"], first: [status, list, "-4"], oob: [status, list, "-5"], plus: [status, list, "+1"], word: [status, list, x]}}}}
+              - {name: index_on_scalar, each: {type: Info, info: {labelsFromPath: {x: [status, phase, "0"]}}}}
+              - {name: stateset_list, each: {type: StateSet, stateSet: {path: [status, conditions], labelName: s, valueFrom: [status], list: ["True", "False", "Unknown"], labelsFromPath: {type: [type]}}}}
+              - {name: stateset_label_override, each: {type: StateSet, stateSet: {path: [status], labelName: phase, valueFrom: [phase], list: [Running, Pending], labelsFromPath: {phase: [phase]}}}}
+              - {name: stateset_empty_list, each: {type: StateSet, stateSet: {path: [status, phase], labelName: phase}}}
+              - {name: info_list_scalars, each: {type: Info, info: {path: [status, list], labelsFromPath: {v: []}}}}
+              - {name: info_map_scalars, each: {type: Info, info: {path: [spec, ints], labelFromKey: key, labelsFromPath: {v: []}}}}
+              - {name: info_map_conflict, each: {type: Info, info: {path: [spec, ints], labelFromKey: i0, labelsFromPath: {i0: [i0]}}}}
+              - {name: info_whole, each: {type: Info, info: {labelsFromPath: {nested: [spec, nested], arr: [spec, nested, arr], empty: [spec, nested, empty], ea: [spec, nested, emptyarr]}}}}
+              - {name: info_map_empty_key, each: {type: Info, info: {path: [spec, m], labelFromKey: key}}}
+              - {name: gauge_map_empty_key, each: {type: Gauge, gauge: {path: [spec, m], labelFromKey: key}}}
+              - {name: timestamp_label, each: {type: Info, info: {labelsFromPath: {f: [spec, floats, f2], g: [spec, floats, f4], h: [spec, floats, f3], i: [spec, ints, big], j: [spec, ints, huge], k: [spec, floats, f8], l: [spec, floats, f9]}}}}
+  - name: values/labels
+    objects: [weird-labels, values]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: w.io, version: v1, kind: Weird}
+            commonLabels: {"x-y": "common", "customresource_kind": "Overridden?"}
+            labelsFromPath:
+              name: [metadata, name]
+              "weird-name": [metadata, name]
+              "*": [metadata, labels]
+            metrics:
+              - name: weird_info
+                help: "Help with \\ backslash\nand newline"
+                each: {type: Info, info: {labelsFromPath: {"__a": [metadata, annotations], "ann_*": [metadata, annotations], "**": [metadata, annotations], "a.b": [metadata, name]}}}
+              - name: gen_common
+                commonLabels: {customresource_group: overridden, extra: "1"}
+                each: {type: Gauge, gauge: {path: [spec, m], labelFromKey: key}}
+              - name: label_from_key_vs_path
+                each: {type: Gauge, gauge: {path: [spec, m], labelFromKey: name, labelsFromPath: {name: [metadata, name]}}}
+
+  # --- yaml.v3 decoding quirks ---
+  - name: yaml/scalars_into_strings
+    objects: [cr]
+    config: |
+      # comment before the document
+      kind: CustomResourceStateMetrics
+      unknownTopLevel: 1
+      spec:
+        unknownSpec: [1]
+        resources:
+          - ~
+          - groupVersionKind:
+              group: myteam.io
+              version: 1.50
+              kind: 0x10
+            commonLabels: {a: 1.50, b: true, c: ~, d: "", e: 0o7, 5: five}
+            errorLogV: 2.9
+            resourcePlural: ~
+            metrics:
+              - ~
+              - name: 007
+                help: 1e3
+                errorLogV: 0
+                each:
+                  type: GAUGE
+                  gauge:
+                    path: [spec, order, 0, ~, value]
+                    nilIsZero: yes
+                    labelFromKey: ~
+                    unknownField: x
+              - name: s
+                each:
+                  type: StateSet
+                  stateSet: {path: [spec, replicas], labelName: 1, list: [1, 1.0, true, ~]}
+              - name: null_path
+                labelsFromPath: {n: ~, m: [metadata, name]}
+                each: {type: Info, info: {labelsFromPath: {nil: ~}}}
+  - name: yaml/multi_document
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: first, version: v1, kind: Doc}
+            metrics: [{name: one, each: {type: Gauge, gauge: {path: [spec, replicas]}}}]
+      ---
+      spec:
+        resources:
+          - groupVersionKind: {group: second, version: v1, kind: Doc}
+            metrics: [{name: two, each: {type: Gauge, gauge: {path: [spec, replicas]}}}]
+  - name: yaml/explicit_start
+    objects: [cr]
+    config: |
+      %YAML 1.2
+      ---
+      spec:
+        resources:
+          - groupVersionKind: {group: first, version: v1, kind: Doc}
+            metrics: [{name: one, each: {type: gauge, gauge: {path: [spec, replicas]}}}]
+  - name: yaml/empty
+    config: ""
+  - name: yaml/comment_only
+    config: |
+      # nothing here
+  - name: yaml/empty_document
+    config: |
+      ---
+  - name: yaml/null_document
+    config: |
+      ~
+  - name: yaml/empty_doc_then_doc
+    config: |
+      ---
+      ---
+      spec: {resources: [{groupVersionKind: {group: a, version: v1, kind: K}, metrics: [{name: m, each: {type: Gauge, gauge: {}}}]}]}
+  - name: yaml/syntax_error
+    config: |
+      spec: {resources: [
+  - name: yaml/syntax_error_block
+    config: |
+      kind: CustomResourceStateMetrics
+      spec:
+        resources:
+          - groupVersionKind:
+              group: a
+             version: v1
+  - name: yaml/scanner_error_mapping_values
+    config: |
+      kind: CustomResourceStateMetrics
+      spec:
+        resources: a: b
+  - name: yaml/scanner_error_unclosed_quote
+    config: |
+      kind: CustomResourceStateMetrics
+      spec:
+        resources:
+          - groupVersionKind: {group: "a}
+  - name: yaml/scanner_error_tab
+    config: "spec:\n\tresources: []\n"
+  - name: yaml/incompatible_directive_late
+    config: |
+      # a comment
+      %YAML 1.2
+      ---
+      spec: {}
+  - name: yaml/directive_1_1
+    objects: [cr]
+    config: |
+      %YAML 1.1
+      ---
+      spec: {resources: [{groupVersionKind: {group: a, version: v1, kind: K}, metrics: [{name: m, each: {type: Gauge, gauge: {path: [spec, replicas]}}}]}]}
+  - name: yaml/type_error_block_long_value
+    config: |
+      kind: CustomResourceStateMetrics
+      spec:
+        resources:
+          - groupVersionKind:
+              group: a
+              version: v1
+              kind: K
+            metrics:
+              - name: m
+                each:
+                  type: Gauge
+                  gauge:
+                    path: a-very-long-path-value
+  - name: yaml/type_error_seq_into_string
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: [a], version: v1, kind: K}
+  - name: yaml/type_error_map_into_list_elem
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: a, version: v1, kind: K}
+            labelsFromPath:
+              x: [{a: 1}]
+  - name: yaml/type_error_common_label_value
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: a, version: v1, kind: K}
+            commonLabels:
+              x.y: [1]
+  - name: yaml/type_error_int_errorlogv_overflow
+    config: |
+      spec: {resources: [{groupVersionKind: {group: a, version: v1, kind: K}, errorLogV: 99999999999}]}
+  - name: yaml/type_error_scalar_resources
+    config: |
+      spec: {resources: 5}
+  - name: yaml/type_error_scalar_metric
+    config: |
+      spec: {resources: [{groupVersionKind: {group: a, version: v1, kind: K}, metrics: [true]}]}
+  - name: yaml/two_type_errors
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: a, version: v1, kind: K}
+            errorLogV: x
+            metrics: [{name: m, each: {type: Gauge, gauge: {path: p}}}]
+  - name: yaml/merge_key
+    objects: [cr]
+    config: |
+      base: &base
+        type: Gauge
+        gauge: {path: [spec, replicas]}
+      spec:
+        resources:
+          - groupVersionKind: {group: a, version: v1, kind: K}
+            metrics:
+              - name: merged
+                each:
+                  <<: *base
+  - name: yaml/anchors
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: &gvk {group: a, version: v1, kind: K}
+            labelsFromPath: &lfp {name: [metadata, name]}
+            metrics:
+              - name: anchored
+                labelsFromPath: *lfp
+                each: {type: Gauge, gauge: {path: &p [spec, replicas]}}
+              - name: anchored2
+                each: {type: Gauge, gauge: {path: *p}}
+  - name: yaml/type_error_path
+    config: |
+      spec: {resources: [{groupVersionKind: {group: a, version: v1, kind: K}, metrics: [{name: m, each: {type: Gauge, gauge: {path: status}}}]}]}
+  - name: yaml/type_error_errorlogv
+    config: |
+      spec: {resources: [{groupVersionKind: {group: a, version: v1, kind: K}, errorLogV: "5", metrics: []}]}
+  - name: yaml/type_error_bool
+    config: |
+      spec: {resources: [{groupVersionKind: {group: a, version: v1, kind: K}, metrics: [{name: m, each: {type: Gauge, gauge: {nilIsZero: "true"}}}]}]}
+  - name: yaml/type_error_spec_seq
+    config: |
+      spec: [1, 2]
+  - name: yaml/top_level_seq
+    config: |
+      - a
+  - name: yaml/duplicate_key
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: a, version: v1, kind: K}
+            commonLabels: {a: "1", a: "2"}
+  - name: yaml/empty_resources
+    config: |
+      kind: CustomResourceStateMetrics
+      spec:
+        resources: []
+  - name: yaml/no_metrics
+    objects: [cr]
+    config: |
+      spec: {resources: [{groupVersionKind: {group: a, version: v1, kind: K}}]}
+  - name: wildcard_gvk
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - groupVersionKind: {group: myteam.io, version: "*", kind: "*"}
+            metrics:
+              - name: myobject_info
+                help: Foo Bar Baz
+                each: {type: Info, info: {path: [metadata], labelsFromPath: {object: [name], namespace: [namespace]}}}
+  - name: plurals
+    objects: [cr]
+    config: |
+      spec:
+        resources:
+          - {groupVersionKind: {group: a, version: v1, kind: Index}, metrics: [{name: m, each: {type: Gauge, gauge: {path: [spec, replicas]}}}]}
+          - {groupVersionKind: {group: a, version: v1, kind: Index}, resourcePlural: indexes, metrics: [{name: m, each: {type: Gauge, gauge: {path: [spec, replicas]}}}]}
+          - {groupVersionKind: {group: a, version: v1, kind: HTTPRoute}, metricNamePrefix: "", metrics: []}
+          - {groupVersionKind: {group: a, version: v1, kind: ""}, metrics: []}
+
+tofloat:
+  - 'null'
+  - 'true'
+  - 'false'
+  - '0'
+  - '1'
+  - '-1'
+  - '42'
+  - '9007199254740993'
+  - '18446744073709551615'
+  - '1.5'
+  - '1e300'
+  - '-0.0'
+  - '{}'
+  - '{"a":1}'
+  - '[]'
+  - '[1,"a",null]'
+  - '""'
+  - '"true"'
+  - '"TRUE"'
+  - '"True"'
+  - '"yes"'
+  - '"YES"'
+  - '"y"'
+  - '"false"'
+  - '"no"'
+  - '"unknown"'
+  - '"UNKNOWN"'
+  - '"on"'
+  - '"2022-06-28T00:00:00Z"'
+  - '"2022-06-28T00:00:00.999999999Z"'
+  - '"2022-06-28T00:00:00,5Z"'
+  - '"2022-06-28T00:00:00+02:00"'
+  - '"2022-06-28T00:00:00-07:30"'
+  - '"2022-06-28T00:00:00+24:00"'
+  - '"2022-06-28T00:00:00+23:60"'
+  - '"2022-06-28T00:00:00+25:00"'
+  - '"2022-06-28T0:00:00Z"'
+  - '"2022-06-28T24:00:00Z"'
+  - '"2022-06-28T23:59:60Z"'
+  - '"2022-6-28T00:00:00Z"'
+  - '"2022-06-28t00:00:00Z"'
+  - '"2022-06-28T00:00:00z"'
+  - '"2022-06-28T00:00:00"'
+  - '"2022-06-28T00:00:00Z "'
+  - '"2020-02-29T12:00:00Z"'
+  - '"2021-02-29T12:00:00Z"'
+  - '"0000-01-01T00:00:00Z"'
+  - '"9999-12-31T23:59:59Z"'
+  - '"1969-12-31T23:59:59Z"'
+  - '"2022-06-28T00:00:00.Z"'
+  - '"2022-06-28T00:00:00+0200"'
+  - '"250m"'
+  - '"5Gi"'
+  - '"1.5"'
+  - '"1e3"'
+  - '"1E3"'
+  - '"1e"'
+  - '"12k"'
+  - '"1Ki"'
+  - '"-1Mi"'
+  - '"+2"'
+  - '".5"'
+  - '"5."'
+  - '"0.1m"'
+  - '"1n"'
+  - '"1u"'
+  - '"100000000000000000000000000000000"'
+  - '"1e400"'
+  - '"1e-400"'
+  - '"9223372036854775807"'
+  - '"28%"'
+  - '"0%"'
+  - '"100%"'
+  - '"5.5%"'
+  - '"%"'
+  - '"-5%"'
+  - '"5%%"'
+  - '"inf"'
+  - '"+Inf"'
+  - '"-infinity"'
+  - '"NaN"'
+  - '"-nan"'
+  - '"0x1p-2"'
+  - '"0x1.8p1"'
+  - '"0X10P0"'
+  - '"0x_1p0"'
+  - '"0x1"'
+  - '"0x1p1024"'
+  - '"1_000"'
+  - '"0b101"'
+  - '" 1"'
+  - '"1 "'
+  - '"abc"'
+  - '"Ready"'
+  - '"1e3Gi"'
+  - '"1.2.3"'
+
+flect:
+  - Foo
+  - Ingress
+  - Policy
+  - NetworkPolicy
+  - Status
+  - Proxy
+  - Index
+  - Matrix
+  - Quota
+  - ResourceQuota
+  - Endpoints
+  - EndpointSlice
+  - Person
+  - Child
+  - Gateway
+  - GatewayClass
+  - HTTPRoute
+  - GRPCRoute
+  - TCPRoute
+  - APIService
+  - VirtualService
+  - Cluster
+  - ClusterIssuer
+  - Certificate
+  - Issuer
+  - Registry
+  - Canary
+  - GitRepository
+  - OCIRepository
+  - EventBus
+  - Money
+  - News
+  - Information
+  - Equipment
+  - Series
+  - Fish
+  - Sheep
+  - Media
+  - Medium
+  - Datum
+  - Data
+  - Premium
+  - Minimum
+  - Spectrum
+  - Forum
+  - Checksum
+  - Criterion
+  - Octopus
+  - Alias
+  - Base
+  - Case
+  - Phase
+  - Lease
+  - Cache
+  - policy
+  - POLICY
+  - STATUS
+  - ingress
+  - people
+  - Children
+  - Policies
+  - Users
+  - SomeKind2
+  - Kind_v2
+  - Ox
+  - Die
+  - Toe
+  - Use
+  - Axis
+  - Louse
+  - Tooth
+  - Goose
+  - Box
+  - Prefix
+  - Vertex
+  - Bus
+  - Address
+  - Prometheus
+  - Alertmanager
+  - ServiceMonitor
+  - Database
+  - Analysis
+  - AnalysisRun
+  - Redis
+  - Postgres
+  - Thanos
+  - Elasticsearch
+  - MySQL
+  - DNS
+  - ID
+  - Id
+  - DNSEndpoint
+  - Video
+  - Repo
+  - Photo
+  - Radio
+  - Zoo
+  - Echo
+  - Safe
+  - Cafe
+  - Leaf
+  - Life
+  - Wolf
+  - Golf
+  - Belief
+  - Chief
+  - Price
+  - Slice
+  - Postman
+  - Human
+  - Bluetooth
+  - Salesperson
+  - Warehouse
+  - Mouse
+  - Quiz
+  - Waltz
+  - Radius
+  - Corpus
+  - Schema
+  - Metadata
+  - ""
+  - " "
+  - "Foo "
+  - " Foo"
+  - "-"
+  - "foo_bar"
+  - "foo-bar"
+  - "foo bar"
+  - "foo/bar"
+  - "foo:bar"
+  - "Foo.Bar"
+  - "Foo$Bar"
+  - "Foo+Index"
+  - "Foo`Bar"
+  - "HTTPSProxy"
+  - "APIServer"
+  - "UUID"
+  - "uuid"
+  - "WiFi"
+  - "WIFI"
+  - "JSONPath"
+  - "xmlHTTPRequest"
+  - "Pod"
+  - "Node"
+  - "ConfigMap"
+  - "Secret"
+  - "Deployment"
+  - "DaemonSet"
+  - "StatefulSet"
+  - "Job"
+  - "CronJob"
+  - "HorizontalPodAutoscaler"
+  - "PersistentVolumeClaim"
+  - "StorageClass"
+  - "VolumeAttachment"
+  - "CustomResourceDefinition"
+  - "Application"
+  - "AppProject"
+  - "Rollout"
+  - "Kustomization"
+  - "HelmRelease"
+  - "HelmRepository"
+  - "Bucket"
+  - "Workflow"
+  - "Sensor"
+  - "EventSource"
+  - "PodMonitor"
+  - "PrometheusRule"
+  - "VerticalPodAutoscaler"
+  - "Foo"
+  - "Bar"
+  - "Ünïcode"
+  - "Straße"
+  - "Café"
+  - "Ａｂｃ"
+  - "ABCs"
+  - "Bus"
+  - "Buses"
+  - "Glass"
+  - "Fez"
+  - "Quiz"
+  - "Buzz"
+  - "Box"
+  - "Tomato"
+  - "Studio"
+  - "Halo"
+  - "Piano"
+  - "Kangaroo"
+  - "Stadium"
+  - "Medium"
+  - "Agenda"
+  - "Formula"
+  - "Nebula"
+  - "Polyhedron"
+  - "Thesis"
+  - "Diagnosis"
+  - "Synopsis"
+  - "Movie"
+  - "Cookie"
+  - "Shoe"
+  - "Hive"
+  - "Dwarf"
+  - "Thief"
+  - "Knife"
+  - "Calf"
+  - "Day"
+  - "Key"
+  - "Toy"
+  - "Guy"
+  - "Soliloquy"
+  - "Bureau"
+  - "Plateau"

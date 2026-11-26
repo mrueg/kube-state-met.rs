@@ -1150,6 +1150,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ksm-crs"
+version = "2.19.0"
+dependencies = [
+ "ksm-core",
+ "ksm-stores",
+ "serde",
+ "serde_json",
+ "serde_yaml_ng",
+ "tracing",
+]
+
+[[package]]
 name = "ksm-stores"
 version = "2.19.0"
 dependencies = [
