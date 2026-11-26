@@ -5,6 +5,7 @@
 mod builder;
 mod client;
 mod crs;
+mod discovery;
 mod handler;
 mod logging;
 mod options;
@@ -12,6 +13,7 @@ mod process;
 mod server;
 mod telemetry;
 mod watch;
+mod watch_dynamic;
 
 use std::process::ExitCode;
 use std::sync::Arc;

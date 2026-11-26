@@ -20,8 +20,12 @@ use kube::runtime::watcher;
 use md5::{Digest, Md5};
 use tokio_util::sync::CancellationToken;
 
-use crate::builder::Builder;
+use std::collections::BTreeMap;
+
+use crate::builder::{Builder, CustomResourceStore, GvkStop};
 use crate::client::{VERSION, create_client, go_arch};
+use crate::crs::StoreConfigurer;
+use crate::discovery::{CrDiscoverer, CrdCounters};
 use crate::handler::{MetricsHandler, plain_error};
 use crate::options::{Options, merge_field_selectors};
 use crate::telemetry::{
@@ -66,10 +70,6 @@ struct ConfigMetrics {
 }
 
 /// Self-metrics registered at the start of every run.
-#[expect(
-    dead_code,
-    reason = "the CRD counters are fed by custom resource discovery (wave 4)"
-)]
 pub struct SelfMetrics {
     pub registry: Registry,
     pub durations: HistogramVec,
@@ -156,8 +156,28 @@ impl SelfMetrics {
     }
 }
 
+/// The text of an `os.PathError` cause as Go prints it.
+pub fn go_io_error(e: &std::io::Error) -> String {
+    use std::io::ErrorKind;
+    match e.kind() {
+        ErrorKind::NotFound => "no such file or directory".to_owned(),
+        ErrorKind::PermissionDenied => "permission denied".to_owned(),
+        ErrorKind::IsADirectory => "is a directory".to_owned(),
+        ErrorKind::NotADirectory => "not a directory".to_owned(),
+        _ => {
+            let s = e.to_string();
+            let s = s.split(" (os error").next().unwrap_or(&s).to_owned();
+            let mut c = s.chars();
+            match c.next() {
+                Some(f) => f.to_lowercase().chain(c).collect(),
+                None => s,
+            }
+        }
+    }
+}
+
 /// Go's `filepath.Clean` for the label value (enough for config paths).
-fn clean_path(p: &str) -> String {
+pub fn clean_path(p: &str) -> String {
     let abs = p.starts_with('/');
     let mut parts: Vec<&str> = Vec::new();
     for seg in p.split('/') {
@@ -221,9 +241,39 @@ pub async fn run(
         .await
         .map_err(|e| format!("failed to build config from flags: {e}"))?;
 
-    if !opts.custom_resource_config.is_empty() || !opts.custom_resource_config_file.is_empty() {
-        crate::crs::check_supported(&opts)?;
+    // Loading custom resource state configuration from cli argument or config file.
+    let crs_config = crate::crs::resolve_config(&opts)?;
+
+    if !opts.custom_resource_config_file.is_empty() {
+        let file = clean_path(&opts.custom_resource_config_file);
+        match std::fs::read(&file) {
+            Err(e) => {
+                tracing::error!(error = %e, file = %opts.custom_resource_config_file, "encountered error while processing the file")
+            }
+            Ok(bytes) => {
+                let t = "customresourceconfig";
+                m.config.success.set(&[t, &file], 1.0);
+                m.config.success_time.set(&[t, &file], unix_now());
+                m.config
+                    .hash
+                    .set(&[t, &file], md5_hash_as_metric_value(&bytes));
+            }
+        }
     }
+
+    let discoverer = crs_config.as_ref().map(|_| {
+        Arc::new(CrDiscoverer::new(CrdCounters {
+            add: m.crd_add.clone(),
+            update: m.crd_update.clone(),
+            delete: m.crd_delete.clone(),
+            cache: m.crd_cache.clone(),
+        }))
+    });
+    let gvk_stop: Option<GvkStop> = discoverer.as_ref().map(|d| {
+        let d = Arc::clone(d);
+        let f: GvkStop = Arc::new(move |gvk: &str| d.stop_for(gvk).map(|h| h.token));
+        f
+    });
 
     let mut builder = Builder {
         enabled: Vec::new(),
@@ -231,6 +281,8 @@ pub async fn run(
         filter: Arc::new(CompositeFilter::default()),
         allow_annotations: Default::default(),
         allow_labels: Default::default(),
+        custom: Default::default(),
+        gvk_stop,
     };
     let resources: Vec<String> = if opts.resources.is_empty() && !opts.custom_resources_only {
         tracing::info!("Used default resources");
@@ -304,8 +356,23 @@ pub async fn run(
         metrics: m.sharding.clone(),
         current: parking_lot::Mutex::new(None),
         parent: stores_cancel.clone(),
+        build_lock: parking_lot::Mutex::new(()),
     };
     let shard_ctl = Arc::new(shard_ctl);
+
+    // A missing CRS config holds off on all custom resource operations.
+    if let (Some(text), Some(discoverer)) = (crs_config, discoverer) {
+        // The CRD discovery feeding the stores stops with them.
+        let resources = ksm_crs::from_config(&text)?;
+        discoverer.start(client.clone(), stores_cancel.clone());
+        let configurer: Arc<dyn StoreConfigurer> = shard_ctl.clone();
+        crate::crs::poll_for_cache_updates(
+            resources,
+            discoverer,
+            configurer,
+            stores_cancel.clone(),
+        );
+    }
 
     let metrics_app = metrics_router(Arc::clone(&handler), m.durations.clone(), client.clone());
     let telemetry_app = telemetry_router(m.registry.clone());
@@ -392,6 +459,21 @@ struct ShardControl {
     metrics: ShardingMetrics,
     current: parking_lot::Mutex<Option<(i32, i64, CancellationToken)>>,
     parent: CancellationToken,
+    /// Serializes rebuilds (Go: the metrics handler's mutex).
+    build_lock: parking_lot::Mutex<()>,
+}
+
+impl StoreConfigurer for ShardControl {
+    /// `ConfigureStore` with `ReplaceEnabledCustomResources`: rebuilds the
+    /// writers unless autosharding has not configured them yet.
+    fn replace_custom_resources(&self, stores: BTreeMap<String, Arc<CustomResourceStore>>) {
+        let _g = self.build_lock.lock();
+        *self.builder.custom.write() = stores;
+        let cur = self.current.lock().as_ref().map(|(s, t, _)| (*s, *t));
+        if let Some((shard, total)) = cur {
+            self.build_writers(shard, total);
+        }
+    }
 }
 
 impl ShardControl {
@@ -409,6 +491,12 @@ impl ShardControl {
             .ordinal
             .set(&[&shard.to_string()], f64::from(shard));
         self.metrics.total.set(&[], total as f64);
+        let _g = self.build_lock.lock();
+        self.build_writers(shard, total);
+    }
+
+    /// `buildWritersLocked`: stops the old watchers and builds new writers.
+    fn build_writers(&self, shard: i32, total: i64) {
         let token = self.parent.child_token();
         let writers = {
             let mut s = self.settings.lock();

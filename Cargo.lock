@@ -1285,6 +1285,7 @@ dependencies = [
  "http",
  "k8s-openapi",
  "ksm-core",
+ "ksm-crs",
  "ksm-stores",
  "kube",
  "md-5",

@@ -1,0 +1,26 @@
+kind: Application
+apiVersion: example.com/v1
+metadata:
+  name: app-one
+  namespace: default
+spec:
+  appName: one
+  replicas: 2
+---
+kind: Application
+apiVersion: example.com/v1alpha1
+metadata:
+  name: app-old
+  namespace: default
+spec:
+  appName: old
+  replicas: 1
+---
+kind: Widget
+apiVersion: example.com/v1
+metadata:
+  name: widget-a
+  labels:
+    color: blue
+spec:
+  size: 7

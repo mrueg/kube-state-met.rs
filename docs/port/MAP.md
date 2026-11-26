@@ -24,7 +24,7 @@ Generated plan: [analyze-whole-app.md](analyze-whole-app.md). Research: [researc
 | 1 | `internal/store/utils.go`, quantity, field selectors | `ksm-core::util`, `::quantity`, `::fields` | done (goldens: labels 911, float 3203, quantity 813) |
 | 2 | `pkg/metricshandler`, `internal/store/builder.go`, `pkg/app` (server, telemetry) | `crates/ksm` | claimed by main session 2026-11-26 |
 | 3 | `internal/store/*` (40 stores) | `ksm-stores` | done: 267/267 store goldens match Go |
-| 4 | `pkg/customresourcestate`, `internal/discovery` | `ksm-crs` | open |
+| 4 | `pkg/customresourcestate`, `internal/discovery` | `ksm-crs`, `ksm::{crs,discovery,watch_dynamic}` | done: CRD discovery, wildcard GVKs, CR watchers; `compare.py --custom-resource-state-config-file=testdata/crs-config.yaml` equal |
 | 4 | auth filter, hot reload (`internal/wrapper.go`), TLS web config | `crates/ksm` | open |
 | 5 | lift, benchmarks report, container image | | open |
 

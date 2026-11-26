@@ -13,6 +13,7 @@ path = "src/main.rs"
 [dependencies]
 ksm-core.workspace = true
 ksm-stores.workspace = true
+ksm-crs.workspace = true
 k8s-openapi.workspace = true
 kube.workspace = true
 tokio.workspace = true
