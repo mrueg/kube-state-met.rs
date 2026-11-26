@@ -1,0 +1,65 @@
+# Architecture decisions: kube-state-met.rs
+
+Port of kube-state-metrics (Go, upstream commit `46cd52ff`, checkout in `../kube-state-metrics`)
+to Rust. The Go checkout is reference only and is never modified.
+
+## ADR-001: Project layout
+Status: accepted (2026-11-26)
+Context: The user wants the Rust project in its own folder, `kube-state-met.rs`, with the Go code kept elsewhere as reference.
+Decision: A cargo workspace at the repository root. Port notes (`MAP.md`, `DECISIONS.md`, `GLOSSARY.md`, `HANDOFF.md`, `research/`) live in `docs/port/`. Files the rust-anything tool owns (`rust/app-cases/`, `rust/RULES.md`) live in `rust/`, because the tool writes there.
+Consequences: Run `rust-anything app ...` with this repository as `REPO`, giving the Go binary as the command.
+
+## ADR-002: Scope: everything, in waves
+Status: accepted (2026-11-26)
+Context: kube-state-metrics has ~40 resource stores, custom resource state (CRS) metrics, sharding (static and automatic), hot-reload of config and kubeconfig, TLS web config, an auth filter and gzip.
+Decision: Port all of it, in waves (see MAP.md). `--auto-gomemlimit`, `--auto-gomemlimit-ratio` and `--auto-gomemlimit-refresh-interval` are Go-runtime only: they are accepted and validated as before, and otherwise do nothing.
+Consequences: The klog flags (`-v`, `--vmodule`, `--log_dir`, ...) are accepted too. `-v` maps to the `tracing` level; the rest are no-ops.
+
+## ADR-003: Equivalence bar
+Status: accepted (2026-11-26)
+Context: Go iterates `sync.Map` and Go maps in random order, so the original orders lines within a metric family differently from scrape to scrape.
+Decision: On the metrics port (`/metrics`), the bar is: the same HELP/TYPE lines, the same family order, and inside each family the same multiset of sample lines, in any order. Label order inside a line must match exactly. Float formatting must match Go's `strconv.FormatFloat(f, 'g', -1, 64)` byte for byte (`1.501569018e+09`). Exit codes and the errors printed for bad flags and config must match. Log lines do not need to match.
+Consequences: Replay sorts sample lines within each family before comparing.
+
+## ADR-004: Compatibility surface
+Status: accepted (2026-11-26)
+Decision: Keep every CLI flag with its exact spelling and default (help text included), the `--config` YAML schema, the CRS config schema, the routes `/metrics`, `/healthz`, `/livez`, `/readyz` (telemetry) and `/`, the `resources=` / `exclude_resources=` query parameters, OpenMetrics content negotiation, gzip, and the `--tls-config` web-config file format (exporter-toolkit).
+
+## ADR-005: Sharding stays hash-compatible
+Status: accepted (2026-11-26)
+Decision: Shard assignment is `jump(fnv64a(uid), total_shards) == shard`, exactly as in Go. Automatic sharding through the StatefulSet ordinal works as before.
+Consequences: Go and Rust replicas can be mixed during a rollout. A test pins Go's hash values.
+
+## ADR-006: Core libraries
+Status: accepted (2026-11-26)
+Decision: `kube` 5.x (client, config, `kube::runtime::watcher` in place of informers and reflectors), `k8s-openapi` 0.29 with feature `v1_37`, `tokio`, `axum`/`hyper` for HTTP, `rustls` for TLS, `clap` for flags, `fancy-regex` for the ECMAScript allow/deny lists (`regexp2` in Go), `regex` for opt-in lists and label wildcards (Go `regexp` is RE2), and a hand-written text exposition writer, as in Go. Small Go dependencies are ported in-tree: jump hash, FNV-64a, `resource.Quantity`, field selectors, label-name sanitizing.
+Consequences: Types k8s-openapi lacks get their own serde structs.
+
+## ADR-007: Ground truth
+Status: accepted (2026-11-26)
+Context: kube-state-metrics needs an API server, and a real cluster's state changes all the time (controllers, leases, kubelet status), so it can't be recorded deterministically.
+Decision: Three layers.
+1. **Store goldens**: a patched scratch copy of the Go store tests dumps every test object (JSON round-tripped, as the API server would deliver it), its allow lists, the headers and Go's own output to `testdata/golden/stores/*.jsonl`. Rust tests regenerate the output and compare by ADR-003. The same kind of Go harness records leaf functions (float formatting, label sanitizing, quantities, regex matching, field selectors, jump hash).
+2. **App cases**: `tools/fake-apiserver` (Rust) serves fixed fixtures (list, watch, WatchList initial events, `/version`, discovery). `rust-anything app record --http` runs the Go binary against it and stores the HTTP cases in `rust/app-cases/http/`; `app replay` holds every build to them.
+3. **Smoke**: the upstream e2e manifests on a kind cluster, comparing scrapes of Go and Rust side by side (not byte goldens).
+Consequences: rust-anything's per-unit `bridge`/`record` (cgo) isn't used: the units take Kubernetes objects, not plain values. The Go harness covers that role, and the HTTP replay covers the whole app.
+
+## ADR-008: Benchmarks are a deliverable
+Status: accepted (2026-11-26)
+Context: The user asked for benchmarks to be available.
+Decision: (a) `criterion` benches in the workspace for exposition writing, per-store metric generation (pods, nodes, deployments...) and label sanitizing. (b) `bench/` harness: a fake API server generating N objects (scales 1k / 10k / 50k pods plus a mix of resources), Go and Rust binaries run against the same fixtures, measuring time to first full scrape (sync), scrape latency p50/p99 and scrape throughput, peak and steady RSS, and CPU time. The results go to `bench/RESULTS.md`, regenerated by `bench/run.sh`.
+
+## ADR-009: Targets, checkpoints, cutover
+Status: accepted (2026-11-26)
+Decision: linux amd64 and arm64; distroless static container image; MSRV = current stable (1.100). Stop for the user's go-ahead after each wave. Cutover runs Rust beside Go (`app shadow` or comparing scrapes); the Go original stays as reference until the user says otherwise.
+
+## ADR-010: Telemetry port content
+Status: accepted (2026-11-26)
+Context: The Go telemetry registry includes `go_*` runtime metrics (GC, goroutines, memstats) that can't exist in Rust.
+Decision: Every `kube_state_metrics_*` and `http_request_duration_seconds` family matches. `process_*` metrics are kept (procfs). `go_*` metrics are dropped. `kube_state_metrics_build_info` keeps its labels (`client_go_version` reports the kube-rs version).
+Consequences: Dashboards that read `go_*` from kube-state-metrics lose those series.
+
+## ADR-011: Watch semantics on kube-rs
+Status: accepted (2026-11-26)
+Decision: One `kube::runtime::watcher` per store (per namespace, as in Go). `Init`/`InitApply`/`InitDone` map to `MetricsStore::replace` (applied once on `InitDone`, keeping the same "delete the missing, then upsert" order), `Apply` to `add`, and `Delete` to `delete`. Sharding filters objects before they reach the store. `--use-apiserver-cache` sets `resourceVersion=0` on lists. `--object-limit` sets the list page size and the store's object limit. Requests are JSON, not protobuf.
+Consequences: List and watch counters on the telemetry port count kube-rs list/watch calls; their numbers may differ from client-go's after errors (a log-level difference, not a metrics-port one).

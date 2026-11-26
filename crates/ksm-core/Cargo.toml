@@ -1,0 +1,19 @@
+[package]
+name = "ksm-core"
+description = "Core of kube-state-metrics in Rust: metric text format, generators, stores, filters, sharding"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+parking_lot.workspace = true
+regex.workspace = true
+fancy-regex.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+serde = { workspace = true }
+
+[lints]
+workspace = true
