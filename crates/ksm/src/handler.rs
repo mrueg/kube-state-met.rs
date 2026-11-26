@@ -156,7 +156,6 @@ impl MetricsHandler {
         *self.writers.write() = Some(Arc::new(writers));
     }
 
-
     /// Serves one scrape.
     pub async fn serve(self: Arc<Self>, query: Option<String>, headers: HeaderMap) -> Response {
         let writers = self.writers.read().clone();

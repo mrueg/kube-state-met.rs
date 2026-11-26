@@ -66,7 +66,10 @@ struct ConfigMetrics {
 }
 
 /// Self-metrics registered at the start of every run.
-#[expect(dead_code, reason = "the CRD counters are fed by custom resource discovery (wave 4)")]
+#[expect(
+    dead_code,
+    reason = "the CRD counters are fed by custom resource discovery (wave 4)"
+)]
 pub struct SelfMetrics {
     pub registry: Registry,
     pub durations: HistogramVec,
@@ -629,7 +632,6 @@ fn telemetry_router(registry: Registry) -> Router {
         .route("/readyz", axum::routing::any(readyz))
         .fallback(|req: Request| fallback(req, include_str!("landing/telemetry.html")))
 }
-
 
 #[cfg(test)]
 mod tests {
