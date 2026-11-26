@@ -10,7 +10,13 @@
 //! ```text
 //! fake-apiserver --listen 127.0.0.1:6443 --fixtures testdata/fixtures [--generate pods=10000,nodes=100]
 //!                [--kubeconfig-out /tmp/kubeconfig]
+//!                [--auth-token TOKEN=USER[,GROUP...]]... [--auth-allow USER:VERB:PATH]...
 //! ```
+//!
+//! TokenReview and SubjectAccessReview (POST) answer from `--auth-token` and
+//! `--auth-allow` (`*` matches any verb or path): an unknown token is not
+//! authenticated, a token `error` gets `status.error`, a user `deny-*` gets
+//! `denied: true`, a user `both` gets `allowed` and `denied`.
 
 mod generate;
 
@@ -224,6 +230,10 @@ struct Cluster {
     objects: BTreeMap<(String, String), Vec<Value>>,
     resource_version: u64,
     git_version: String,
+    /// token → (user, groups).
+    tokens: BTreeMap<String, (String, Vec<String>)>,
+    /// (user, verb, path) allowed.
+    allow: Vec<(String, String, String)>,
 }
 
 type Shared = Arc<Cluster>;
@@ -248,6 +258,8 @@ impl Cluster {
             objects: BTreeMap::new(),
             resource_version: 1000,
             git_version,
+            tokens: BTreeMap::new(),
+            allow: Vec::new(),
         }
     }
 
@@ -559,6 +571,50 @@ async fn object(
     }
 }
 
+/// TokenReview / SubjectAccessReview from the `--auth-*` flags.
+fn review(c: &Cluster, group: &str, resource: &str, body: &str) -> Response {
+    let Ok(mut req) = serde_json::from_str::<Value>(body) else {
+        return status(StatusCode::BAD_REQUEST, "BadRequest", "invalid body");
+    };
+    match (group, resource) {
+        ("authentication.k8s.io", "tokenreviews") => {
+            let token = req["spec"]["token"].as_str().unwrap_or("");
+            req["status"] = match c.tokens.get(token) {
+                Some((user, groups)) => json!({"authenticated": true,
+                    "user": {"username": user, "uid": format!("uid-{user}"), "groups": groups}}),
+                None if token == "error" => {
+                    json!({"authenticated": false, "error": "token review failed"})
+                }
+                None => json!({"authenticated": false}),
+            };
+            json_response(&req)
+        }
+        ("authorization.k8s.io", "subjectaccessreviews") => {
+            let spec = &req["spec"];
+            let user = spec["user"].as_str().unwrap_or("");
+            let verb = spec["nonResourceAttributes"]["verb"].as_str().unwrap_or("");
+            let path = spec["nonResourceAttributes"]["path"].as_str().unwrap_or("");
+            let allowed = c
+                .allow
+                .iter()
+                .any(|(u, v, p)| u == user && (v == "*" || v == verb) && (p == "*" || p == path));
+            req["status"] = if user == "both" {
+                json!({"allowed": true, "denied": true})
+            } else if user.starts_with("deny-") {
+                json!({"allowed": false, "denied": true, "reason": "denied by fake"})
+            } else {
+                json!({"allowed": allowed})
+            };
+            json_response(&req)
+        }
+        _ => status(
+            StatusCode::METHOD_NOT_ALLOWED,
+            "MethodNotAllowed",
+            "read-only fake",
+        ),
+    }
+}
+
 fn resource_list(c: &Cluster, group: &str, version: &str) -> Value {
     let resources: Vec<Value> = c
         .types
@@ -617,6 +673,8 @@ fn router(c: Shared) -> Router {
         }))
         .route("/apis/{g}/{v}/{r}", get(|State(c): State<Shared>, Path((g, v, r)): Path<(String, String, String)>, Query(p): Query<ListParams>| async move {
             collection(c, g, v, None, r, p).await
+        }).post(|State(c): State<Shared>, Path((g, _v, r)): Path<(String, String, String)>, body: String| async move {
+            review(&c, &g, &r, &body)
         }))
         .route("/apis/{g}/{v}/{r}/{name}", get(|State(c): State<Shared>, Path((g, v, r, n)): Path<(String, String, String, String)>| async move {
             object(c, g, v, None, r, n).await
@@ -632,7 +690,7 @@ fn router(c: Shared) -> Router {
 
 fn usage() -> ! {
     eprintln!(
-        "usage: fake-apiserver [--listen ADDR] [--fixtures PATH]... [--generate kind=n,...] [--seed N] [--kubeconfig-out PATH] [--git-version V]"
+        "usage: fake-apiserver [--listen ADDR] [--fixtures PATH]... [--generate kind=n,...] [--seed N] [--kubeconfig-out PATH] [--git-version V] [--auth-token TOKEN=USER[,GROUP...]]... [--auth-allow USER:VERB:PATH]..."
     );
     std::process::exit(2)
 }
@@ -645,6 +703,8 @@ async fn main() {
     let mut seed = 1u64;
     let mut kubeconfig_out = None;
     let mut git_version = "v1.37.0-fake".to_owned();
+    let mut auth_tokens = BTreeMap::new();
+    let mut auth_allow = Vec::new();
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
         let mut val = || args.next().unwrap_or_else(|| usage());
@@ -655,10 +715,27 @@ async fn main() {
             "--seed" => seed = val().parse().unwrap_or_else(|_| usage()),
             "--kubeconfig-out" => kubeconfig_out = Some(val()),
             "--git-version" => git_version = val(),
+            "--auth-token" => {
+                let v = val();
+                let (tok, rest) = v.split_once('=').unwrap_or_else(|| usage());
+                let mut parts = rest.split(',').map(str::to_owned);
+                let user = parts.next().unwrap_or_default();
+                auth_tokens.insert(tok.to_owned(), (user, parts.collect()));
+            }
+            "--auth-allow" => {
+                let v = val();
+                let mut parts = v.splitn(3, ':').map(str::to_owned);
+                match (parts.next(), parts.next(), parts.next()) {
+                    (Some(u), Some(verb), Some(p)) => auth_allow.push((u, verb, p)),
+                    _ => usage(),
+                }
+            }
             _ => usage(),
         }
     }
     let mut cluster = Cluster::new(git_version);
+    cluster.tokens = auth_tokens;
+    cluster.allow = auth_allow;
     for f in &fixtures {
         if let Err(e) = cluster.load_path(std::path::Path::new(f)) {
             eprintln!("fake-apiserver: {e}");

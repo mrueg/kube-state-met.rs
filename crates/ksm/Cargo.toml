@@ -40,6 +40,7 @@ tower = { version = "0.5", features = ["util"] }
 hyper-util = { version = "0.1", features = ["server", "server-auto", "server-graceful", "service", "tokio"] }
 base64 = "0.22"
 rustls-native-certs = "0.8"
+sha2 = "0.10"
 
 [dev-dependencies]
 fake-apiserver = { path = "../../tools/fake-apiserver" }

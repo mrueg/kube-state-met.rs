@@ -2,6 +2,7 @@
 //! API server and generates metrics about the state of the objects.
 //! Go entry points: `main.go`, `internal/wrapper.go`.
 
+mod auth;
 mod builder;
 mod client;
 mod crs;

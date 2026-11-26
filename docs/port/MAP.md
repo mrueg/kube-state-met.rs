@@ -27,7 +27,8 @@ Generated plan: [analyze-whole-app.md](analyze-whole-app.md). Research: [researc
 | 3 | `internal/store/*` (40 stores) | `ksm-stores` | done: 267/267 store goldens match Go |
 | 4 | `pkg/customresourcestate`, `internal/discovery` | `ksm-crs`, `ksm::{crs,discovery,watch_dynamic}` | done: CRD discovery, wildcard GVKs, CR watchers; `compare.py --custom-resource-state-config-file=testdata/crs-config.yaml` equal |
 | 4 | TLS web config (exporter-toolkit `web`) | `ksm::web` | done: all 49 exporter-toolkit test configs equal to Go (startup errors, HTTP/TLS answers); rustls limits in ADR-013 |
-| 4 | auth filter, hot reload (`internal/wrapper.go`) | `crates/ksm` | open |
+| 4 | `--auth-filter` (controller-runtime `WithAuthenticationAndAuthorization`) | `ksm::auth` | done: 19 request cases equal to Go against the fake apiserver's TokenReview/SubjectAccessReview (`--auth-token`, `--auth-allow`); WebSocket-protocol tokens not ported |
+| 4 | hot reload (`internal/wrapper.go`) | `crates/ksm` | open |
 | 5 | lift, benchmarks report, container image | | open |
 
 ## Open questions

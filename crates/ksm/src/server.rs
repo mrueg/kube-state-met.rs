@@ -22,6 +22,9 @@ use tokio_util::sync::CancellationToken;
 
 use std::collections::BTreeMap;
 
+use axum::routing::MethodRouter;
+
+use crate::auth::{AuthFilter, auth_middleware};
 use crate::builder::{Builder, CustomResourceStore, GvkStop};
 use crate::client::{VERSION, create_client, go_arch};
 use crate::crs::StoreConfigurer;
@@ -376,8 +379,18 @@ pub async fn run(
         );
     }
 
-    let metrics_app = metrics_router(Arc::clone(&handler), m.durations.clone(), client.clone());
-    let telemetry_app = telemetry_router(m.registry.clone());
+    // Each server gets its own filter, with its own caches, as in Go.
+    let auth = || {
+        opts.auth_filter
+            .then(|| Arc::new(crate::auth::AuthFilter::new(client.clone())))
+    };
+    let metrics_app = metrics_router(
+        Arc::clone(&handler),
+        m.durations.clone(),
+        client.clone(),
+        auth(),
+    );
+    let telemetry_app = telemetry_router(m.registry.clone(), auth());
     let metrics_addr = listen_addr(&opts.host, opts.port)?;
     let telemetry_addr = listen_addr(&opts.telemetry_host, opts.telemetry_port)?;
     let metrics_listener = tokio::net::TcpListener::bind(metrics_addr)
@@ -667,10 +680,19 @@ fn method_label(m: &http::Method) -> String {
     }
 }
 
+/// `/metrics` behind the auth filter when there is one.
+fn protect(route: MethodRouter, auth: Option<Arc<AuthFilter>>) -> MethodRouter {
+    match auth {
+        Some(f) => route.layer(axum::middleware::from_fn_with_state(f, auth_middleware)),
+        None => route,
+    }
+}
+
 fn metrics_router(
     handler: Arc<MetricsHandler>,
     durations: HistogramVec,
     client: kube::Client,
+    auth: Option<Arc<AuthFilter>>,
 ) -> Router {
     let metrics = move |req: Request| {
         let handler = Arc::clone(&handler);
@@ -709,13 +731,13 @@ fn metrics_router(
         }
     };
     Router::new()
-        .route("/metrics", axum::routing::any(metrics))
+        .route("/metrics", protect(axum::routing::any(metrics), auth))
         .route("/livez", axum::routing::any(livez))
         .route("/healthz", axum::routing::any(|| async { ok_text() }))
         .fallback(|req: Request| fallback(req, include_str!("landing/metrics.html")))
 }
 
-fn telemetry_router(registry: Registry) -> Router {
+fn telemetry_router(registry: Registry, auth: Option<Arc<AuthFilter>>) -> Router {
     let reg = registry.clone();
     let metrics = move || {
         let reg = reg.clone();
@@ -742,7 +764,7 @@ fn telemetry_router(registry: Registry) -> Router {
         }
     };
     Router::new()
-        .route("/metrics", axum::routing::any(metrics))
+        .route("/metrics", protect(axum::routing::any(metrics), auth))
         .route("/readyz", axum::routing::any(readyz))
         .fallback(|req: Request| fallback(req, include_str!("landing/telemetry.html")))
 }
