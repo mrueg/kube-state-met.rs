@@ -18,7 +18,12 @@ num-traits = "0.2"
 
 
 [dev-dependencies]
+criterion = "0.7"
 serde_json.workspace = true
 
 [lints]
 workspace = true
+
+[[bench]]
+name = "generate"
+harness = false

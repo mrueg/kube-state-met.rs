@@ -28,6 +28,7 @@ flate2 = "1"
 tokio-util = "0.7"
 bytes = "1"
 http = "1"
+md5 = { package = "md-5", version = "0.10" }
 
 [dev-dependencies]
 fake-apiserver = { path = "../../tools/fake-apiserver" }
