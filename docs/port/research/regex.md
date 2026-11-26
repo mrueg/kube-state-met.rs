@@ -39,7 +39,7 @@ The allow/deny and opt-in filters run once per family generator when the stores 
 
 ## 3. regexp2 ECMAScript vs fancy-regex 0.20 (default builder): verified differences
 
-fancy-regex rows marked "=" behaved identically. 37 of 83 vectors differ.
+fancy-regex rows marked "=" behaved identically. 37 of 80 vectors differ.
 
 | Pattern | Input | regexp2 ECMAScript | fancy-regex default |
 |---|---|---|---|
@@ -113,7 +113,7 @@ let re = fancy_regex::RegexBuilder::new(&ecma_to_fancy(pattern)?) // see below
 
 ## 4. Go `regexp` (RE2) vs Rust `regex` (opt-in list)
 
-Diff of the same 83 vectors, Go `regexp.Compile` against `regex::Regex::new` (18 differences):
+Diff of the same 80 vectors, Go `regexp.Compile` against `regex::Regex::new` (18 differences):
 
 | Construct | Go RE2 | Rust `regex` |
 |---|---|---|

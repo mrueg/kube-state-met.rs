@@ -198,7 +198,12 @@ pub fn format_go_g(buf: &mut Vec<u8>, f: f64) {
             nd += 1;
         }
     }
-    let digits = &digits[..nd];
+    let tie = go_tie_digits(a, nd, exp);
+    let digits: &[u8] = match &tie {
+        Some(t) => t.as_bytes(),
+        None => &digits[..nd],
+    };
+    let nd = digits.len();
     let dp = exp + 1; // position of the decimal point relative to the digits
     if !(-4..6).contains(&exp) {
         buf.push(digits[0]);
@@ -228,6 +233,54 @@ pub fn format_go_g(buf: &mut Vec<u8>, f: f64) {
             buf.extend_from_slice(&digits[dp..]);
         }
     }
+}
+
+/// Go rounds an exact tie between two shortest candidates half-to-even;
+/// Rust's `{:e}` rounds it up. A tie needs the exact decimal value of `f` to
+/// have exactly `nd + 1` significant digits, the last being 5. Returns Go's
+/// digits in that case (docs/port/research/go-float-format.md).
+fn go_tie_digits(f: f64, nd: usize, exp: i32) -> Option<String> {
+    if nd < 16 {
+        return None;
+    }
+    let bits = f.to_bits();
+    let biased = ((bits >> 52) & 0x7ff) as i32;
+    let mut m = bits & ((1u64 << 52) - 1);
+    let mut e;
+    if biased == 0 {
+        e = -1074;
+    } else {
+        m |= 1u64 << 52;
+        e = biased - 1075;
+    }
+    let tz = m.trailing_zeros() as i32;
+    m >>= tz;
+    e += tz;
+    let n: u128 = if e < 0 {
+        let mut n = u128::from(m);
+        for _ in 0..(-e) {
+            n = n.checked_mul(5)?;
+        }
+        n
+    } else {
+        let p5 = 5u128.checked_pow(e.unsigned_abs() + 1)?;
+        if u128::from(m) % p5 != 0 {
+            return None;
+        }
+        u128::from(m) / 5u128.pow(e.unsigned_abs())
+    };
+    let s = n.to_string();
+    if s.len() != nd + 1 || !s.ends_with('5') {
+        return None;
+    }
+    let mut q = n / 10;
+    if q % 2 == 1 {
+        q += 1;
+    }
+    let qs = q.to_string();
+    // Go only breaks the tie if both candidates round-trip to `f`.
+    let back: f64 = format!("{}.{}e{}", &qs[..1], &qs[1..], exp).parse().ok()?;
+    (back == f).then_some(qs)
 }
 
 /// Go-formatted float as a `String`.

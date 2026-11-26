@@ -55,41 +55,167 @@ const BUILTIN: &[(&str, &str, &str, &str, bool)] = &[
     ("", "v1", "Namespace", "namespaces", false),
     ("", "v1", "Node", "nodes", false),
     ("", "v1", "PersistentVolume", "persistentvolumes", false),
-    ("", "v1", "PersistentVolumeClaim", "persistentvolumeclaims", true),
+    (
+        "",
+        "v1",
+        "PersistentVolumeClaim",
+        "persistentvolumeclaims",
+        true,
+    ),
     ("", "v1", "Pod", "pods", true),
-    ("", "v1", "ReplicationController", "replicationcontrollers", true),
+    (
+        "",
+        "v1",
+        "ReplicationController",
+        "replicationcontrollers",
+        true,
+    ),
     ("", "v1", "ResourceQuota", "resourcequotas", true),
     ("", "v1", "Secret", "secrets", true),
     ("", "v1", "Service", "services", true),
     ("", "v1", "ServiceAccount", "serviceaccounts", true),
-    ("admissionregistration.k8s.io", "v1", "MutatingAdmissionPolicy", "mutatingadmissionpolicies", false),
-    ("admissionregistration.k8s.io", "v1", "MutatingAdmissionPolicyBinding", "mutatingadmissionpolicybindings", false),
-    ("admissionregistration.k8s.io", "v1", "MutatingWebhookConfiguration", "mutatingwebhookconfigurations", false),
-    ("admissionregistration.k8s.io", "v1", "ValidatingAdmissionPolicy", "validatingadmissionpolicies", false),
-    ("admissionregistration.k8s.io", "v1", "ValidatingAdmissionPolicyBinding", "validatingadmissionpolicybindings", false),
-    ("admissionregistration.k8s.io", "v1", "ValidatingWebhookConfiguration", "validatingwebhookconfigurations", false),
-    ("apiextensions.k8s.io", "v1", "CustomResourceDefinition", "customresourcedefinitions", false),
+    (
+        "admissionregistration.k8s.io",
+        "v1",
+        "MutatingAdmissionPolicy",
+        "mutatingadmissionpolicies",
+        false,
+    ),
+    (
+        "admissionregistration.k8s.io",
+        "v1",
+        "MutatingAdmissionPolicyBinding",
+        "mutatingadmissionpolicybindings",
+        false,
+    ),
+    (
+        "admissionregistration.k8s.io",
+        "v1",
+        "MutatingWebhookConfiguration",
+        "mutatingwebhookconfigurations",
+        false,
+    ),
+    (
+        "admissionregistration.k8s.io",
+        "v1",
+        "ValidatingAdmissionPolicy",
+        "validatingadmissionpolicies",
+        false,
+    ),
+    (
+        "admissionregistration.k8s.io",
+        "v1",
+        "ValidatingAdmissionPolicyBinding",
+        "validatingadmissionpolicybindings",
+        false,
+    ),
+    (
+        "admissionregistration.k8s.io",
+        "v1",
+        "ValidatingWebhookConfiguration",
+        "validatingwebhookconfigurations",
+        false,
+    ),
+    (
+        "apiextensions.k8s.io",
+        "v1",
+        "CustomResourceDefinition",
+        "customresourcedefinitions",
+        false,
+    ),
     ("apps", "v1", "DaemonSet", "daemonsets", true),
     ("apps", "v1", "Deployment", "deployments", true),
     ("apps", "v1", "ReplicaSet", "replicasets", true),
     ("apps", "v1", "StatefulSet", "statefulsets", true),
-    ("autoscaling", "v2", "HorizontalPodAutoscaler", "horizontalpodautoscalers", true),
+    (
+        "autoscaling",
+        "v2",
+        "HorizontalPodAutoscaler",
+        "horizontalpodautoscalers",
+        true,
+    ),
     ("batch", "v1", "CronJob", "cronjobs", true),
     ("batch", "v1", "Job", "jobs", true),
-    ("certificates.k8s.io", "v1", "CertificateSigningRequest", "certificatesigningrequests", false),
+    (
+        "certificates.k8s.io",
+        "v1",
+        "CertificateSigningRequest",
+        "certificatesigningrequests",
+        false,
+    ),
     ("coordination.k8s.io", "v1", "Lease", "leases", true),
-    ("discovery.k8s.io", "v1", "EndpointSlice", "endpointslices", true),
+    (
+        "discovery.k8s.io",
+        "v1",
+        "EndpointSlice",
+        "endpointslices",
+        true,
+    ),
     ("networking.k8s.io", "v1", "Ingress", "ingresses", true),
-    ("networking.k8s.io", "v1", "IngressClass", "ingressclasses", false),
-    ("networking.k8s.io", "v1", "NetworkPolicy", "networkpolicies", true),
-    ("policy", "v1", "PodDisruptionBudget", "poddisruptionbudgets", true),
-    ("rbac.authorization.k8s.io", "v1", "ClusterRole", "clusterroles", false),
-    ("rbac.authorization.k8s.io", "v1", "ClusterRoleBinding", "clusterrolebindings", false),
+    (
+        "networking.k8s.io",
+        "v1",
+        "IngressClass",
+        "ingressclasses",
+        false,
+    ),
+    (
+        "networking.k8s.io",
+        "v1",
+        "NetworkPolicy",
+        "networkpolicies",
+        true,
+    ),
+    (
+        "policy",
+        "v1",
+        "PodDisruptionBudget",
+        "poddisruptionbudgets",
+        true,
+    ),
+    (
+        "rbac.authorization.k8s.io",
+        "v1",
+        "ClusterRole",
+        "clusterroles",
+        false,
+    ),
+    (
+        "rbac.authorization.k8s.io",
+        "v1",
+        "ClusterRoleBinding",
+        "clusterrolebindings",
+        false,
+    ),
     ("rbac.authorization.k8s.io", "v1", "Role", "roles", true),
-    ("rbac.authorization.k8s.io", "v1", "RoleBinding", "rolebindings", true),
-    ("storage.k8s.io", "v1", "StorageClass", "storageclasses", false),
-    ("storage.k8s.io", "v1", "VolumeAttachment", "volumeattachments", false),
-    ("storage.k8s.io", "v1", "VolumeAttributesClass", "volumeattributesclasses", false),
+    (
+        "rbac.authorization.k8s.io",
+        "v1",
+        "RoleBinding",
+        "rolebindings",
+        true,
+    ),
+    (
+        "storage.k8s.io",
+        "v1",
+        "StorageClass",
+        "storageclasses",
+        false,
+    ),
+    (
+        "storage.k8s.io",
+        "v1",
+        "VolumeAttachment",
+        "volumeattachments",
+        false,
+    ),
+    (
+        "storage.k8s.io",
+        "v1",
+        "VolumeAttributesClass",
+        "volumeattributesclasses",
+        false,
+    ),
 ];
 
 struct Cluster {
@@ -126,15 +252,23 @@ impl Cluster {
     }
 
     fn type_of(&self, api_version: &str, kind: &str) -> Option<&ResourceType> {
-        self.types.iter().find(|t| t.api_version() == api_version && t.kind == kind)
+        self.types
+            .iter()
+            .find(|t| t.api_version() == api_version && t.kind == kind)
     }
 
     /// Registers the types a CustomResourceDefinition declares.
     fn learn_crd(&mut self, crd: &Value) {
         let spec = &crd["spec"];
         let group = spec["group"].as_str().unwrap_or_default().to_owned();
-        let kind = spec["names"]["kind"].as_str().unwrap_or_default().to_owned();
-        let plural = spec["names"]["plural"].as_str().unwrap_or_default().to_owned();
+        let kind = spec["names"]["kind"]
+            .as_str()
+            .unwrap_or_default()
+            .to_owned();
+        let plural = spec["names"]["plural"]
+            .as_str()
+            .unwrap_or_default()
+            .to_owned();
         let namespaced = spec["scope"].as_str() != Some("Cluster");
         for v in spec["versions"].as_array().into_iter().flatten() {
             if v["served"].as_bool() == Some(false) {
@@ -174,11 +308,14 @@ impl Cluster {
             .ok_or_else(|| format!("unknown type {api_version} {kind}"))?
             .clone();
         self.resource_version += 1;
-        let meta = obj["metadata"].as_object_mut().ok_or("object without metadata")?;
+        let meta = obj["metadata"]
+            .as_object_mut()
+            .ok_or("object without metadata")?;
         if t.namespaced && !meta.contains_key("namespace") {
             meta.insert("namespace".into(), json!("default"));
         }
-        meta.entry("resourceVersion").or_insert(json!(self.resource_version.to_string()));
+        meta.entry("resourceVersion")
+            .or_insert(json!(self.resource_version.to_string()));
         if !meta.contains_key("uid") {
             let id = format!(
                 "{}-{}-{}",
@@ -188,7 +325,10 @@ impl Cluster {
             );
             meta.insert("uid".into(), json!(generate::uid_for(&id)));
         }
-        self.objects.entry((t.group.clone(), t.plural.clone())).or_default().push(obj);
+        self.objects
+            .entry((t.group.clone(), t.plural.clone()))
+            .or_default()
+            .push(obj);
         Ok(())
     }
 
@@ -213,11 +353,13 @@ impl Cluster {
         }
         let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
         for doc in serde_yaml_ng::Deserializer::from_str(&text) {
-            let v: Value = serde::Deserialize::deserialize(doc).map_err(|e| format!("{}: {e}", path.display()))?;
+            let v: Value = serde::Deserialize::deserialize(doc)
+                .map_err(|e| format!("{}: {e}", path.display()))?;
             if v.is_null() {
                 continue;
             }
-            self.add(v).map_err(|e| format!("{}: {e}", path.display()))?;
+            self.add(v)
+                .map_err(|e| format!("{}: {e}", path.display()))?;
         }
         Ok(())
     }
@@ -275,39 +417,71 @@ fn matches_labels(obj: &Value, selector: &str) -> bool {
 fn status(code: StatusCode, reason: &str, message: &str) -> Response {
     let body = json!({"kind": "Status", "apiVersion": "v1", "metadata": {}, "status": "Failure",
         "message": message, "reason": reason, "code": code.as_u16()});
-    (code, [(header::CONTENT_TYPE, "application/json")], body.to_string()).into_response()
+    (
+        code,
+        [(header::CONTENT_TYPE, "application/json")],
+        body.to_string(),
+    )
+        .into_response()
 }
 
 fn json_response(v: &Value) -> Response {
     ([(header::CONTENT_TYPE, "application/json")], v.to_string()).into_response()
 }
 
-fn selected<'a>(c: &'a Cluster, t: &ResourceType, ns: Option<&str>, p: &ListParams) -> Vec<&'a Value> {
+fn selected<'a>(
+    c: &'a Cluster,
+    t: &ResourceType,
+    ns: Option<&str>,
+    p: &ListParams,
+) -> Vec<&'a Value> {
     c.objects
         .get(&(t.group.clone(), t.plural.clone()))
         .map(|v| v.as_slice())
         .unwrap_or_default()
         .iter()
         .filter(|o| ns.is_none_or(|ns| field(o, "metadata.namespace") == ns))
-        .filter(|o| p.field_selector.as_deref().is_none_or(|s| matches_fields(o, s)))
-        .filter(|o| p.label_selector.as_deref().is_none_or(|s| matches_labels(o, s)))
+        .filter(|o| {
+            p.field_selector
+                .as_deref()
+                .is_none_or(|s| matches_fields(o, s))
+        })
+        .filter(|o| {
+            p.label_selector
+                .as_deref()
+                .is_none_or(|s| matches_labels(o, s))
+        })
         .collect()
 }
 
-async fn collection(c: Shared, group: String, version: String, ns: Option<String>, plural: String, p: ListParams) -> Response {
+async fn collection(
+    c: Shared,
+    group: String,
+    version: String,
+    ns: Option<String>,
+    plural: String,
+    p: ListParams,
+) -> Response {
     let Some(t) = c
         .types
         .iter()
         .find(|t| t.group == group && t.version == version && t.plural == plural)
         .cloned()
     else {
-        return status(StatusCode::NOT_FOUND, "NotFound", &format!("the server could not find the requested resource ({plural})"));
+        return status(
+            StatusCode::NOT_FOUND,
+            "NotFound",
+            &format!("the server could not find the requested resource ({plural})"),
+        );
     };
     let rv = c.resource_version.to_string();
     if p.watch.as_deref() == Some("true") || p.watch.as_deref() == Some("1") {
         let initial = p.send_initial_events.as_deref() == Some("true");
         let objs: Vec<Value> = if initial {
-            selected(&c, &t, ns.as_deref(), &p).into_iter().cloned().collect()
+            selected(&c, &t, ns.as_deref(), &p)
+                .into_iter()
+                .cloned()
+                .collect()
         } else {
             Vec::new()
         };
@@ -340,24 +514,48 @@ async fn collection(c: Shared, group: String, version: String, ns: Option<String
         meta["continue"] = json!(end.to_string());
         meta["remainingItemCount"] = json!(all.len() - end);
     }
-    json_response(&json!({"kind": format!("{}List", t.kind), "apiVersion": t.api_version(), "metadata": meta, "items": items}))
+    json_response(
+        &json!({"kind": format!("{}List", t.kind), "apiVersion": t.api_version(), "metadata": meta, "items": items}),
+    )
 }
 
-async fn object(c: Shared, group: String, version: String, ns: Option<String>, plural: String, name: String) -> Response {
-    let Some(t) = c.types.iter().find(|t| t.group == group && t.version == version && t.plural == plural) else {
-        return status(StatusCode::NOT_FOUND, "NotFound", "the server could not find the requested resource");
+async fn object(
+    c: Shared,
+    group: String,
+    version: String,
+    ns: Option<String>,
+    plural: String,
+    name: String,
+) -> Response {
+    let Some(t) = c
+        .types
+        .iter()
+        .find(|t| t.group == group && t.version == version && t.plural == plural)
+    else {
+        return status(
+            StatusCode::NOT_FOUND,
+            "NotFound",
+            "the server could not find the requested resource",
+        );
     };
     let found = c
         .objects
         .get(&(t.group.clone(), t.plural.clone()))
         .and_then(|v| {
             v.iter().find(|o| {
-                field(o, "metadata.name") == name && ns.as_deref().is_none_or(|ns| field(o, "metadata.namespace") == ns)
+                field(o, "metadata.name") == name
+                    && ns
+                        .as_deref()
+                        .is_none_or(|ns| field(o, "metadata.namespace") == ns)
             })
         });
     match found {
         Some(o) => json_response(o),
-        None => status(StatusCode::NOT_FOUND, "NotFound", &format!("{plural} \"{name}\" not found")),
+        None => status(
+            StatusCode::NOT_FOUND,
+            "NotFound",
+            &format!("{plural} \"{name}\" not found"),
+        ),
     }
 }
 
@@ -369,7 +567,11 @@ fn resource_list(c: &Cluster, group: &str, version: &str) -> Value {
         .map(|t| json!({"name": t.plural, "singularName": t.kind.to_lowercase(), "namespaced": t.namespaced,
             "kind": t.kind, "verbs": ["get", "list", "watch"]}))
         .collect();
-    let gv = if group.is_empty() { version.to_owned() } else { format!("{group}/{version}") };
+    let gv = if group.is_empty() {
+        version.to_owned()
+    } else {
+        format!("{group}/{version}")
+    };
     json!({"kind": "APIResourceList", "apiVersion": "v1", "groupVersion": gv, "resources": resources})
 }
 
@@ -429,7 +631,9 @@ fn router(c: Shared) -> Router {
 }
 
 fn usage() -> ! {
-    eprintln!("usage: fake-apiserver [--listen ADDR] [--fixtures PATH]... [--generate kind=n,...] [--seed N] [--kubeconfig-out PATH] [--git-version V]");
+    eprintln!(
+        "usage: fake-apiserver [--listen ADDR] [--fixtures PATH]... [--generate kind=n,...] [--seed N] [--kubeconfig-out PATH] [--git-version V]"
+    );
     std::process::exit(2)
 }
 
@@ -473,10 +677,12 @@ async fn main() {
         }
     }
     let total: usize = cluster.objects.values().map(Vec::len).sum();
-    let listener = tokio::net::TcpListener::bind(listen).await.unwrap_or_else(|e| {
-        eprintln!("fake-apiserver: bind {listen}: {e}");
-        std::process::exit(1)
-    });
+    let listener = tokio::net::TcpListener::bind(listen)
+        .await
+        .unwrap_or_else(|e| {
+            eprintln!("fake-apiserver: bind {listen}: {e}");
+            std::process::exit(1)
+        });
     let addr = listener.local_addr().unwrap_or(listen);
     if let Some(path) = kubeconfig_out {
         let kc = format!(

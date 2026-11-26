@@ -1,4 +1,4 @@
-// Validated prototype (scratch, not built by the workspace). Deps: num-bigint 0.5, num-integer 0.1,
+// Validated prototype (scratch, not built by the workspace; cargo --bin with these deps). Deps: num-bigint 0.5, num-integer 0.1,
 // num-traits 0.2, serde_json 1. `main` checks testdata/golden/quantity.jsonl: 813 checked, 0 mismatches.
 // See docs/port/research/quantity.md.
 //! Prototype port of k8s.io/apimachinery v0.37.2 resource.Quantity (parse + the accessors

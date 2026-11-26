@@ -1,49 +1,40 @@
 // Validated prototype (scratch, std only). Checks testdata/golden/float_g.jsonl: 3203 checked, 0 mismatches;
 // also 5,000,000 extra values (random bits, tie candidates m*2^e, x/1000, timestamps): 0 mismatches.
+// Usage: rustc -O go-float-format-prototype.rs && ./go-float-format-prototype testdata/golden/float_g.jsonl
 // See docs/port/research/go-float-format.md.
 use std::io::{BufRead, BufReader};
-
-/// Reproduces Go strconv.FormatFloat(f, 'g', -1, 64).
-fn format_g(f: f64) -> String {
+pub fn go_format_g(f: f64) -> String {
     if f.is_nan() { return "NaN".into(); }
-    if f.is_infinite() { return if f > 0.0 { "+Inf".into() } else { "-Inf".into() }; }
+    if f.is_infinite() { return if f > 0.0 { "+Inf" } else { "-Inf" }.into(); }
     let neg = f.is_sign_negative();
-    if f == 0.0 { return if neg { "-0".into() } else { "0".into() }; }
-    // Rust's {:e} gives the shortest round-trip digits: "d[.ddd]e<exp>"
+    if f == 0.0 { return if neg { "-0" } else { "0" }.into(); }   // KSM's writeFloat prints "0" for -0 before this
     let s = format!("{:e}", f.abs());
     let (mant, exp) = s.split_once('e').unwrap();
-    let exp: i32 = exp.parse().unwrap();
-    let mut digits: String = mant.chars().filter(|c| *c != '.').collect();
+    let exp: i32 = exp.parse().unwrap();                 // decimal exponent of first digit
+    let mut digits: String = mant.chars().filter(|&c| c != '.').collect();
     if let Some(d) = go_tie_digits(f.abs(), digits.len(), exp) { digits = d; }
     let nd = digits.len() as i32;
-    let dp = exp + 1; // decimal point position
-    let mut out = String::new();
+    let dp = exp + 1;
+    let mut out = String::with_capacity(24);
     if neg { out.push('-'); }
-    let x = dp - 1;
-    if x < -4 || x >= 6 {
-        // %e with prec nd-1
+    if exp < -4 || exp >= 6 {                            // %e
         out.push_str(&digits[..1]);
         if nd > 1 { out.push('.'); out.push_str(&digits[1..]); }
         out.push('e');
-        out.push(if x < 0 { '-' } else { '+' });
-        let a = x.abs();
+        out.push(if exp < 0 { '-' } else { '+' });
+        let a = exp.unsigned_abs();
         if a < 10 { out.push('0'); }
         out.push_str(&a.to_string());
-    } else {
-        // %f with prec max(nd-dp,0)
+    } else {                                             // %f
         if dp > 0 {
             let m = nd.min(dp) as usize;
             out.push_str(&digits[..m]);
             for _ in 0..(dp - m as i32) { out.push('0'); }
-        } else {
-            out.push('0');
-        }
-        let prec = (nd - dp).max(0);
-        if prec > 0 {
+        } else { out.push('0'); }
+        if nd > dp {
             out.push('.');
             for _ in 0..(-dp).max(0) { out.push('0'); }
-            let off = dp.max(0) as usize;
-            out.push_str(&digits[off..]);
+            out.push_str(&digits[dp.max(0) as usize..]);
         }
     }
     out
@@ -90,7 +81,7 @@ fn main() {
         let out_start = line.find("\"out\":\"").unwrap() + 7;
         let want = &line[out_start..line.len() - 2];
         let f = f64::from_bits(u64::from_str_radix(bits, 16).unwrap());
-        let got = format_g(f);
+        let got = go_format_g(f);
         n += 1;
         if got != want { bad += 1; if bad < 20 { println!("MISMATCH {bits}: want {want} got {got}"); } }
     }

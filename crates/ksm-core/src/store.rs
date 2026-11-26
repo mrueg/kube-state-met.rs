@@ -209,6 +209,25 @@ impl MetricsStore {
         self.set_last_resource_version(resource_version);
     }
 
+    /// [`replace`](Self::replace) with metrics rendered while the list was
+    /// buffered (Go: the store's `Transformer` during a WatchList sync).
+    pub fn replace_rendered(&self, items: Vec<(String, String, Rendered)>, resource_version: &str) {
+        let listed: HashSet<&str> = items.iter().map(|(uid, _, _)| uid.as_str()).collect();
+        let kept = {
+            let mut m = self.metrics.write();
+            m.retain(|uid, _| listed.contains(uid.as_str()));
+            m.len() as i64
+        };
+        drop(listed);
+        if self.object_limit > 0 {
+            *self.object_count.lock() = kept;
+        }
+        for (uid, rv, rendered) in items {
+            self.add(&uid, &rv, || rendered);
+        }
+        self.set_last_resource_version(resource_version);
+    }
+
     pub fn last_resource_version(&self) -> String {
         self.last_resource_version.lock().clone()
     }

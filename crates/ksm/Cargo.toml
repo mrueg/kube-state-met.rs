@@ -1,9 +1,36 @@
 [package]
 name = "kube-state-metrics"
-version = "0.1.0"
-edition = "2024"
+description = "kube-state-metrics in Rust: generates Prometheus metrics about the state of Kubernetes objects"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "kube-state-metrics"
+path = "src/main.rs"
 
 [dependencies]
+ksm-core.workspace = true
+ksm-stores.workspace = true
+k8s-openapi.workspace = true
+kube.workspace = true
+tokio.workspace = true
+axum.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml_ng.workspace = true
+parking_lot.workspace = true
+tracing.workspace = true
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+futures = "0.3"
+flate2 = "1"
+tokio-util = "0.7"
+bytes = "1"
+http = "1"
+
+[dev-dependencies]
+fake-apiserver = { path = "../../tools/fake-apiserver" }
 
 [lints]
 workspace = true

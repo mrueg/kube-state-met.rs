@@ -31,7 +31,10 @@ struct Rng(u64);
 
 impl Rng {
     fn next(&mut self) -> u64 {
-        self.0 = self.0.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(1_442_695_040_888_963_407);
+        self.0 = self
+            .0
+            .wrapping_mul(6_364_136_223_846_793_005)
+            .wrapping_add(1_442_695_040_888_963_407);
         self.0 >> 33
     }
     fn below(&mut self, n: u64) -> u64 {
@@ -58,7 +61,12 @@ fn ts(secs: i64) -> String {
     let d = doy - (153 * mp + 2) / 5 + 1;
     let m = if mp < 10 { mp + 3 } else { mp - 9 };
     let y = if m <= 2 { y + 1 } else { y };
-    format!("{y:04}-{m:02}-{d:02}T{:02}:{:02}:{:02}Z", rem / 3600, (rem % 3600) / 60, rem % 60)
+    format!(
+        "{y:04}-{m:02}-{d:02}T{:02}:{:02}:{:02}Z",
+        rem / 3600,
+        (rem % 3600) / 60,
+        rem % 60
+    )
 }
 
 fn meta(r: &mut Rng, name: &str, ns: Option<&str>, app: &str) -> Value {
@@ -138,7 +146,8 @@ fn node(r: &mut Rng, i: usize) -> Value {
     let name = format!("node-{i}");
     let mut m = meta(r, &name, None, "node");
     m["labels"]["kubernetes.io/hostname"] = json!(name);
-    m["labels"]["node.kubernetes.io/instance-type"] = json!(r.pick(&["m5.xlarge", "m5.2xlarge", "c6i.4xlarge"]));
+    m["labels"]["node.kubernetes.io/instance-type"] =
+        json!(r.pick(&["m5.xlarge", "m5.2xlarge", "c6i.4xlarge"]));
     let cap = json!({"cpu": format!("{}", 4 * (1 + r.below(8))), "memory": format!("{}Ki", 16_000_000 + r.below(50_000_000)),
         "pods": "110", "ephemeral-storage": "100Gi", "hugepages-2Mi": "0"});
     json!({
@@ -223,7 +232,9 @@ fn job(r: &mut Rng, i: usize, namespaces: usize) -> Value {
 pub fn cluster(spec: &str, seed: u64) -> Result<Vec<Value>, String> {
     let mut counts: Vec<(String, usize)> = Vec::new();
     for part in spec.split(',').filter(|p| !p.is_empty()) {
-        let (k, v) = part.split_once('=').ok_or_else(|| format!("bad --generate part {part:?}"))?;
+        let (k, v) = part
+            .split_once('=')
+            .ok_or_else(|| format!("bad --generate part {part:?}"))?;
         let n: usize = v.parse().map_err(|_| format!("bad count in {part:?}"))?;
         counts.push((k.to_owned(), n));
     }
