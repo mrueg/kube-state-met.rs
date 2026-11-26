@@ -4,6 +4,7 @@
 //! watch counters), `CLUSTER_SCOPED`, `PORTED` and
 //! `families(allow_annotations, allow_labels)`.
 
+pub mod cron;
 pub mod quantity;
 pub mod util;
 

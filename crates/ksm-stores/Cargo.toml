@@ -12,6 +12,8 @@ k8s-openapi.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 regex.workspace = true
+# Time zones for CronJob schedules (Go embeds time/tzdata the same way).
+jiff = { version = "0.2.46", features = ["tzdb-bundle-always"] }
 
 
 [dev-dependencies]
