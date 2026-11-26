@@ -156,9 +156,6 @@ impl MetricsHandler {
         *self.writers.write() = Some(Arc::new(writers));
     }
 
-    pub fn is_configured(&self) -> bool {
-        self.writers.read().is_some()
-    }
 
     /// Serves one scrape.
     pub async fn serve(self: Arc<Self>, query: Option<String>, headers: HeaderMap) -> Response {

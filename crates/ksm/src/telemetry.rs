@@ -186,10 +186,7 @@ impl Registry {
     }
 
     /// The text exposition format (0.0.4) of every family with series.
-    pub fn render(
-        &self,
-        extra: &[(String, String, &str, Vec<(Vec<(String, String)>, f64)>)],
-    ) -> Vec<u8> {
+    pub fn render(&self, extra: &[crate::process::ExtraFamily]) -> Vec<u8> {
         let fams = self.families.lock();
         let mut out = Vec::with_capacity(4096);
         // Extra families (process metrics) are merged into the sorted order.

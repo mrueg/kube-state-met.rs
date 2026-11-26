@@ -1,7 +1,6 @@
 //! One run of kube-state-metrics: config, stores, autosharding and the two
 //! HTTP servers (Go: `pkg/app/server.go`, `pkg/metricshandler.Run`).
 
-use std::collections::BTreeSet;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
@@ -67,6 +66,7 @@ struct ConfigMetrics {
 }
 
 /// Self-metrics registered at the start of every run.
+#[expect(dead_code, reason = "the CRD counters are fed by custom resource discovery (wave 4)")]
 pub struct SelfMetrics {
     pub registry: Registry,
     pub durations: HistogramVec,
@@ -630,13 +630,6 @@ fn telemetry_router(registry: Registry) -> Router {
         .fallback(|req: Request| fallback(req, include_str!("landing/telemetry.html")))
 }
 
-/// Resources set by default, sorted.
-pub fn default_resources() -> BTreeSet<String> {
-    crate::options::DEFAULT_RESOURCES
-        .iter()
-        .map(|s| (*s).to_owned())
-        .collect()
-}
 
 #[cfg(test)]
 mod tests {
