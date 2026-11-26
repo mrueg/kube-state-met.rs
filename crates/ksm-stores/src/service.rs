@@ -1,17 +1,121 @@
-//! Port of `internal/store/service.go`. NOT PORTED YET: generates no families.
+//! Port of `internal/store/service.go`.
 
-use k8s_openapi::api::core::v1::Service;
+use k8s_openapi::api::core::v1::{Service, ServiceSpec};
 use ksm_core::FamilyGenerator;
+
+use crate::util::*;
 
 pub const NAME: &str = "services";
 pub const GO_TYPE: &str = "*v1.Service";
 pub const CLUSTER_SCOPED: bool = false;
 /// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = false;
+pub const PORTED: bool = true;
+
+/// A spec string field, `""` when the spec or the field is unset.
+fn spec_str(sv: &Service, f: fn(&ServiceSpec) -> &Option<String>) -> String {
+    sv.spec
+        .as_ref()
+        .map(|sp| s(f(sp)).to_owned())
+        .unwrap_or_default()
+}
 
 pub fn families(
-    _allow_annotations: &[String],
-    _allow_labels: &[String],
+    allow_annotations: &[String],
+    allow_labels: &[String],
 ) -> Vec<FamilyGenerator<Service>> {
-    Vec::new()
+    let mut f = Families::new(&["namespace", "service", "uid"], |o: &Service| {
+        vec![ns(&o.metadata), name(&o.metadata), s(&o.metadata.uid)]
+    });
+    f.add(
+        "kube_service_info",
+        "Information about service.",
+        Gauge,
+        Stable,
+        "",
+        |sv| {
+            vec![mk(
+                &[
+                    "cluster_ip",
+                    "external_name",
+                    "load_balancer_ip",
+                    "external_traffic_policy",
+                ],
+                vec![
+                    spec_str(sv, |sp| &sp.cluster_ip),
+                    spec_str(sv, |sp| &sp.external_name),
+                    spec_str(sv, |sp| &sp.load_balancer_ip),
+                    spec_str(sv, |sp| &sp.external_traffic_policy),
+                ],
+                1.0,
+            )]
+        },
+    )
+    .add(
+        "kube_service_created",
+        "Unix creation timestamp",
+        Gauge,
+        Stable,
+        "",
+        |sv| created_metric(&sv.metadata),
+    )
+    .add(
+        "kube_service_spec_type",
+        "Type about service.",
+        Gauge,
+        Stable,
+        "",
+        |sv| vec![m1("type", spec_str(sv, |sp| &sp.type_), 1.0)],
+    )
+    .annotations("kube_service_annotations", Alpha, allow_annotations, |o| {
+        &o.metadata
+    })
+    .labels("kube_service_labels", Stable, allow_labels, |o| &o.metadata)
+    .add(
+        "kube_service_spec_external_ip",
+        "Service external ips. One series for each ip",
+        Gauge,
+        Stable,
+        "",
+        |sv| {
+            sv.spec
+                .as_ref()
+                .and_then(|sp| sp.external_ips.as_ref())
+                .into_iter()
+                .flatten()
+                .map(|ip| m1("external_ip", ip.as_str(), 1.0))
+                .collect()
+        },
+    )
+    .add(
+        "kube_service_status_load_balancer_ingress",
+        "Service load balancer ingress status",
+        Gauge,
+        Stable,
+        "",
+        |sv| {
+            sv.status
+                .as_ref()
+                .and_then(|st| st.load_balancer.as_ref())
+                .and_then(|lb| lb.ingress.as_ref())
+                .into_iter()
+                .flatten()
+                .map(|i| {
+                    mk(
+                        &["ip", "hostname"],
+                        vec![s(&i.ip).to_owned(), s(&i.hostname).to_owned()],
+                        1.0,
+                    )
+                })
+                .collect()
+        },
+    )
+    .add(
+        "kube_service_deletion_timestamp",
+        "Unix deletion timestamp",
+        Gauge,
+        Alpha,
+        "",
+        |sv| deletion_metric(&sv.metadata),
+    );
+    f.build()
 }
