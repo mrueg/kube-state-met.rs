@@ -236,3 +236,52 @@ pub fn conditions_with(keys: &[&'static str], values: &[&str], status: &str) -> 
         })
         .collect()
 }
+
+/// Go's `metav1.MicroTime.IsZero()` for an optional micro time.
+pub fn micro_time_is_zero(t: Option<&MicroTime>) -> bool {
+    match t {
+        None => true,
+        Some(t) => t.0.as_second() == GO_ZERO_TIME_UNIX && t.0.subsec_nanosecond() == 0,
+    }
+}
+
+/// `float64(t.Unix())` of a value-typed Go time that may be unset: an unset
+/// time is Go's zero time (-62135596800).
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "Go converts int64 seconds to float64 the same way"
+)]
+pub fn time_or_zero_f64(t: Option<&Time>) -> f64 {
+    match t {
+        Some(t) => time_f64(t),
+        None => GO_ZERO_TIME_UNIX as f64,
+    }
+}
+
+/// The `owner_kind`, `owner_name`, `owner_is_controller` samples of an
+/// object's owner references (a single empty sample when there are none).
+pub fn owner_metrics(m: &ObjectMeta) -> Vec<Metric> {
+    const KEYS: &[&str] = &["owner_kind", "owner_name", "owner_is_controller"];
+    match m.owner_references.as_deref() {
+        None | Some([]) => vec![mk(
+            KEYS,
+            vec![String::new(), String::new(), String::new()],
+            1.0,
+        )],
+        Some(owners) => owners
+            .iter()
+            .map(|o| {
+                let ctrl = match o.controller {
+                    Some(c) => c.to_string(),
+                    None => "false".to_owned(),
+                };
+                mk(KEYS, vec![o.kind.clone(), o.name.clone(), ctrl], 1.0)
+            })
+            .collect(),
+    }
+}
+
+/// Go `strconv.FormatBool` of an optional bool, `""` when unset.
+pub fn opt_bool_string(b: Option<bool>) -> String {
+    b.map(|b| b.to_string()).unwrap_or_default()
+}
