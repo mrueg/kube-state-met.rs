@@ -1,0 +1,67 @@
+{
+  "schema": "rust-anything/app-cases@1",
+  "name": "kube-state-metrics",
+  "run": [
+    "/home/mrueg/repos/kube-state-met.rs/target/ksm-go/kube-state-metrics",
+    "--port",
+    "{port}"
+  ],
+  "normalizers": {
+    "version": "Version: \\(version=[^)]*\\)"
+  },
+  "timeout_secs": 30,
+  "http": {
+    "args": [
+      "--kubeconfig=/home/mrueg/repos/kube-state-met.rs/target/app-cases-kubeconfig.yaml",
+      "--resources=certificatesigningrequests,clusterrolebindings,clusterroles,configmaps,cronjobs,daemonsets,deployments,endpoints,endpointslices,horizontalpodautoscalers,ingressclasses,ingresses,jobs,leases,limitranges,mutatingadmissionpolicies,mutatingadmissionpolicybindings,mutatingwebhookconfigurations,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,poddisruptionbudgets,pods,replicasets,replicationcontrollers,resourcequotas,rolebindings,roles,secrets,serviceaccounts,services,statefulsets,storageclasses,validatingadmissionpolicies,validatingadmissionpolicybindings,validatingwebhookconfigurations,volumeattachments,volumeattributesclasses",
+      "--telemetry-port=0",
+      "--host=127.0.0.1",
+      "--enable-gzip-encoding"
+    ],
+    "ready_secs": 30
+  },
+  "unordered": {
+    "input-001-get-metrics": [
+      "body"
+    ],
+    "input-002-get-metrics": [
+      "body"
+    ],
+    "input-003-get-metrics": [
+      "body"
+    ],
+    "input-004-get-metrics": [
+      "body"
+    ],
+    "input-005-get-metrics": [
+      "body"
+    ],
+    "input-006-get-metrics": [
+      "body"
+    ],
+    "input-007-get-metrics": [
+      "body"
+    ],
+    "input-011-post-metrics": [
+      "body"
+    ]
+  },
+  "recorded": [
+    "input-001-get-metrics",
+    "input-002-get-metrics",
+    "input-003-get-metrics",
+    "input-004-get-metrics",
+    "input-005-get-metrics",
+    "input-006-get-metrics",
+    "input-007-get-metrics",
+    "input-008-get-metrics",
+    "input-009-get-metrics",
+    "input-010-head-metrics",
+    "input-011-post-metrics",
+    "input-012-get-healthz",
+    "input-013-get-livez",
+    "input-014-get-root",
+    "input-015-get-nonexistent",
+    "input-016-get-debug"
+  ]
+}

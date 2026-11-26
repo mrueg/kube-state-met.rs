@@ -1,0 +1,884 @@
+# HELP kube_pod_completion_time [STABLE] Completion time in unix timestamp for a pod.
+# TYPE kube_pod_completion_time gauge
+kube_pod_completion_time{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx"} 1.501888018e+09
+# HELP kube_pod_container_info [STABLE] Information about a container in a pod.
+# TYPE kube_pod_container_info gauge
+kube_pod_container_info{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container2",image_spec="k8s.gcr.io/hyperkube2_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container3",image_spec="k8s.gcr.io/hyperkube3_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container2",image_spec="k8s.gcr.io/hyperkube2_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container3",image_spec="k8s.gcr.io/hyperkube3_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",container="container7",image_spec="k8s.gcr.io/hyperkube7_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",container="container1",image_spec="k8s.gcr.io/hyperkube1_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",container="container4",image_spec="k8s.gcr.io/hyperkube4_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",container="container5",image_spec="k8s.gcr.io/hyperkube5_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container2",image_spec="k8s.gcr.io/hyperkube2_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container3",image_spec="k8s.gcr.io/hyperkube3_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",container="container1",image_spec="k8s.gcr.io/hyperkube1_spec",image="k8s.gcr.io/hyperkube1",image_id="docker://sha256:aaa",container_id="docker://ab123"} 1
+kube_pod_container_info{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="container1",image_spec="k8s.gcr.io/hyperkube2_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container2",image_spec="k8s.gcr.io/hyperkube2_spec",image="k8s.gcr.io/hyperkube2",image_id="docker://sha256:bbb",container_id="docker://cd456"} 1
+kube_pod_container_info{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container3",image_spec="k8s.gcr.io/hyperkube3_spec",image="k8s.gcr.io/hyperkube3",image_id="docker://sha256:ccc",container_id="docker://ef789"} 1
+kube_pod_container_info{namespace="ns6",pod="pod6",uid="golden-0211-uid6",container="container7",image_spec="k8s.gcr.io/hyperkube7_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",container="container1",image_spec="k8s.gcr.io/hyperkube1_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_1",image_spec="k8s.gcr.io/hyperkube2_spec",image="k8s.gcr.io/hyperkube2",image_id="docker://sha256:bbb",container_id="docker://cd456"} 1
+kube_pod_container_info{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_2",image_spec="k8s.gcr.io/hyperkube2_spec",image="k8s.gcr.io/hyperkube2",image_id="docker://sha256:bbb",container_id="docker://cd456"} 1
+kube_pod_container_info{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_3",image_spec="k8s.gcr.io/hyperkube2_spec",image="k8s.gcr.io/hyperkube2",image_id="docker://sha256:bbb",container_id="docker://cd456"} 1
+kube_pod_container_info{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",container="container1",image_spec="k8s.gcr.io/hyperkube1_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns7",pod="pod7",uid="golden-0214-uid7",container="container8",image_spec="k8s.gcr.io/hyperkube1_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns5",pod="pod5",uid="golden-0209-uid5",container="container6",image_spec="k8s.gcr.io/hyperkube1_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container2",image_spec="k8s.gcr.io/hyperkube2_spec",image="",image_id="",container_id=""} 1
+kube_pod_container_info{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container3",image_spec="k8s.gcr.io/hyperkube3_spec",image="",image_id="",container_id=""} 1
+# HELP kube_pod_container_resource_limits [STABLE] The number of requested limit resource by a container. It is recommended to use the kube_pod_resource_limits metric exposed by kube-scheduler instead, as it is more precise.
+# TYPE kube_pod_container_resource_limits gauge
+kube_pod_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con1",node="",resource="cpu",unit="core"} 0.2
+kube_pod_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con1",node="",resource="ephemeral_storage",unit="byte"} 3e+08
+kube_pod_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con1",node="",resource="memory",unit="byte"} 1e+08
+kube_pod_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con1",node="",resource="nvidia_com_gpu",unit="integer"} 1
+kube_pod_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con1",node="",resource="storage",unit="byte"} 4e+08
+kube_pod_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con2",node="",resource="cpu",unit="core"} 0.3
+kube_pod_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con2",node="",resource="memory",unit="byte"} 2e+08
+kube_pod_container_resource_limits{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_con1",node="",resource="cpu",unit="core"} 0.4
+kube_pod_container_resource_limits{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_con1",node="",resource="memory",unit="byte"} 3e+08
+kube_pod_container_resource_limits{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_con2",node="",resource="cpu",unit="core"} 0.5
+kube_pod_container_resource_limits{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_con2",node="",resource="memory",unit="byte"} 4e+08
+# HELP kube_pod_container_resource_requests [STABLE] The number of requested request resource by a container. It is recommended to use the kube_pod_resource_requests metric exposed by kube-scheduler instead, as it is more precise.
+# TYPE kube_pod_container_resource_requests gauge
+kube_pod_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con1",node="",resource="cpu",unit="core"} 0.2
+kube_pod_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con1",node="",resource="ephemeral_storage",unit="byte"} 3e+08
+kube_pod_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con1",node="",resource="memory",unit="byte"} 1e+08
+kube_pod_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con1",node="",resource="nvidia_com_gpu",unit="integer"} 1
+kube_pod_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con1",node="",resource="storage",unit="byte"} 4e+08
+kube_pod_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con2",node="",resource="cpu",unit="core"} 0.3
+kube_pod_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_con2",node="",resource="memory",unit="byte"} 2e+08
+kube_pod_container_resource_requests{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_con1",node="",resource="cpu",unit="core"} 0.4
+kube_pod_container_resource_requests{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_con1",node="",resource="memory",unit="byte"} 3e+08
+kube_pod_container_resource_requests{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_con2",node="",resource="cpu",unit="core"} 0.5
+kube_pod_container_resource_requests{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_con2",node="",resource="memory",unit="byte"} 4e+08
+# HELP kube_pod_container_state_started [STABLE] Start time in unix timestamp for a pod container.
+# TYPE kube_pod_container_state_started gauge
+kube_pod_container_state_started{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container2"} 1.501777018e+09
+kube_pod_container_state_started{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",container="container7"} 1.501777018e+09
+kube_pod_container_state_started{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="container1"} 1.501777018e+09
+kube_pod_container_state_started{namespace="ns6",pod="pod6",uid="golden-0211-uid6",container="container7"} 1.501777018e+09
+kube_pod_container_state_started{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",container="container1"} 1.501777018e+09
+# HELP kube_pod_container_status_last_terminated_reason Describes the last reason the container was in terminated state.
+# TYPE kube_pod_container_status_last_terminated_reason gauge
+kube_pod_container_status_last_terminated_reason{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="container",reason="ContainerStatusUnknown"} 1
+kube_pod_container_status_last_terminated_reason{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",container="container7",reason="DeadlineExceeded"} 1
+kube_pod_container_status_last_terminated_reason{namespace="ns6",pod="pod6",uid="golden-0211-uid6",container="container7",reason="OOMKilled"} 1
+# HELP kube_pod_container_status_last_terminated_exitcode Describes the exit code for the last container in terminated state.
+# TYPE kube_pod_container_status_last_terminated_exitcode gauge
+kube_pod_container_status_last_terminated_exitcode{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="container"} 137
+kube_pod_container_status_last_terminated_exitcode{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",container="container7"} 143
+kube_pod_container_status_last_terminated_exitcode{namespace="ns6",pod="pod6",uid="golden-0211-uid6",container="container7"} 137
+# HELP kube_pod_container_status_last_terminated_timestamp Last terminated time for a pod container in unix timestamp.
+# TYPE kube_pod_container_status_last_terminated_timestamp gauge
+kube_pod_container_status_last_terminated_timestamp{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",container="container7"} 1.501779547e+09
+kube_pod_container_status_last_terminated_timestamp{namespace="ns6",pod="pod6",uid="golden-0211-uid6",container="container7"} 1.501779547e+09
+# HELP kube_pod_container_status_ready [STABLE] Describes whether the containers readiness check succeeded.
+# TYPE kube_pod_container_status_ready gauge
+kube_pod_container_status_ready{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container2"} 1
+kube_pod_container_status_ready{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container3"} 0
+kube_pod_container_status_ready{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container2"} 0
+kube_pod_container_status_ready{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container3"} 0
+kube_pod_container_status_ready{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="container"} 0
+kube_pod_container_status_ready{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",container="container7"} 0
+kube_pod_container_status_ready{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",container="container1"} 0
+kube_pod_container_status_ready{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",container="container4"} 0
+kube_pod_container_status_ready{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",container="container5"} 0
+kube_pod_container_status_ready{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container2"} 1
+kube_pod_container_status_ready{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container3"} 0
+kube_pod_container_status_ready{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",container="container1"} 0
+kube_pod_container_status_ready{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="container1"} 0
+kube_pod_container_status_ready{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container2"} 0
+kube_pod_container_status_ready{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container3"} 0
+kube_pod_container_status_ready{namespace="ns6",pod="pod6",uid="golden-0211-uid6",container="container7"} 0
+kube_pod_container_status_ready{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",container="container1"} 0
+kube_pod_container_status_ready{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_1"} 0
+kube_pod_container_status_ready{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_2"} 0
+kube_pod_container_status_ready{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_3"} 0
+kube_pod_container_status_ready{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",container="container1"} 1
+kube_pod_container_status_ready{namespace="ns7",pod="pod7",uid="golden-0214-uid7",container="container8"} 0
+kube_pod_container_status_ready{namespace="ns5",pod="pod5",uid="golden-0209-uid5",container="container6"} 0
+kube_pod_container_status_ready{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container2"} 0
+kube_pod_container_status_ready{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container3"} 0
+# HELP kube_pod_container_status_restarts_total [STABLE] The number of container restarts per container.
+# TYPE kube_pod_container_status_restarts_total counter
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container2"} 0
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container3"} 0
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container2"} 0
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container3"} 0
+kube_pod_container_status_restarts_total{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="container"} 0
+kube_pod_container_status_restarts_total{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",container="container7"} 0
+kube_pod_container_status_restarts_total{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",container="container1"} 0
+kube_pod_container_status_restarts_total{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",container="container4"} 0
+kube_pod_container_status_restarts_total{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",container="container5"} 0
+kube_pod_container_status_restarts_total{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container2"} 0
+kube_pod_container_status_restarts_total{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container3"} 0
+kube_pod_container_status_restarts_total{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",container="container1"} 0
+kube_pod_container_status_restarts_total{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="container1"} 0
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container2"} 0
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container3"} 0
+kube_pod_container_status_restarts_total{namespace="ns6",pod="pod6",uid="golden-0211-uid6",container="container7"} 0
+kube_pod_container_status_restarts_total{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",container="container1"} 0
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_1"} 0
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_2"} 0
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_3"} 0
+kube_pod_container_status_restarts_total{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",container="container1"} 0
+kube_pod_container_status_restarts_total{namespace="ns7",pod="pod7",uid="golden-0214-uid7",container="container8"} 0
+kube_pod_container_status_restarts_total{namespace="ns5",pod="pod5",uid="golden-0209-uid5",container="container6"} 0
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container2"} 0
+kube_pod_container_status_restarts_total{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container3"} 1
+# HELP kube_pod_container_status_running [STABLE] Describes whether the container is currently in running state.
+# TYPE kube_pod_container_status_running gauge
+kube_pod_container_status_running{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container2"} 0
+kube_pod_container_status_running{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container3"} 0
+kube_pod_container_status_running{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container2"} 0
+kube_pod_container_status_running{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container3"} 0
+kube_pod_container_status_running{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="container"} 0
+kube_pod_container_status_running{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",container="container7"} 1
+kube_pod_container_status_running{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",container="container1"} 0
+kube_pod_container_status_running{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",container="container4"} 0
+kube_pod_container_status_running{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",container="container5"} 0
+kube_pod_container_status_running{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container2"} 0
+kube_pod_container_status_running{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container3"} 0
+kube_pod_container_status_running{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",container="container1"} 0
+kube_pod_container_status_running{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="container1"} 1
+kube_pod_container_status_running{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container2"} 0
+kube_pod_container_status_running{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container3"} 0
+kube_pod_container_status_running{namespace="ns6",pod="pod6",uid="golden-0211-uid6",container="container7"} 1
+kube_pod_container_status_running{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",container="container1"} 0
+kube_pod_container_status_running{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_1"} 0
+kube_pod_container_status_running{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_2"} 0
+kube_pod_container_status_running{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_3"} 0
+kube_pod_container_status_running{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",container="container1"} 0
+kube_pod_container_status_running{namespace="ns7",pod="pod7",uid="golden-0214-uid7",container="container8"} 0
+kube_pod_container_status_running{namespace="ns5",pod="pod5",uid="golden-0209-uid5",container="container6"} 0
+kube_pod_container_status_running{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container2"} 0
+kube_pod_container_status_running{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container3"} 0
+# HELP kube_pod_container_status_terminated [STABLE] Describes whether the container is currently in terminated state.
+# TYPE kube_pod_container_status_terminated gauge
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container2"} 0
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container3"} 0
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container2"} 1
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container3"} 0
+kube_pod_container_status_terminated{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="container"} 1
+kube_pod_container_status_terminated{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",container="container7"} 0
+kube_pod_container_status_terminated{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",container="container1"} 0
+kube_pod_container_status_terminated{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",container="container4"} 0
+kube_pod_container_status_terminated{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",container="container5"} 0
+kube_pod_container_status_terminated{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container2"} 0
+kube_pod_container_status_terminated{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container3"} 0
+kube_pod_container_status_terminated{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",container="container1"} 0
+kube_pod_container_status_terminated{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="container1"} 0
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container2"} 0
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container3"} 0
+kube_pod_container_status_terminated{namespace="ns6",pod="pod6",uid="golden-0211-uid6",container="container7"} 0
+kube_pod_container_status_terminated{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",container="container1"} 1
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_1"} 1
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_2"} 1
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_3"} 1
+kube_pod_container_status_terminated{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",container="container1"} 0
+kube_pod_container_status_terminated{namespace="ns7",pod="pod7",uid="golden-0214-uid7",container="container8"} 0
+kube_pod_container_status_terminated{namespace="ns5",pod="pod5",uid="golden-0209-uid5",container="container6"} 0
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container2"} 0
+kube_pod_container_status_terminated{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container3"} 0
+# HELP kube_pod_container_status_terminated_reason Describes the reason the container is currently in terminated state.
+# TYPE kube_pod_container_status_terminated_reason gauge
+kube_pod_container_status_terminated_reason{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container2",reason="OOMKilled"} 1
+kube_pod_container_status_terminated_reason{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="container",reason="ContainerStatusUnknown"} 1
+kube_pod_container_status_terminated_reason{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",container="container1",reason="Completed"} 1
+kube_pod_container_status_terminated_reason{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_1",reason=""} 1
+kube_pod_container_status_terminated_reason{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_2",reason=""} 1
+kube_pod_container_status_terminated_reason{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_3",reason=""} 1
+# HELP kube_pod_container_status_waiting [STABLE] Describes whether the container is currently in waiting state.
+# TYPE kube_pod_container_status_waiting gauge
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container2"} 0
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",container="container3"} 0
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container2"} 0
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container3"} 1
+kube_pod_container_status_waiting{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="container"} 0
+kube_pod_container_status_waiting{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",container="container7"} 0
+kube_pod_container_status_waiting{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",container="container1"} 0
+kube_pod_container_status_waiting{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",container="container4"} 1
+kube_pod_container_status_waiting{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",container="container5"} 1
+kube_pod_container_status_waiting{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container2"} 0
+kube_pod_container_status_waiting{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="container3"} 0
+kube_pod_container_status_waiting{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",container="container1"} 0
+kube_pod_container_status_waiting{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="container1"} 0
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container2"} 0
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="container3"} 0
+kube_pod_container_status_waiting{namespace="ns6",pod="pod6",uid="golden-0211-uid6",container="container7"} 0
+kube_pod_container_status_waiting{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",container="container1"} 0
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_1"} 0
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_2"} 0
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",container="container2_3"} 0
+kube_pod_container_status_waiting{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",container="container1"} 0
+kube_pod_container_status_waiting{namespace="ns7",pod="pod7",uid="golden-0214-uid7",container="container8"} 1
+kube_pod_container_status_waiting{namespace="ns5",pod="pod5",uid="golden-0209-uid5",container="container6"} 1
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container2"} 0
+kube_pod_container_status_waiting{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",container="container3"} 0
+# HELP kube_pod_container_status_waiting_reason [STABLE] Describes the reason the container is currently in waiting state.
+# TYPE kube_pod_container_status_waiting_reason gauge
+kube_pod_container_status_waiting_reason{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",container="container3",reason="ContainerCreating"} 1
+kube_pod_container_status_waiting_reason{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",container="container4",reason="CrashLoopBackOff"} 1
+kube_pod_container_status_waiting_reason{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",container="container5",reason="ImagePullBackOff"} 1
+kube_pod_container_status_waiting_reason{namespace="ns7",pod="pod7",uid="golden-0214-uid7",container="container8",reason="CreateContainerConfigError"} 1
+kube_pod_container_status_waiting_reason{namespace="ns5",pod="pod5",uid="golden-0209-uid5",container="container6",reason="ErrImagePull"} 1
+# HELP kube_pod_created [STABLE] Unix creation timestamp
+# TYPE kube_pod_created gauge
+kube_pod_created{namespace="ns1",pod="pod1-g152",uid="golden-0152-abc-123-xxx"} 1.5e+09
+kube_pod_created{namespace="ns1",pod="pod1-g151",uid="golden-0151-abc-123-xxx"} 1.5e+09
+# HELP kube_pod_deletion_timestamp Unix deletion timestamp
+# TYPE kube_pod_deletion_timestamp gauge
+kube_pod_deletion_timestamp{namespace="ns1",pod="pod1-g151",uid="golden-0151-abc-123-xxx"} 1.8e+09
+# HELP kube_pod_info [STABLE] Information about pod.
+# TYPE kube_pod_info gauge
+kube_pod_info{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g186",uid="golden-0186-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns5",pod="pod5-g210",uid="golden-0210-uid5",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g164",uid="golden-0164-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g200",uid="golden-0200-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g179",uid="golden-0179-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g201",uid="golden-0201-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1",uid="golden-0150-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g184",uid="golden-0184-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g176",uid="golden-0176-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g174",uid="golden-0174-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod2",uid="golden-0187-uid6",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g202",uid="golden-0202-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g163",uid="golden-0163-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g197",uid="golden-0197-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4",uid="golden-0153-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns3",pod="pod3",uid="golden-0203-uid3",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g177",uid="golden-0177-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g152",uid="golden-0152-abc-123-xxx",host_ip="1.1.1.1",pod_ip="1.2.3.4",node="node1",created_by_kind="",created_by_name="",priority_class="system-node-critical",host_network="true"} 1
+kube_pod_info{namespace="ns3",pod="pod3-g205",uid="golden-0205-uid3",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns7",pod="pod7disruption",uid="golden-0213-uid7",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g182",uid="golden-0182-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g180",uid="golden-0180-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g183",uid="golden-0183-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns6",pod="pod6-g212",uid="golden-0212-uid6",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns8",pod="pod8",uid="golden-0216-uid8",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g198",uid="golden-0198-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns6",pod="pod6",uid="golden-0211-uid6",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns9",pod="pod9",uid="golden-0217-uid9",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g178",uid="golden-0178-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g151",uid="golden-0151-abc-123-xxx",host_ip="1.1.1.1",pod_ip="1.2.3.4",node="node1",created_by_kind="",created_by_name="",priority_class="system-node-critical",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",host_ip="1.1.1.1",pod_ip="2.3.4.5",node="node2",created_by_kind="ReplicaSet",created_by_name="rs-name",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g181",uid="golden-0181-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g185",uid="golden-0185-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns1",pod="pod1-g175",uid="golden-0175-uid1",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g199",uid="golden-0199-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns7",pod="pod7",uid="golden-0214-uid7",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns5",pod="pod5",uid="golden-0209-uid5",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+kube_pod_info{namespace="ns2",pod="pod2-g196",uid="golden-0196-uid2",host_ip="",pod_ip="",node="",created_by_kind="",created_by_name="",priority_class="",host_network="false"} 1
+# HELP kube_pod_ips Pod IP addresses
+# TYPE kube_pod_ips gauge
+kube_pod_ips{namespace="ns1",pod="pod1-g152",uid="golden-0152-abc-123-xxx",ip="1.2.3.4",ip_family="4"} 1
+kube_pod_ips{namespace="ns1",pod="pod1-g152",uid="golden-0152-abc-123-xxx",ip="fc00:1234:5678:90ab:cdef:cafe:f00d:d00d",ip_family="6"} 1
+kube_pod_ips{namespace="ns1",pod="pod1-g152",uid="golden-0152-abc-123-xxx",ip="::ffff:1.2.3.4",ip_family="4"} 1
+# HELP kube_pod_init_container_info [STABLE] Information about an init container in a pod.
+# TYPE kube_pod_init_container_info gauge
+kube_pod_init_container_info{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer2",image_spec="k8s.gcr.io/initfoo_spec",image="",image_id="",container_id="",restart_policy=""} 1
+kube_pod_init_container_info{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer3",image_spec="k8s.gcr.io/initfoo_spec",image="",image_id="",container_id="",restart_policy=""} 1
+kube_pod_init_container_info{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",container="initcontainer1",image_spec="k8s.gcr.io/initfoo_spec",image="",image_id="",container_id="",restart_policy=""} 1
+kube_pod_init_container_info{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer1",image_spec="k8s.gcr.io/initfoo_spec",image="",image_id="",container_id="",restart_policy=""} 1
+kube_pod_init_container_info{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer2",image_spec="k8s.gcr.io/initfoo_spec",image="",image_id="",container_id="",restart_policy=""} 1
+kube_pod_init_container_info{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="initcontainer1",image_spec="k8s.gcr.io/initfoo_spec",image="",image_id="",container_id="",restart_policy=""} 1
+kube_pod_init_container_info{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="initContainer",image_spec="k8s.gcr.io/initfoo_spec",image="k8s.gcr.io/initfoo",image_id="docker://sha256:wxyz",container_id="docker://ef123",restart_policy="Always"} 1
+kube_pod_init_container_info{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer1",image_spec="k8s.gcr.io/init1_spec",image="",image_id="",container_id="",restart_policy=""} 1
+kube_pod_init_container_info{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer2",image_spec="k8s.gcr.io/init2_spec",image="",image_id="",container_id="",restart_policy=""} 1
+kube_pod_init_container_info{namespace="ns9",pod="pod9",uid="golden-0217-uid9",container="initcontainer1",image_spec="k8s.gcr.io/init1_spec",image="",image_id="",container_id="",restart_policy=""} 1
+# HELP kube_pod_init_container_resource_limits The number of requested limit resource by an init container.
+# TYPE kube_pod_init_container_resource_limits gauge
+kube_pod_init_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_initcon1",resource="memory",unit="byte"} 1e+08
+kube_pod_init_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_initcon1",resource="nvidia_com_gpu",unit="integer"} 1
+kube_pod_init_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_initcon1",resource="storage",unit="byte"} 4e+08
+kube_pod_init_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_initcon1",resource="cpu",unit="core"} 0.2
+kube_pod_init_container_resource_limits{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_initcon1",resource="ephemeral_storage",unit="byte"} 3e+08
+kube_pod_init_container_resource_limits{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_initcon1",resource="cpu",unit="core"} 0.4
+kube_pod_init_container_resource_limits{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_initcon1",resource="memory",unit="byte"} 3e+08
+# HELP kube_pod_init_container_resource_requests The number of requested request resource by an init container.
+# TYPE kube_pod_init_container_resource_requests gauge
+kube_pod_init_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_initcon1",resource="cpu",unit="core"} 0.2
+kube_pod_init_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_initcon1",resource="ephemeral_storage",unit="byte"} 3e+08
+kube_pod_init_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_initcon1",resource="memory",unit="byte"} 1e+08
+kube_pod_init_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_initcon1",resource="nvidia_com_gpu",unit="integer"} 1
+kube_pod_init_container_resource_requests{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",container="pod1_initcon1",resource="storage",unit="byte"} 4e+08
+kube_pod_init_container_resource_requests{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_initcon1",resource="cpu",unit="core"} 0.4
+kube_pod_init_container_resource_requests{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",container="pod2_initcon1",resource="memory",unit="byte"} 3e+08
+# HELP kube_pod_init_container_state_started Start time in unix timestamp for a pod init container.
+# TYPE kube_pod_init_container_state_started gauge
+kube_pod_init_container_state_started{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="initcontainer1"} -6.21355968e+10
+kube_pod_init_container_state_started{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer1"} 1.501777018e+09
+kube_pod_init_container_state_started{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer2"} 1.501777018e+09
+kube_pod_init_container_state_started{namespace="ns9",pod="pod9",uid="golden-0217-uid9",container="initcontainer1"} 1.501777018e+09
+# HELP kube_pod_init_container_status_last_terminated_reason Describes the last reason the init container was in terminated state.
+# TYPE kube_pod_init_container_status_last_terminated_reason gauge
+kube_pod_init_container_status_last_terminated_reason{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="init",reason="ContainerStatusUnknown"} 1
+kube_pod_init_container_status_last_terminated_reason{namespace="ns9",pod="pod9",uid="golden-0217-uid9",container="initcontainer1",reason="OOMKilled"} 1
+# HELP kube_pod_init_container_status_last_terminated_exitcode Describes the exit code for the last init container in terminated state.
+# TYPE kube_pod_init_container_status_last_terminated_exitcode gauge
+kube_pod_init_container_status_last_terminated_exitcode{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="init"} 137
+kube_pod_init_container_status_last_terminated_exitcode{namespace="ns9",pod="pod9",uid="golden-0217-uid9",container="initcontainer1"} 137
+# HELP kube_pod_init_container_status_last_terminated_timestamp Last terminated time for a pod init container in unix timestamp.
+# TYPE kube_pod_init_container_status_last_terminated_timestamp gauge
+kube_pod_init_container_status_last_terminated_timestamp{namespace="ns9",pod="pod9",uid="golden-0217-uid9",container="initcontainer1"} 1.501779547e+09
+# HELP kube_pod_init_container_status_ready [STABLE] Describes whether the init containers readiness check succeeded.
+# TYPE kube_pod_init_container_status_ready gauge
+kube_pod_init_container_status_ready{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer2"} 0
+kube_pod_init_container_status_ready{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer3"} 0
+kube_pod_init_container_status_ready{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="init"} 0
+kube_pod_init_container_status_ready{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",container="initcontainer1"} 0
+kube_pod_init_container_status_ready{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer1"} 1
+kube_pod_init_container_status_ready{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer2"} 0
+kube_pod_init_container_status_ready{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="initcontainer1"} 0
+kube_pod_init_container_status_ready{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="initContainer"} 0
+kube_pod_init_container_status_ready{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer1"} 0
+kube_pod_init_container_status_ready{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer2"} 0
+kube_pod_init_container_status_ready{namespace="ns9",pod="pod9",uid="golden-0217-uid9",container="initcontainer1"} 0
+# HELP kube_pod_init_container_status_restarts_total [STABLE] The number of restarts for the init container.
+# TYPE kube_pod_init_container_status_restarts_total counter
+kube_pod_init_container_status_restarts_total{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer2"} 0
+kube_pod_init_container_status_restarts_total{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer3"} 1
+kube_pod_init_container_status_restarts_total{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="init"} 0
+kube_pod_init_container_status_restarts_total{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",container="initcontainer1"} 1
+kube_pod_init_container_status_restarts_total{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer1"} 0
+kube_pod_init_container_status_restarts_total{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer2"} 0
+kube_pod_init_container_status_restarts_total{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="initcontainer1"} 0
+kube_pod_init_container_status_restarts_total{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="initContainer"} 0
+kube_pod_init_container_status_restarts_total{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer1"} 0
+kube_pod_init_container_status_restarts_total{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer2"} 0
+kube_pod_init_container_status_restarts_total{namespace="ns9",pod="pod9",uid="golden-0217-uid9",container="initcontainer1"} 0
+# HELP kube_pod_init_container_status_running [STABLE] Describes whether the init container is currently in running state.
+# TYPE kube_pod_init_container_status_running gauge
+kube_pod_init_container_status_running{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer2"} 0
+kube_pod_init_container_status_running{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer3"} 0
+kube_pod_init_container_status_running{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="init"} 0
+kube_pod_init_container_status_running{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",container="initcontainer1"} 0
+kube_pod_init_container_status_running{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer1"} 0
+kube_pod_init_container_status_running{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer2"} 0
+kube_pod_init_container_status_running{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="initcontainer1"} 1
+kube_pod_init_container_status_running{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="initContainer"} 0
+kube_pod_init_container_status_running{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer1"} 1
+kube_pod_init_container_status_running{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer2"} 0
+kube_pod_init_container_status_running{namespace="ns9",pod="pod9",uid="golden-0217-uid9",container="initcontainer1"} 1
+# HELP kube_pod_init_container_status_terminated [STABLE] Describes whether the init container is currently in terminated state.
+# TYPE kube_pod_init_container_status_terminated gauge
+kube_pod_init_container_status_terminated{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer2"} 0
+kube_pod_init_container_status_terminated{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer3"} 0
+kube_pod_init_container_status_terminated{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="init"} 1
+kube_pod_init_container_status_terminated{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",container="initcontainer1"} 0
+kube_pod_init_container_status_terminated{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer1"} 0
+kube_pod_init_container_status_terminated{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer2"} 0
+kube_pod_init_container_status_terminated{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="initcontainer1"} 0
+kube_pod_init_container_status_terminated{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="initContainer"} 0
+kube_pod_init_container_status_terminated{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer1"} 0
+kube_pod_init_container_status_terminated{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer2"} 1
+kube_pod_init_container_status_terminated{namespace="ns9",pod="pod9",uid="golden-0217-uid9",container="initcontainer1"} 0
+# HELP kube_pod_init_container_status_terminated_reason Describes the reason the init container is currently in terminated state.
+# TYPE kube_pod_init_container_status_terminated_reason gauge
+kube_pod_init_container_status_terminated_reason{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="init",reason="ContainerStatusUnknown"} 1
+kube_pod_init_container_status_terminated_reason{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer2",reason=""} 1
+# HELP kube_pod_init_container_status_waiting [STABLE] Describes whether the init container is currently in waiting state.
+# TYPE kube_pod_init_container_status_waiting gauge
+kube_pod_init_container_status_waiting{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer2"} 0
+kube_pod_init_container_status_waiting{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",container="initcontainer3"} 0
+kube_pod_init_container_status_waiting{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",container="init"} 0
+kube_pod_init_container_status_waiting{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",container="initcontainer1"} 0
+kube_pod_init_container_status_waiting{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer1"} 0
+kube_pod_init_container_status_waiting{namespace="ns3",pod="pod3",uid="golden-0203-uid3",container="initcontainer2"} 0
+kube_pod_init_container_status_waiting{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",container="initcontainer1"} 0
+kube_pod_init_container_status_waiting{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",container="initContainer"} 0
+kube_pod_init_container_status_waiting{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer1"} 0
+kube_pod_init_container_status_waiting{namespace="ns8",pod="pod8",uid="golden-0216-uid8",container="initcontainer2"} 0
+kube_pod_init_container_status_waiting{namespace="ns9",pod="pod9",uid="golden-0217-uid9",container="initcontainer1"} 0
+# HELP kube_pod_init_container_status_waiting_reason Describes the reason the init container is currently in waiting state.
+# TYPE kube_pod_init_container_status_waiting_reason gauge
+# HELP kube_pod_annotations Kubernetes annotations converted to Prometheus labels.
+# TYPE kube_pod_annotations gauge
+# HELP kube_pod_labels [STABLE] Kubernetes labels converted to Prometheus labels.
+# TYPE kube_pod_labels gauge
+# HELP kube_pod_overhead_cpu_cores The pod overhead in regards to cpu cores associated with running a pod.
+# TYPE kube_pod_overhead_cpu_cores gauge
+# HELP kube_pod_overhead_memory_bytes The pod overhead in regards to memory associated with running a pod.
+# TYPE kube_pod_overhead_memory_bytes gauge
+# HELP kube_pod_owner [STABLE] Information about the Pod's owner.
+# TYPE kube_pod_owner gauge
+kube_pod_owner{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g186",uid="golden-0186-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns5",pod="pod5-g210",uid="golden-0210-uid5",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g164",uid="golden-0164-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g200",uid="golden-0200-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g179",uid="golden-0179-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g201",uid="golden-0201-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1",uid="golden-0150-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g184",uid="golden-0184-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g176",uid="golden-0176-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g174",uid="golden-0174-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod2",uid="golden-0187-uid6",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g202",uid="golden-0202-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g163",uid="golden-0163-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g197",uid="golden-0197-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4",uid="golden-0153-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns3",pod="pod3",uid="golden-0203-uid3",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g177",uid="golden-0177-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g152",uid="golden-0152-abc-123-xxx",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns3",pod="pod3-g205",uid="golden-0205-uid3",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns7",pod="pod7disruption",uid="golden-0213-uid7",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g182",uid="golden-0182-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g180",uid="golden-0180-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g183",uid="golden-0183-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns6",pod="pod6-g212",uid="golden-0212-uid6",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns8",pod="pod8",uid="golden-0216-uid8",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g198",uid="golden-0198-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns6",pod="pod6",uid="golden-0211-uid6",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns9",pod="pod9",uid="golden-0217-uid9",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g178",uid="golden-0178-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g151",uid="golden-0151-abc-123-xxx",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",owner_kind="ReplicaSet",owner_name="rs-name",owner_is_controller="true"} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g181",uid="golden-0181-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g185",uid="golden-0185-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns1",pod="pod1-g175",uid="golden-0175-uid1",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g199",uid="golden-0199-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns7",pod="pod7",uid="golden-0214-uid7",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns5",pod="pod5",uid="golden-0209-uid5",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+kube_pod_owner{namespace="ns2",pod="pod2-g196",uid="golden-0196-uid2",owner_kind="",owner_name="",owner_is_controller=""} 1
+# HELP kube_pod_resourceclaim_info Information about a DRA ResourceClaim referenced by a pod, one series per pod.spec.resourceClaims entry; claim_name is the pod-local reference and resourceclaim_name is the resolved ResourceClaim object name.
+# TYPE kube_pod_resourceclaim_info gauge
+kube_pod_resourceclaim_info{namespace="ns1",pod="pod1-g175",uid="golden-0175-uid1",claim_name="gpu",resourceclaim_name="shared-gpu-claim",resourceclaim_template_name=""} 1
+kube_pod_resourceclaim_info{namespace="ns1",pod="pod1-g175",uid="golden-0175-uid1",claim_name="gpu-tmpl",resourceclaim_name="pod1-gpu-tmpl-abcde",resourceclaim_template_name="gpu-template"} 1
+kube_pod_resourceclaim_info{namespace="ns2",pod="pod2-g196",uid="golden-0196-uid2",claim_name="pending",resourceclaim_name="",resourceclaim_template_name="gpu-template"} 1
+# HELP kube_pod_restart_policy [STABLE] Describes the restart policy in use by this pod.
+# TYPE kube_pod_restart_policy gauge
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g186",uid="golden-0186-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns5",pod="pod5-g210",uid="golden-0210-uid5",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g164",uid="golden-0164-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g200",uid="golden-0200-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g179",uid="golden-0179-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g201",uid="golden-0201-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1",uid="golden-0150-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g184",uid="golden-0184-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g176",uid="golden-0176-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g174",uid="golden-0174-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod2",uid="golden-0187-uid6",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g202",uid="golden-0202-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g163",uid="golden-0163-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g197",uid="golden-0197-uid2",type="Always"} 1
+kube_pod_restart_policy{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4",uid="golden-0153-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns3",pod="pod3",uid="golden-0203-uid3",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g177",uid="golden-0177-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g152",uid="golden-0152-abc-123-xxx",type=""} 1
+kube_pod_restart_policy{namespace="ns3",pod="pod3-g205",uid="golden-0205-uid3",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns7",pod="pod7disruption",uid="golden-0213-uid7",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g182",uid="golden-0182-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g180",uid="golden-0180-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g183",uid="golden-0183-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns6",pod="pod6-g212",uid="golden-0212-uid6",type=""} 1
+kube_pod_restart_policy{namespace="ns8",pod="pod8",uid="golden-0216-uid8",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g198",uid="golden-0198-uid2",type="OnFailure"} 1
+kube_pod_restart_policy{namespace="ns6",pod="pod6",uid="golden-0211-uid6",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns9",pod="pod9",uid="golden-0217-uid9",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g178",uid="golden-0178-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g151",uid="golden-0151-abc-123-xxx",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g181",uid="golden-0181-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g185",uid="golden-0185-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns1",pod="pod1-g175",uid="golden-0175-uid1",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g199",uid="golden-0199-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns7",pod="pod7",uid="golden-0214-uid7",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns5",pod="pod5",uid="golden-0209-uid5",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",type=""} 1
+kube_pod_restart_policy{namespace="ns2",pod="pod2-g196",uid="golden-0196-uid2",type=""} 1
+# HELP kube_pod_runtimeclass_name_info The runtimeclass associated with the pod.
+# TYPE kube_pod_runtimeclass_name_info gauge
+kube_pod_runtimeclass_name_info{namespace="ns1",pod="pod1-g163",uid="golden-0163-uid1",runtimeclass_name="foo"} 1
+# HELP kube_pod_spec_volumes_persistentvolumeclaims_info [STABLE] Information about persistentvolumeclaim and ephemeral volumes in a pod.
+# TYPE kube_pod_spec_volumes_persistentvolumeclaims_info gauge
+kube_pod_spec_volumes_persistentvolumeclaims_info{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",volume="myvol",persistentvolumeclaim="claim1",ephemeral="false"} 1
+kube_pod_spec_volumes_persistentvolumeclaims_info{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",volume="my-readonly-vol",persistentvolumeclaim="claim2",ephemeral="false"} 1
+kube_pod_spec_volumes_persistentvolumeclaims_info{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",volume="my-ephemeral-vol",persistentvolumeclaim="pod1-g167-my-ephemeral-vol",ephemeral="true"} 1
+# HELP kube_pod_spec_volumes_persistentvolumeclaims_readonly [STABLE] Describes whether a persistentvolumeclaim is mounted read only. Ephemeral volumes always report 0 since the ephemeral volume source does not support a read-only flag.
+# TYPE kube_pod_spec_volumes_persistentvolumeclaims_readonly gauge
+kube_pod_spec_volumes_persistentvolumeclaims_readonly{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",volume="myvol",persistentvolumeclaim="claim1",ephemeral="false"} 0
+kube_pod_spec_volumes_persistentvolumeclaims_readonly{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",volume="my-readonly-vol",persistentvolumeclaim="claim2",ephemeral="false"} 1
+kube_pod_spec_volumes_persistentvolumeclaims_readonly{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",volume="my-ephemeral-vol",persistentvolumeclaim="pod1-g167-my-ephemeral-vol",ephemeral="true"} 0
+# HELP kube_pod_start_time [STABLE] Start time in unix timestamp for a pod.
+# TYPE kube_pod_start_time gauge
+kube_pod_start_time{namespace="ns1",pod="pod1-g152",uid="golden-0152-abc-123-xxx"} 1.501569018e+09
+kube_pod_start_time{namespace="ns1",pod="pod1-g151",uid="golden-0151-abc-123-xxx"} 1.501569018e+09
+# HELP kube_pod_status_phase [STABLE] The pods current phase.
+# TYPE kube_pod_status_phase gauge
+kube_pod_status_phase{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",phase="Running"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",phase="Running"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",phase="Running"} 1
+kube_pod_status_phase{namespace="ns1",pod="pod1-g184",uid="golden-0184-uid1",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns1",pod="pod1-g184",uid="golden-0184-uid1",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns1",pod="pod1-g184",uid="golden-0184-uid1",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns1",pod="pod1-g184",uid="golden-0184-uid1",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns1",pod="pod1-g184",uid="golden-0184-uid1",phase="Running"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",phase="Running"} 1
+kube_pod_status_phase{namespace="ns2",pod="pod2-g202",uid="golden-0202-uid2",phase="Pending"} 1
+kube_pod_status_phase{namespace="ns2",pod="pod2-g202",uid="golden-0202-uid2",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns2",pod="pod2-g202",uid="golden-0202-uid2",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns2",pod="pod2-g202",uid="golden-0202-uid2",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns2",pod="pod2-g202",uid="golden-0202-uid2",phase="Running"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",phase="Pending"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",phase="Running"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",phase="Failed"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",phase="Running"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4",uid="golden-0153-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4",uid="golden-0153-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4",uid="golden-0153-uid4",phase="Failed"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4",uid="golden-0153-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4",uid="golden-0153-uid4",phase="Running"} 0
+kube_pod_status_phase{namespace="ns3",pod="pod3-g205",uid="golden-0205-uid3",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns3",pod="pod3-g205",uid="golden-0205-uid3",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns3",pod="pod3-g205",uid="golden-0205-uid3",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns3",pod="pod3-g205",uid="golden-0205-uid3",phase="Unknown"} 1
+kube_pod_status_phase{namespace="ns3",pod="pod3-g205",uid="golden-0205-uid3",phase="Running"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",phase="Running"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",phase="Running"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",phase="Running"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",phase="Failed"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",phase="Running"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",phase="Pending"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",phase="Succeeded"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",phase="Failed"} 1
+kube_pod_status_phase{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",phase="Unknown"} 0
+kube_pod_status_phase{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",phase="Running"} 0
+# HELP kube_pod_status_qos_class The pods current qosClass.
+# TYPE kube_pod_status_qos_class gauge
+kube_pod_status_qos_class{namespace="ns1",pod="pod1-g185",uid="golden-0185-uid1",qos_class="BestEffort"} 1
+kube_pod_status_qos_class{namespace="ns1",pod="pod1-g185",uid="golden-0185-uid1",qos_class="Burstable"} 0
+kube_pod_status_qos_class{namespace="ns1",pod="pod1-g185",uid="golden-0185-uid1",qos_class="Guaranteed"} 0
+# HELP kube_pod_status_ready [STABLE] Describes whether the pod is ready to serve requests.
+# TYPE kube_pod_status_ready gauge
+kube_pod_status_ready{namespace="ns1",pod="pod1-g183",uid="golden-0183-uid1",condition="true"} 1
+kube_pod_status_ready{namespace="ns1",pod="pod1-g183",uid="golden-0183-uid1",condition="false"} 0
+kube_pod_status_ready{namespace="ns1",pod="pod1-g183",uid="golden-0183-uid1",condition="unknown"} 0
+kube_pod_status_ready{namespace="ns6",pod="pod6-g212",uid="golden-0212-uid6",condition="true"} 0
+kube_pod_status_ready{namespace="ns6",pod="pod6-g212",uid="golden-0212-uid6",condition="false"} 0
+kube_pod_status_ready{namespace="ns6",pod="pod6-g212",uid="golden-0212-uid6",condition="unknown"} 0
+kube_pod_status_ready{namespace="ns2",pod="pod2-g199",uid="golden-0199-uid2",condition="true"} 0
+kube_pod_status_ready{namespace="ns2",pod="pod2-g199",uid="golden-0199-uid2",condition="false"} 1
+kube_pod_status_ready{namespace="ns2",pod="pod2-g199",uid="golden-0199-uid2",condition="unknown"} 0
+# HELP kube_pod_status_ready_time Readiness achieved time in unix timestamp for a pod.
+# TYPE kube_pod_status_ready_time gauge
+kube_pod_status_ready_time{namespace="ns1",pod="pod1-g183",uid="golden-0183-uid1"} 1.501666018e+09
+# HELP kube_pod_status_initialized_time Initialized time in unix timestamp for a pod.
+# TYPE kube_pod_status_initialized_time gauge
+kube_pod_status_initialized_time{namespace="ns1",pod="pod1-g181",uid="golden-0181-uid1"} 1.501666018e+09
+# HELP kube_pod_status_container_ready_time Readiness achieved time in unix timestamp for a pod containers.
+# TYPE kube_pod_status_container_ready_time gauge
+kube_pod_status_container_ready_time{namespace="ns1",pod="pod1-g180",uid="golden-0180-uid1"} 1.501666018e+09
+# HELP kube_pod_status_reason The pod status reasons
+# TYPE kube_pod_status_reason gauge
+kube_pod_status_reason{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",reason="TerminationByKubelet"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",reason="NodeAffinity"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",reason="PreemptionByScheduler"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",reason="Evicted"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",reason="SchedulingGated"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",reason="OutOfmemory"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4",uid="golden-0153-uid4",reason="OutOfcpu"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",reason="Other"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",reason="UnexpectedAdmissionError"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",reason="Shutdown"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",reason="NodeLost"} 1
+kube_pod_status_reason{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",reason="TopologyAffinityError"} 1
+# HELP kube_pod_status_disruption_reason The pod disruption condition reason
+# TYPE kube_pod_status_disruption_reason gauge
+kube_pod_status_disruption_reason{namespace="ns5",pod="pod5-g210",uid="golden-0210-uid5",reason="EvictionByEvictionAPI"} 1
+kube_pod_status_disruption_reason{namespace="ns7",pod="pod7disruption",uid="golden-0213-uid7",reason="Other"} 1
+# HELP kube_pod_status_scheduled [STABLE] Describes the status of the scheduling process for the pod.
+# TYPE kube_pod_status_scheduled gauge
+kube_pod_status_scheduled{namespace="ns2",pod="pod2-g200",uid="golden-0200-uid2",condition="true"} 0
+kube_pod_status_scheduled{namespace="ns2",pod="pod2-g200",uid="golden-0200-uid2",condition="false"} 1
+kube_pod_status_scheduled{namespace="ns2",pod="pod2-g200",uid="golden-0200-uid2",condition="unknown"} 0
+kube_pod_status_scheduled{namespace="ns2",pod="pod2-g201",uid="golden-0201-uid2",condition="true"} 0
+kube_pod_status_scheduled{namespace="ns2",pod="pod2-g201",uid="golden-0201-uid2",condition="false"} 1
+kube_pod_status_scheduled{namespace="ns2",pod="pod2-g201",uid="golden-0201-uid2",condition="unknown"} 0
+kube_pod_status_scheduled{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",condition="true"} 0
+kube_pod_status_scheduled{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",condition="false"} 1
+kube_pod_status_scheduled{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",condition="unknown"} 0
+kube_pod_status_scheduled{namespace="ns1",pod="pod1-g182",uid="golden-0182-uid1",condition="true"} 1
+kube_pod_status_scheduled{namespace="ns1",pod="pod1-g182",uid="golden-0182-uid1",condition="false"} 0
+kube_pod_status_scheduled{namespace="ns1",pod="pod1-g182",uid="golden-0182-uid1",condition="unknown"} 0
+# HELP kube_pod_status_scheduled_time [STABLE] Unix timestamp when pod moved into scheduled status
+# TYPE kube_pod_status_scheduled_time gauge
+kube_pod_status_scheduled_time{namespace="ns1",pod="pod1-g182",uid="golden-0182-uid1"} 1.501666018e+09
+# HELP kube_pod_status_unschedulable [STABLE] Describes the unschedulable status for the pod.
+# TYPE kube_pod_status_unschedulable gauge
+kube_pod_status_unschedulable{namespace="ns2",pod="pod2-g200",uid="golden-0200-uid2"} 1
+kube_pod_status_unschedulable{namespace="ns2",pod="pod2-g201",uid="golden-0201-uid2"} 1
+kube_pod_status_unschedulable{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4"} 1
+# HELP kube_pod_status_unscheduled_time Unix timestamp when pod moved into unscheduled status
+# TYPE kube_pod_status_unscheduled_time gauge
+kube_pod_status_unscheduled_time{namespace="ns2",pod="pod2-g200",uid="golden-0200-uid2"} -6.21355968e+10
+kube_pod_status_unscheduled_time{namespace="ns2",pod="pod2-g201",uid="golden-0201-uid2"} -6.21355968e+10
+kube_pod_status_unscheduled_time{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4"} -6.21355968e+10
+# HELP kube_pod_tolerations Information about the pod tolerations
+# TYPE kube_pod_tolerations gauge
+kube_pod_tolerations{namespace="ns1",pod="pod1-g186",uid="golden-0186-uid1",key="key1",operator="Equal",value="value1",effect="NoSchedule",toleration_seconds=""} 1
+kube_pod_tolerations{namespace="ns1",pod="pod1-g186",uid="golden-0186-uid1",key="key2",operator="Exists",value="",effect="",toleration_seconds=""} 1
+kube_pod_tolerations{namespace="ns1",pod="pod1-g186",uid="golden-0186-uid1",key="key3",operator="Equal",value="value3",effect="",toleration_seconds=""} 1
+kube_pod_tolerations{namespace="ns1",pod="pod1-g186",uid="golden-0186-uid1",key="",operator="",value="",effect="",toleration_seconds=""} 1
+# HELP kube_pod_service_account The service account for a pod.
+# TYPE kube_pod_service_account gauge
+kube_pod_service_account{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g186",uid="golden-0186-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns5",pod="pod5-g210",uid="golden-0210-uid5",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g164",uid="golden-0164-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g200",uid="golden-0200-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g179",uid="golden-0179-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g201",uid="golden-0201-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1",uid="golden-0150-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g184",uid="golden-0184-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g176",uid="golden-0176-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g174",uid="golden-0174-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod2",uid="golden-0187-uid6",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g202",uid="golden-0202-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g163",uid="golden-0163-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g197",uid="golden-0197-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4",uid="golden-0153-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns3",pod="pod3",uid="golden-0203-uid3",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g177",uid="golden-0177-uid1",service_account="service-account-name"} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g152",uid="golden-0152-abc-123-xxx",service_account=""} 1
+kube_pod_service_account{namespace="ns3",pod="pod3-g205",uid="golden-0205-uid3",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns7",pod="pod7disruption",uid="golden-0213-uid7",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g182",uid="golden-0182-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g180",uid="golden-0180-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g183",uid="golden-0183-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns6",pod="pod6-g212",uid="golden-0212-uid6",service_account=""} 1
+kube_pod_service_account{namespace="ns8",pod="pod8",uid="golden-0216-uid8",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g198",uid="golden-0198-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns6",pod="pod6",uid="golden-0211-uid6",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns9",pod="pod9",uid="golden-0217-uid9",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g178",uid="golden-0178-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g151",uid="golden-0151-abc-123-xxx",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g181",uid="golden-0181-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g185",uid="golden-0185-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns1",pod="pod1-g175",uid="golden-0175-uid1",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g199",uid="golden-0199-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns7",pod="pod7",uid="golden-0214-uid7",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns5",pod="pod5",uid="golden-0209-uid5",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",service_account=""} 1
+kube_pod_service_account{namespace="ns2",pod="pod2-g196",uid="golden-0196-uid2",service_account=""} 1
+# HELP kube_pod_scheduler The scheduler for a pod.
+# TYPE kube_pod_scheduler gauge
+kube_pod_scheduler{namespace="ns2",pod="pod2-g192",uid="golden-0192-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g186",uid="golden-0186-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g161",uid="golden-0161-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g156",uid="golden-0156-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns5",pod="pod5-g210",uid="golden-0210-uid5",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g195",uid="golden-0195-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g159",uid="golden-0159-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g164",uid="golden-0164-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g200",uid="golden-0200-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g191",uid="golden-0191-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g167",uid="golden-0167-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g179",uid="golden-0179-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g201",uid="golden-0201-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1",uid="golden-0150-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g184",uid="golden-0184-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns",pod="pod_unknown",uid="golden-0218-uid_unknown",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g155",uid="golden-0155-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g176",uid="golden-0176-uid1",name="scheduler1"} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g174",uid="golden-0174-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod2",uid="golden-0187-uid6",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g194",uid="golden-0194-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns7",pod="pod7-g215",uid="golden-0215-uid7",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g169",uid="golden-0169-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g202",uid="golden-0202-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g207",uid="golden-0207-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g163",uid="golden-0163-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g197",uid="golden-0197-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns3",pod="pod3-g204",uid="golden-0204-uid3",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g154",uid="golden-0154-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4",uid="golden-0153-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g206",uid="golden-0206-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns3",pod="pod3",uid="golden-0203-uid3",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g177",uid="golden-0177-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g152",uid="golden-0152-abc-123-xxx",name=""} 1
+kube_pod_scheduler{namespace="ns3",pod="pod3-g205",uid="golden-0205-uid3",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g168",uid="golden-0168-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g172",uid="golden-0172-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns7",pod="pod7disruption",uid="golden-0213-uid7",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g182",uid="golden-0182-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g158",uid="golden-0158-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g180",uid="golden-0180-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g183",uid="golden-0183-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g189",uid="golden-0189-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns6",pod="pod6-g212",uid="golden-0212-uid6",name=""} 1
+kube_pod_scheduler{namespace="ns8",pod="pod8",uid="golden-0216-uid8",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g198",uid="golden-0198-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns6",pod="pod6",uid="golden-0211-uid6",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g170",uid="golden-0170-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns9",pod="pod9",uid="golden-0217-uid9",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g178",uid="golden-0178-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g151",uid="golden-0151-abc-123-xxx",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g162",uid="golden-0162-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2",uid="golden-0188-abc-456-xxx",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g171",uid="golden-0171-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g181",uid="golden-0181-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g173",uid="golden-0173-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g185",uid="golden-0185-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns1",pod="pod1-g175",uid="golden-0175-uid1",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g199",uid="golden-0199-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns7",pod="pod7",uid="golden-0214-uid7",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g160",uid="golden-0160-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g157",uid="golden-0157-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns4",pod="pod4-g208",uid="golden-0208-uid4",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g193",uid="golden-0193-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns5",pod="pod5",uid="golden-0209-uid5",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g190",uid="golden-0190-uid2",name=""} 1
+kube_pod_scheduler{namespace="ns2",pod="pod2-g196",uid="golden-0196-uid2",name=""} 1

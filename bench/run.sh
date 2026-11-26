@@ -10,6 +10,7 @@ args=()
 for a in "$@"; do
   if [[ "$a" == "--no-micro" ]]; then micro=0; else args+=("$a"); fi
 done
+export PATH="$HOME/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:$PATH"
 cargo build --release -q -p kube-state-metrics -p fake-apiserver
 mkdir -p target/ksm-go
 (cd "$GO_SRC" && go build -o "$OLDPWD/target/ksm-go/kube-state-metrics" .)

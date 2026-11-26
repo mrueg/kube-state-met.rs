@@ -1,0 +1,12 @@
+[request]
+method = "GET"
+path = "/metrics"
+
+[request.headers]
+Accept = "application/openmetrics-text; version=1.0.0"
+
+[response]
+status = 200
+
+[response.headers]
+content-type = "application/openmetrics-text; version=1.0.0; charset=utf-8; escaping=underscores"

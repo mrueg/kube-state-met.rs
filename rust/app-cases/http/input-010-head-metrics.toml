@@ -1,0 +1,9 @@
+[request]
+method = "HEAD"
+path = "/metrics"
+
+[response]
+status = 200
+
+[response.headers]
+content-type = "text/plain; version=0.0.4; charset=utf-8"
