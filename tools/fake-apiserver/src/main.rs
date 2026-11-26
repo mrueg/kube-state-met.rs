@@ -228,6 +228,9 @@ struct Cluster {
     types: Vec<ResourceType>,
     /// Objects by `(group, plural)`, in fixture order.
     objects: BTreeMap<(String, String), Vec<Value>>,
+    /// Every object serialized once (same order as `objects`), shared by all
+    /// responses: a WatchList of 50k pods must not clone them per request.
+    json: BTreeMap<(String, String), Vec<Arc<str>>>,
     resource_version: u64,
     git_version: String,
     /// token → (user, groups).
@@ -256,6 +259,7 @@ impl Cluster {
         Cluster {
             types: builtin_types(),
             objects: BTreeMap::new(),
+            json: BTreeMap::new(),
             resource_version: 1000,
             git_version,
             tokens: BTreeMap::new(),
@@ -441,28 +445,44 @@ fn json_response(v: &Value) -> Response {
     ([(header::CONTENT_TYPE, "application/json")], v.to_string()).into_response()
 }
 
-fn selected<'a>(
-    c: &'a Cluster,
-    t: &ResourceType,
-    ns: Option<&str>,
-    p: &ListParams,
-) -> Vec<&'a Value> {
+impl Cluster {
+    /// Serializes every object once; call after loading.
+    fn freeze(&mut self) {
+        self.json = self
+            .objects
+            .iter()
+            .map(|(k, v)| {
+                (
+                    k.clone(),
+                    v.iter().map(|o| Arc::from(o.to_string())).collect(),
+                )
+            })
+            .collect();
+    }
+}
+
+/// The serialized objects matching a request.
+fn selected(c: &Cluster, t: &ResourceType, ns: Option<&str>, p: &ListParams) -> Vec<Arc<str>> {
+    let key = (t.group.clone(), t.plural.clone());
+    let json = c.json.get(&key).map(|v| v.as_slice()).unwrap_or_default();
     c.objects
-        .get(&(t.group.clone(), t.plural.clone()))
+        .get(&key)
         .map(|v| v.as_slice())
         .unwrap_or_default()
         .iter()
-        .filter(|o| ns.is_none_or(|ns| field(o, "metadata.namespace") == ns))
-        .filter(|o| {
+        .zip(json)
+        .filter(|(o, _)| ns.is_none_or(|ns| field(o, "metadata.namespace") == ns))
+        .filter(|(o, _)| {
             p.field_selector
                 .as_deref()
                 .is_none_or(|s| matches_fields(o, s))
         })
-        .filter(|o| {
+        .filter(|(o, _)| {
             p.label_selector
                 .as_deref()
                 .is_none_or(|s| matches_labels(o, s))
         })
+        .map(|(_, j)| Arc::clone(j))
         .collect()
 }
 
@@ -489,11 +509,8 @@ async fn collection(
     let rv = c.resource_version.to_string();
     if p.watch.as_deref() == Some("true") || p.watch.as_deref() == Some("1") {
         let initial = p.send_initial_events.as_deref() == Some("true");
-        let objs: Vec<Value> = if initial {
+        let objs: Vec<Arc<str>> = if initial {
             selected(&c, &t, ns.as_deref(), &p)
-                .into_iter()
-                .cloned()
-                .collect()
         } else {
             Vec::new()
         };
@@ -502,7 +519,7 @@ async fn collection(
         let kind = t.kind.clone();
         let stream = async_stream::stream! {
             for o in objs {
-                yield Ok::<_, std::io::Error>(format!("{}\n", json!({"type": "ADDED", "object": o})));
+                yield Ok::<_, std::io::Error>(format!("{{\"type\":\"ADDED\",\"object\":{o}}}\n"));
             }
             if initial {
                 let bm = json!({"type": "BOOKMARK", "object": {"kind": kind, "apiVersion": api_version,
@@ -520,15 +537,26 @@ async fn collection(
     let start: usize = p.cont.as_deref().and_then(|s| s.parse().ok()).unwrap_or(0);
     let limit = p.limit.filter(|l| *l > 0).unwrap_or(usize::MAX);
     let end = start.saturating_add(limit).min(all.len());
-    let items: Vec<&Value> = all.get(start..end).unwrap_or_default().to_vec();
+    let items = all.get(start..end).unwrap_or_default();
     let mut meta = json!({"resourceVersion": rv});
     if end < all.len() {
         meta["continue"] = json!(end.to_string());
         meta["remainingItemCount"] = json!(all.len() - end);
     }
-    json_response(
-        &json!({"kind": format!("{}List", t.kind), "apiVersion": t.api_version(), "metadata": meta, "items": items}),
-    )
+    let mut body = String::with_capacity(items.iter().map(|i| i.len() + 1).sum::<usize>() + 256);
+    body.push_str(&format!(
+        "{{\"kind\":{},\"apiVersion\":{},\"metadata\":{meta},\"items\":[",
+        json!(format!("{}List", t.kind)),
+        json!(t.api_version())
+    ));
+    for (i, item) in items.iter().enumerate() {
+        if i > 0 {
+            body.push(',');
+        }
+        body.push_str(item);
+    }
+    body.push_str("]}");
+    ([(header::CONTENT_TYPE, "application/json")], body).into_response()
 }
 
 async fn object(
@@ -753,6 +781,7 @@ async fn main() {
             }
         }
     }
+    cluster.freeze();
     let total: usize = cluster.objects.values().map(Vec::len).sum();
     let listener = tokio::net::TcpListener::bind(listen)
         .await

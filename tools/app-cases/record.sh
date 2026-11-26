@@ -10,7 +10,7 @@ cargo build -q --release -p fake-apiserver -p kube-state-metrics
 kc="$PWD/target/app-cases-kubeconfig.yaml"
 target/release/fake-apiserver --listen 127.0.0.1:16444 --fixtures testdata/fixtures --kubeconfig-out "$kc" &
 fake=$!
-trap 'kill $fake' EXIT
+trap 'kill $fake 2>/dev/null || true' EXIT
 sleep 1
 ALL=$(target/release/kube-state-metrics --list-resources 2>/dev/null || true)
 ALL=${ALL:-certificatesigningrequests,clusterrolebindings,clusterroles,configmaps,cronjobs,daemonsets,deployments,endpoints,endpointslices,horizontalpodautoscalers,ingressclasses,ingresses,jobs,leases,limitranges,mutatingadmissionpolicies,mutatingadmissionpolicybindings,mutatingwebhookconfigurations,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,poddisruptionbudgets,pods,replicasets,replicationcontrollers,resourcequotas,rolebindings,roles,secrets,serviceaccounts,services,statefulsets,storageclasses,validatingadmissionpolicies,validatingadmissionpolicybindings,validatingwebhookconfigurations,volumeattachments,volumeattributesclasses}
