@@ -16,5 +16,15 @@ mkdir -p target/ksm-go
 (cd "$GO_SRC" && go build -o "$OLDPWD/target/ksm-go/kube-state-metrics" .)
 python3 bench/bench.py "${args[@]}"
 if [[ $micro == 1 ]]; then
-  cargo bench -q -p ksm-stores --bench generate -- --noplot 2>&1 | tee target/criterion-summary.txt | grep -E "time:|^[a-z]" || true
+  cargo bench -q -p ksm-stores --bench generate -- --noplot > target/criterion-summary.txt 2>&1 || true
+  {
+    echo
+    echo "## Micro-benchmarks (criterion, \`cargo bench -p ksm-stores --bench generate\`)"
+    echo
+    echo "Per-object metric generation over the store-golden objects, and writing a store of 10 000 objects."
+    echo
+    echo '```'
+    grep -E "time:|^[a-z]" target/criterion-summary.txt | paste -sd' ' | sed 's/ \([a-z_]*\/\)/\n\1/g; s/ \(labels\/\)/\n\1/g'
+    echo '```'
+  } >> bench/RESULTS.md
 fi
