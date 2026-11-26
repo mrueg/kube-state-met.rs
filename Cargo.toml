@@ -33,3 +33,10 @@ unwrap_used = "warn"
 [profile.release]
 lto = "thin"
 codegen-units = 1
+
+# bcrypt (basic auth in --tls-config) is too slow unoptimized for the app cases.
+[profile.dev.package.bcrypt]
+opt-level = 3
+
+[profile.dev.package.blowfish]
+opt-level = 3

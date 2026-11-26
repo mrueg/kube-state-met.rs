@@ -8,7 +8,8 @@ Generated plan: [analyze-whole-app.md](analyze-whole-app.md). Research: [researc
 
 ## ADR index
 001 layout · 002 scope · 003 equivalence bar · 004 compatibility · 005 sharding hash · 006 libraries ·
-007 ground truth · 008 benchmarks · 009 targets/checkpoints/cutover · 010 telemetry · 011 watch semantics · 012 no proxying front door
+007 ground truth · 008 benchmarks · 009 targets/checkpoints/cutover · 010 telemetry · 011 watch semantics · 012 no proxying front door ·
+013 TLS web config on rustls
 
 ## Units
 
@@ -25,7 +26,8 @@ Generated plan: [analyze-whole-app.md](analyze-whole-app.md). Research: [researc
 | 2 | `pkg/metricshandler`, `internal/store/builder.go`, `pkg/app` (server, telemetry) | `crates/ksm` | claimed by main session 2026-11-26 |
 | 3 | `internal/store/*` (40 stores) | `ksm-stores` | done: 267/267 store goldens match Go |
 | 4 | `pkg/customresourcestate`, `internal/discovery` | `ksm-crs`, `ksm::{crs,discovery,watch_dynamic}` | done: CRD discovery, wildcard GVKs, CR watchers; `compare.py --custom-resource-state-config-file=testdata/crs-config.yaml` equal |
-| 4 | auth filter, hot reload (`internal/wrapper.go`), TLS web config | `crates/ksm` | open |
+| 4 | TLS web config (exporter-toolkit `web`) | `ksm::web` | done: all 49 exporter-toolkit test configs equal to Go (startup errors, HTTP/TLS answers); rustls limits in ADR-013 |
+| 4 | auth filter, hot reload (`internal/wrapper.go`) | `crates/ksm` | open |
 | 5 | lift, benchmarks report, container image | | open |
 
 ## Open questions

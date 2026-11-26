@@ -14,6 +14,7 @@ mod server;
 mod telemetry;
 mod watch;
 mod watch_dynamic;
+mod web;
 
 use std::process::ExitCode;
 use std::sync::Arc;

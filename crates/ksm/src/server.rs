@@ -340,6 +340,8 @@ pub async fn run(
 
     let handler = Arc::new(MetricsHandler::new(opts.enable_gzip_encoding));
     let stores_cancel = CancellationToken::new();
+    // Stops the stores and discovery on every return, errors included.
+    let _stores_guard = stores_cancel.clone().drop_guard();
     let settings = WatchSettings {
         client: client.clone(),
         field_selector: merged,
@@ -385,20 +387,22 @@ pub async fn run(
         .await
         .map_err(|e| format!("run server group error: listen tcp {telemetry_addr}: bind: {e}"))?;
 
+    // `web.ListenAndServe`'s configureServer: a bad --tls-config ends the run.
+    let tls = if opts.tls_config.is_empty() {
+        None
+    } else {
+        Some(
+            crate::web::configure(&opts.tls_config)
+                .map_err(|e| format!("run server group error: {e}"))?,
+        )
+    };
+
     let servers_stop = CancellationToken::new();
     let (s1, s2) = (servers_stop.clone(), servers_stop.clone());
     tracing::info!(telemetryAddress = %telemetry_addr, "Started kube-state-metrics self metrics server");
-    let telemetry = tokio::spawn(async move {
-        axum::serve(telemetry_listener, telemetry_app)
-            .with_graceful_shutdown(async move { s1.cancelled().await })
-            .await
-    });
+    let telemetry = spawn_server(telemetry_listener, telemetry_app, &opts.tls_config, tls, s1);
     tracing::info!(metricsServerAddress = %metrics_addr, "Started metrics server");
-    let metrics_srv = tokio::spawn(async move {
-        axum::serve(metrics_listener, metrics_app)
-            .with_graceful_shutdown(async move { s2.cancelled().await })
-            .await
-    });
+    let metrics_srv = spawn_server(metrics_listener, metrics_app, &opts.tls_config, tls, s2);
 
     let sharding_task = {
         let ctl = Arc::clone(&shard_ctl);
@@ -434,6 +438,28 @@ pub async fn run(
         tracing::info!("Exited");
     }
     result
+}
+
+/// Serves `app` until `stop`: plain axum without a web config, else the
+/// exporter-toolkit behavior of [`crate::web`].
+fn spawn_server(
+    listener: tokio::net::TcpListener,
+    app: Router,
+    web_config: &str,
+    tls: Option<bool>,
+    stop: CancellationToken,
+) -> tokio::task::JoinHandle<()> {
+    let path = web_config.to_owned();
+    tokio::spawn(async move {
+        match tls {
+            None => {
+                let _ = axum::serve(listener, app)
+                    .with_graceful_shutdown(async move { stop.cancelled().await })
+                    .await;
+            }
+            Some(tls) => crate::web::serve(listener, app, path, tls, stop).await,
+        }
+    })
 }
 
 fn listen_addr(host: &str, port: i64) -> Result<SocketAddr, String> {
