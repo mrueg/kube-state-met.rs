@@ -1,0 +1,16 @@
+{"method":"GET","path":"/metrics"}
+{"method":"GET","path":"/metrics","headers":{"Accept":"application/openmetrics-text; version=1.0.0"}}
+{"method":"GET","path":"/metrics","headers":{"Accept":"application/openmetrics-text"}}
+{"method":"GET","path":"/metrics","headers":{"Accept":"application/vnd.google.protobuf;proto=io.prometheus.client.MetricFamily;encoding=delimited;q=0.7,text/plain;version=0.0.4;q=0.3,*/*;q=0.1"}}
+{"method":"GET","path":"/metrics?resources=pods"}
+{"method":"GET","path":"/metrics?resources=pods,nodes&resources=services"}
+{"method":"GET","path":"/metrics?exclude_resources=pods,jobs"}
+{"method":"GET","path":"/metrics?resources=pods&exclude_resources=pods"}
+{"method":"GET","path":"/metrics?resources=doesnotexist"}
+{"method":"HEAD","path":"/metrics"}
+{"method":"POST","path":"/metrics"}
+{"method":"GET","path":"/healthz"}
+{"method":"GET","path":"/livez"}
+{"method":"GET","path":"/"}
+{"method":"GET","path":"/nonexistent"}
+{"method":"GET","path":"/debug/pprof/heap"}

@@ -63,3 +63,9 @@ Consequences: Dashboards that read `go_*` from kube-state-metrics lose those ser
 Status: accepted (2026-11-26)
 Decision: One `kube::runtime::watcher` per store (per namespace, as in Go). `Init`/`InitApply`/`InitDone` map to `MetricsStore::replace` (applied once on `InitDone`, keeping the same "delete the missing, then upsert" order), `Apply` to `add`, and `Delete` to `delete`. Sharding filters objects before they reach the store. `--use-apiserver-cache` sets `resourceVersion=0` on lists. `--object-limit` sets the list page size and the store's object limit. Requests are JSON, not protobuf.
 Consequences: List and watch counters on the telemetry port count kube-rs list/watch calls; their numbers may differ from client-go's after errors (a log-level difference, not a metrics-port one).
+
+## ADR-012: No proxying front door
+Status: accepted (2026-11-26)
+Context: The whole-app recipe puts a front door in front of the original that proxies whatever isn't ported yet. Here, every store was ported and golden-checked (267/267) before the binary first ran, and `/metrics` is one route covering every resource.
+Decision: The Rust binary owns every route from the start. Features not ported yet (custom resource state metrics, `--tls-config`, `--auth-filter`, config hot reload) fail clearly at startup instead of falling back to Go. The fallback rate is the share of recorded app cases that use one of those features, and it drops to zero with wave 4.
+Consequences: No Go process runs beside the Rust binary, and `app front-door`/`app wire` are not used. `app record`/`app replay` still hold the binary to the recorded cases.

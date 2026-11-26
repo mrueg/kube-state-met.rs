@@ -8,14 +8,14 @@ Generated plan: [analyze-whole-app.md](analyze-whole-app.md). Research: [researc
 
 ## ADR index
 001 layout · 002 scope · 003 equivalence bar · 004 compatibility · 005 sharding hash · 006 libraries ·
-007 ground truth · 008 benchmarks · 009 targets/checkpoints/cutover · 010 telemetry · 011 watch semantics
+007 ground truth · 008 benchmarks · 009 targets/checkpoints/cutover · 010 telemetry · 011 watch semantics · 012 no proxying front door
 
 ## Units
 
 | Wave | Unit (Go) | Rust home | State |
 | ---: | --- | --- | --- |
 | 0 | ground truth: Go golden harness, fake apiserver, app record | `tools/`, `testdata/golden/`, `rust/app-cases/` | goldens + fake apiserver done; app record open |
-| 0 | front door (Rust binary, proxies what isn't ported to Go) | `crates/ksm` | open |
+| 0 | front door | `crates/ksm` | dropped (ADR-012) |
 | 1 | `pkg/metric`, `pkg/metric_generator` | `ksm-core::metric`, `::generator` | done |
 | 1 | `pkg/metrics_store` | `ksm-core::store` | done |
 | 1 | `pkg/options` | `ksm-core::options` | claimed by options agent 2026-11-26 |
