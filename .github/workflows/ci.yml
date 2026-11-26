@@ -1,0 +1,24 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    env:
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      # Includes the Go goldens: stores, labels, floats, quantities, CRS, flect, CLI.
+      - run: cargo test --workspace --locked
+  app-cases:
+    # Replays the recorded whole-app HTTP cases against the Rust binary.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo install rust-anything --locked
+      - run: tools/app-cases/record.sh replay
