@@ -1,0 +1,7547 @@
+[
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "# just a comment\n"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "~"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "foo"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `foo` into options.Options",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "[1, 2]"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!seq into options.Options",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: 1234\nhost: 0.0.0.0\n"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "0.0.0.0",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 1234,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: '1234'"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `1234` into int",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: 1.9"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 1,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: 0x10\ntelemetry_port: 0o17\ntotal_shards: 3"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 16,
+    "telemetry_port": 15,
+    "total_shards": 3,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: abc\nhost: kept-after-error"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `abc` into int",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "kept-after-error",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: ~\nhost:\n"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: [1]"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!seq into int",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "shard: 2147483648"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!int `2147483648` into int32",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "shard: -5"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": -5,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "object_limit: 9223372036854775807"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 9223372036854775807,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "object_limit: 9223372036854775808"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!int `9223372...` into int64",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auto-gomemlimit-ratio: 0.5"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.5,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auto-gomemlimit-ratio: 1"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 1,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auto-gomemlimit-ratio: '0.5'"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `0.5` into float64",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auto-gomemlimit-ratio: .inf"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": "+Inf",
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auto-gomemlimit-refresh-interval: 1m"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 60000000000,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auto-gomemlimit-refresh-interval: -1m"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": -60000000000,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auto-gomemlimit-refresh-interval: 60"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!int `60` into time.Duration",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "server_read_timeout: 2m\nserver_write_timeout: 3s\nserver_idle_timeout: 1h\nserver_read_header_timeout: 1ms\nshutdown_delay: 10s"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 120000000000,
+    "server_write_timeout": 3000000000,
+    "server_idle_timeout": 3600000000000,
+    "server_read_header_timeout": 1000000,
+    "shutdown_delay": 10000000000,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "server_read_timeout: abc"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `abc` into time.Duration",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "server_read_timeout: 0"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!int `0` into time.Duration",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "server_read_timeout: -5s"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 0,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auth_filter: true\nauto-gomemlimit: yes\ncustom_resources_only: On\nenable_gzip_encoding: Y\nhelp: True\ntrack_unscheduled_pods: TRUE\nuse_api_server_cache: n"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": true,
+    "custom_resources_only": true,
+    "enable_gzip_encoding": true,
+    "help": true,
+    "track_unscheduled_pods": true,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": true
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auth_filter: 'true'"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `true` into bool",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auth_filter: 'yes'"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": true
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auth_filter: 1"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!int `1` into bool",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "auth_filter: [true]"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!seq into bool",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "continue_without_config: true\ncontinue_without_custom_resource_state_config_file: true"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": true,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": true,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "apiserver: https://x\nkubeconfig: /k\nnamespace: ns\nnode: n1\npod: p\ntls_config: /t\ntelemetry_host: 127.0.0.1\nconfig: /c\ncustom_resource_config: 'a: b'"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "https://x",
+    "custom_resource_config": "a: b",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "/k",
+    "namespace": "ns",
+    "node": "n1",
+    "pod": "p",
+    "tls_config": "/t",
+    "telemetry_host": "127.0.0.1",
+    "config": "/c",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "apiserver: 0x10"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "0x10",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "apiserver: 1.50"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "1.50",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "apiserver: true"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "true",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "apiserver: {a: b}"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!map into string",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "custom_resource_state_config_file: /new\ncustom_resource_config_file: /old"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "/new",
+    "custom_resource_config_file_deprecated": "/old",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "custom_resource_config_file: /old"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "/old",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "CustomResourceConfigFile: /ignored\nPort: 1"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "unknown_key: 1\nport: 2"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 2,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: 1\nport: 2"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 2: mapping key \"port\" already defined at line 1",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--resources=configmaps"
+   ],
+   "yaml": "resources: {pods: {}, secrets: {}}"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [
+     "configmaps",
+     "pods",
+     "secrets"
+    ],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--resources=configmaps"
+   ],
+   "yaml": "resources: {pods: ~, secrets: }"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [
+     "configmaps",
+     "pods",
+     "secrets"
+    ],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--resources=configmaps"
+   ],
+   "yaml": "resources: ~"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--resources=configmaps"
+   ],
+   "yaml": "resources: [pods]"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!seq into options.ResourceSet",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [
+     "configmaps"
+    ],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--resources=configmaps"
+   ],
+   "yaml": "resources: {pods: 1}"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!int `1` into struct {}",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [
+     "configmaps"
+    ],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "resources: {pods: {x: 1}}"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [
+     "pods"
+    ],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--metric-allowlist=x",
+    "--metric-denylist=y"
+   ],
+   "yaml": "metric_allowlist: {kube_pod_info: {}}\nmetric_denylist: {kube_pod_labels: {}}\nmetric_opt_in_list: {a: {}}"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [
+     "kube_pod_info",
+     "x"
+    ],
+    "metric_denylist": [
+     "kube_pod_labels",
+     "y"
+    ],
+    "metric_opt_in_list": [
+     "a"
+    ],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--namespaces=x",
+    "--namespaces-denylist=y"
+   ],
+   "yaml": "namespaces: [a, b]\nnamespaces_denylist: [c]"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [
+     "a",
+     "b"
+    ],
+    "namespaces_denylist": [
+     "c"
+    ],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "namespaces: [a, ~, b]"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [
+     "a",
+     "b"
+    ],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--namespaces=x"
+   ],
+   "yaml": "namespaces: ~"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "namespaces: a"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `a` into options.NamespaceList",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "namespaces: [[a]]"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!seq into string",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "namespaces: [1, 0x10, true]"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [
+     "1",
+     "0x10",
+     "true"
+    ],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--metric-labels-allowlist=nodes=[c],pods=[d]"
+   ],
+   "yaml": "labels_allow_list: {pods: [a, b]}"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {
+     "pods": [
+      "a",
+      "b"
+     ]
+    },
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--metric-labels-allowlist=nodes=[c]"
+   ],
+   "yaml": "labels_allow_list: {pods: ~}"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {
+     "pods": []
+    },
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--metric-labels-allowlist=nodes=[c]"
+   ],
+   "yaml": "labels_allow_list: ~"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "labels_allow_list: {pods: ['a*b*']}\nport: 1"
+  },
+  "res": {
+   "err": "invalid format, only one wildcard per label allowed",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: 1\nlabels_allow_list: {pods: ['a*b*']}\nhost: h"
+  },
+  "res": {
+   "err": "invalid format, only one wildcard per label allowed",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 1,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "annotations_allow_list: {pods: ['*']}\nlabels_allow_list: {nodes: ['x*']}"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {
+     "pods": [
+      "*"
+     ]
+    },
+    "labels_allow_list": {
+     "nodes": [
+      "x*"
+     ]
+    },
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "annotations_allow_list: {pods: a}\nport: 3"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!str `a` into []string",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 3,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "annotations_allow_list: [a]"
+  },
+  "res": {
+   "err": "yaml: unmarshal errors:\n  line 1: cannot unmarshal !!seq into map[string][]string",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "annotations_allow_list: {pods: [a, ~, b]}"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {
+     "pods": [
+      "a",
+      "b"
+     ]
+    },
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: 1\n---\nport: 2\n"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 1,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "port: 1\n  bad: indentation\n"
+  },
+  "res": {
+   "err": "yaml: line 2: mapping values are not allowed in this context",
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": "a: &x 5\nport: *x\n"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 5,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--port=2",
+    "--host=h"
+   ],
+   "yaml": "port: 1\n"
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "h",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 1,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "configure",
+   "args": [
+    "--resources=a"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [
+     "a"
+    ],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "configure",
+   "args": [
+    "--resources=oldresource",
+    "--metric-allowlist=oldallow",
+    "--metric-denylist=olddeny",
+    "--metric-opt-in-list=oldoptin",
+    "--metric-labels-allowlist=oldlabel=[oldvalue]",
+    "--metric-annotations-allowlist=oldannotation=[oldvalue]"
+   ],
+   "yaml": "resources: {pod: {}, service: {}}\nmetric_allowlist: {kube_pod_info: {}}\nmetric_denylist: {kube_pod_labels: {}}\nmetric_opt_in_list: {kube_pod_status_phase: {}}\nlabels_allow_list: {labelX: [foo, bar]}\nannotations_allow_list: {annotationY: [baz]}\n"
+  },
+  "res": {
+   "opts": {
+    "annotations_allow_list": {
+     "annotationY": [
+      "baz"
+     ]
+    },
+    "labels_allow_list": {
+     "labelX": [
+      "foo",
+      "bar"
+     ]
+    },
+    "metric_allowlist": [
+     "kube_pod_info"
+    ],
+    "metric_denylist": [
+     "kube_pod_labels"
+    ],
+    "metric_opt_in_list": [
+     "kube_pod_status_phase"
+    ],
+    "resources": [
+     "pod",
+     "service"
+    ],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "configure",
+   "args": [
+    "--resources=a"
+   ],
+   "yaml": "resources: {}\nport: 5"
+  },
+  "res": {
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [
+     "a"
+    ],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "configure",
+   "args": [
+    "--resources=a"
+   ],
+   "yaml": "resources: {b: {}}\nport: abc"
+  },
+  "res": {
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [
+     "a"
+    ],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "configure",
+   "args": [
+    "--custom-resource-state-config-file=/x"
+   ],
+   "yaml": "port: 1"
+  },
+  "res": {
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "/x",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--port=0x1F",
+    "--telemetry-port=010",
+    "--total-shards=8_0",
+    "--shard=-0",
+    "--object-limit=+5"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 31,
+    "telemetry_port": 8,
+    "total_shards": 80,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 5,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--resources=pods, secrets,,",
+    "--resources=nodes"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [
+     "nodes",
+     "pods",
+     "secrets"
+    ],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--namespaces=a, b",
+    "--namespaces=a"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [
+     "a",
+     "b",
+     "a"
+    ],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--metric-allowlist=a",
+    "--metric-allowlist=b,a",
+    "--metric-denylist= c ",
+    "--metric-opt-in-list=d"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [
+     "a",
+     "b"
+    ],
+    "metric_denylist": [
+     "c"
+    ],
+    "metric_opt_in_list": [
+     "d"
+    ],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--metric-labels-allowlist=pods=[a,b],nodes=[]",
+    "--metric-labels-allowlist=deployments=[ x , y ]"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {
+     "deployments": [
+      "x",
+      "y"
+     ]
+    },
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--metric-annotations-allowlist= pods =[ a ],pods=[b]"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {
+     "pods": [
+      "b"
+     ]
+    },
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--metric-labels-allowlist=pods=[ ]"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {
+     "pods": []
+    },
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--auto-gomemlimit-ratio=1_0.5e-1",
+    "--auto-gomemlimit-refresh-interval=1.5h",
+    "--server-read-timeout=1h2m3.004005006s",
+    "--server-write-timeout=-1s",
+    "--server-idle-timeout=+2m",
+    "--server-read-header-timeout=.5s",
+    "--shutdown-delay=1us"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 1.05,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 3723004005006,
+    "server_write_timeout": 0,
+    "server_idle_timeout": 120000000000,
+    "server_read_header_timeout": 500000000,
+    "shutdown_delay": 1000,
+    "auto_go_memlimit_refresh_interval": 5400000000000,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--auto-gomemlimit-refresh-interval=-90s"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": -90000000000,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--apiserver=a",
+    "--kubeconfig=b",
+    "--host=c",
+    "--telemetry-host=d",
+    "--pod=e",
+    "--pod-namespace=f",
+    "--node=g",
+    "--tls-config=h",
+    "--config=i",
+    "--custom-resource-state-config=j",
+    "--custom-resource-state-config-file=k"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "a",
+    "custom_resource_config": "j",
+    "custom_resource_config_file": "k",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": false,
+    "host": "c",
+    "kubeconfig": "b",
+    "namespace": "f",
+    "node": "g",
+    "pod": "e",
+    "tls_config": "h",
+    "telemetry_host": "d",
+    "config": "i",
+    "continue_without_config": false,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": false,
+    "custom_resources_only": false,
+    "enable_gzip_encoding": false,
+    "help": false,
+    "track_unscheduled_pods": false,
+    "use_api_server_cache": false,
+    "object_limit": 0,
+    "auth_filter": false
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "yaml",
+   "args": [
+    "--auth-filter",
+    "--auto-gomemlimit",
+    "--continue-without-config",
+    "--continue-without-custom-resource-state-config-file",
+    "--custom-resource-state-only",
+    "--enable-gzip-encoding",
+    "--track-unscheduled-pods",
+    "--use-apiserver-cache"
+   ],
+   "yaml": ""
+  },
+  "res": {
+   "err": null,
+   "opts": {
+    "annotations_allow_list": {},
+    "labels_allow_list": {},
+    "metric_allowlist": [],
+    "metric_denylist": [],
+    "metric_opt_in_list": [],
+    "resources": [],
+    "apiserver": "",
+    "custom_resource_config": "",
+    "custom_resource_config_file": "",
+    "custom_resource_config_file_deprecated": "",
+    "continue_without_custom_resource_config_file": true,
+    "host": "::",
+    "kubeconfig": "",
+    "namespace": "",
+    "node": "",
+    "pod": "",
+    "tls_config": "",
+    "telemetry_host": "::",
+    "config": "",
+    "continue_without_config": true,
+    "namespaces": [],
+    "namespaces_denylist": [],
+    "auto_go_memlimit_ratio": 0.9,
+    "port": 8080,
+    "telemetry_port": 8081,
+    "total_shards": 1,
+    "server_read_timeout": 60000000000,
+    "server_write_timeout": 60000000000,
+    "server_idle_timeout": 300000000000,
+    "server_read_header_timeout": 5000000000,
+    "shutdown_delay": 0,
+    "auto_go_memlimit_refresh_interval": 0,
+    "shard": 0,
+    "auto_go_memlimit": true,
+    "custom_resources_only": true,
+    "enable_gzip_encoding": true,
+    "help": false,
+    "track_unscheduled_pods": true,
+    "use_api_server_cache": true,
+    "object_limit": 0,
+    "auth_filter": true
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": ""
+  },
+  "res": {
+   "err": "time: invalid duration \"\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "0"
+  },
+  "res": {
+   "err": null,
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "-0"
+  },
+  "res": {
+   "err": null,
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "+0"
+  },
+  "res": {
+   "err": null,
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1"
+  },
+  "res": {
+   "err": "time: missing unit in duration \"1\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1s"
+  },
+  "res": {
+   "err": null,
+   "ns": 1000000000,
+   "str": "1s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1.5h"
+  },
+  "res": {
+   "err": null,
+   "ns": 5400000000000,
+   "str": "1h30m0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "-1.5h"
+  },
+  "res": {
+   "err": null,
+   "ns": -5400000000000,
+   "str": "-1h30m0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1h2m3s4ms5us6ns"
+  },
+  "res": {
+   "err": null,
+   "ns": 3723004005006,
+   "str": "1h2m3.004005006s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1µs"
+  },
+  "res": {
+   "err": null,
+   "ns": 1000,
+   "str": "1µs"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1μs"
+  },
+  "res": {
+   "err": null,
+   "ns": 1000,
+   "str": "1µs"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1us"
+  },
+  "res": {
+   "err": null,
+   "ns": 1000,
+   "str": "1µs"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": ".5s"
+  },
+  "res": {
+   "err": null,
+   "ns": 500000000,
+   "str": "500ms"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "5.s"
+  },
+  "res": {
+   "err": null,
+   "ns": 5000000000,
+   "str": "5s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": ".s"
+  },
+  "res": {
+   "err": "time: invalid duration \".s\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1.0000000000000000001s"
+  },
+  "res": {
+   "err": null,
+   "ns": 1000000000,
+   "str": "1s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "0.1h"
+  },
+  "res": {
+   "err": null,
+   "ns": 360000000000,
+   "str": "6m0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1e3s"
+  },
+  "res": {
+   "err": "time: unknown unit \"e\" in duration \"1e3s\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1x"
+  },
+  "res": {
+   "err": "time: unknown unit \"x\" in duration \"1x\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1s2"
+  },
+  "res": {
+   "err": "time: missing unit in duration \"1s2\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "s"
+  },
+  "res": {
+   "err": "time: invalid duration \"s\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "-"
+  },
+  "res": {
+   "err": "time: invalid duration \"-\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "+"
+  },
+  "res": {
+   "err": "time: invalid duration \"+\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "2562047h47m16.854775807s"
+  },
+  "res": {
+   "err": null,
+   "ns": 9223372036854775807,
+   "str": "2562047h47m16.854775807s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "2562047h47m16.854775808s"
+  },
+  "res": {
+   "err": "time: invalid duration \"2562047h47m16.854775808s\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "-2562047h47m16.854775808s"
+  },
+  "res": {
+   "err": null,
+   "ns": -9223372036854775808,
+   "str": "-2562047h47m16.854775808s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "9223372036854775807ns"
+  },
+  "res": {
+   "err": null,
+   "ns": 9223372036854775807,
+   "str": "2562047h47m16.854775807s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "9223372036854775808ns"
+  },
+  "res": {
+   "err": "time: invalid duration \"9223372036854775808ns\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "99999999999999999999ns"
+  },
+  "res": {
+   "err": "time: invalid duration \"99999999999999999999ns\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1é"
+  },
+  "res": {
+   "err": "time: unknown unit \"\\xc3\\xa9\" in duration \"1\\xc3\\xa9\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "é"
+  },
+  "res": {
+   "err": "time: invalid duration \"\\xc3\\xa9\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1h\t"
+  },
+  "res": {
+   "err": "time: unknown unit \"h\\x09\" in duration \"1h\\x09\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": " 1h"
+  },
+  "res": {
+   "err": "time: invalid duration \" 1h\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1H"
+  },
+  "res": {
+   "err": "time: unknown unit \"H\" in duration \"1H\"",
+   "ns": 0,
+   "str": "0s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "3.000000001s"
+  },
+  "res": {
+   "err": null,
+   "ns": 3000000001,
+   "str": "3.000000001s"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "0.000000001s"
+  },
+  "res": {
+   "err": null,
+   "ns": 1,
+   "str": "1ns"
+  }
+ },
+ {
+  "req": {
+   "op": "dur",
+   "s": "1.9999999999999999999999h"
+  },
+  "res": {
+   "err": null,
+   "ns": 7200000000000,
+   "str": "2h0m0s"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": ""
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "0"
+  },
+  "res": {
+   "err": null,
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "-0",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "-0",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "-0"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"-0\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "+1",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "1"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "+1",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "1"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "+1"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"+1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0x",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"0x\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0x",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"0x\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "0x"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"0x\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0x1F",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "31"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0x1F",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "31"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "0x1F"
+  },
+  "res": {
+   "err": null,
+   "v": "31"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0X1f",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "31"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0X1f",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "31"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "0X1f"
+  },
+  "res": {
+   "err": null,
+   "v": "31"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0o17",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "15"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0o17",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "15"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "0o17"
+  },
+  "res": {
+   "err": null,
+   "v": "15"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0O17",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "15"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0O17",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "15"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "0O17"
+  },
+  "res": {
+   "err": null,
+   "v": "15"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "017",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "15"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "017",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "15"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "017"
+  },
+  "res": {
+   "err": null,
+   "v": "15"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "08",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"08\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "08",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"08\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "08"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"08\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0b101",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "5"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0b101",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "5"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "0b101"
+  },
+  "res": {
+   "err": null,
+   "v": "5"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0b2",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"0b2\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0b2",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"0b2\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "0b2"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"0b2\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "1_000",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "1000"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "1_000",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "1000"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "1_000"
+  },
+  "res": {
+   "err": null,
+   "v": "1000"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "_1",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"_1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "_1",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"_1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "_1"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"_1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "1_",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"1_\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "1_",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"1_\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "1_"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"1_\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0x_1F",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "31"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0x_1F",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "31"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "0x_1F"
+  },
+  "res": {
+   "err": null,
+   "v": "31"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0_7",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "7"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "0_7",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "7"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "0_7"
+  },
+  "res": {
+   "err": null,
+   "v": "7"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "1__0",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"1__0\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "1__0",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"1__0\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "1__0"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"1__0\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "abc",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"abc\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "abc",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"abc\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "abc"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"abc\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "9223372036854775807",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "9223372036854775807"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "9223372036854775807",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"9223372036854775807\": value out of range",
+   "v": "2147483647"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "9223372036854775807"
+  },
+  "res": {
+   "err": null,
+   "v": "9223372036854775807"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "9223372036854775808",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"9223372036854775808\": value out of range",
+   "v": "9223372036854775807"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "9223372036854775808",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"9223372036854775808\": value out of range",
+   "v": "2147483647"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "9223372036854775808"
+  },
+  "res": {
+   "err": null,
+   "v": "9223372036854775808"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "-9223372036854775808",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "-9223372036854775808"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "-9223372036854775808",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"-9223372036854775808\": value out of range",
+   "v": "-2147483648"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "-9223372036854775808"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"-9223372036854775808\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "-9223372036854775809",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"-9223372036854775809\": value out of range",
+   "v": "-9223372036854775808"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "-9223372036854775809",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"-9223372036854775809\": value out of range",
+   "v": "-2147483648"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "-9223372036854775809"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"-9223372036854775809\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "2147483647",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "2147483647"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "2147483647",
+   "bits": 32
+  },
+  "res": {
+   "err": null,
+   "v": "2147483647"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "2147483647"
+  },
+  "res": {
+   "err": null,
+   "v": "2147483647"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "2147483648",
+   "bits": 64
+  },
+  "res": {
+   "err": null,
+   "v": "2147483648"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "2147483648",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"2147483648\": value out of range",
+   "v": "2147483647"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "2147483648"
+  },
+  "res": {
+   "err": null,
+   "v": "2147483648"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "99999999999999999999x",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"99999999999999999999x\": value out of range",
+   "v": "9223372036854775807"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "99999999999999999999x",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"99999999999999999999x\": value out of range",
+   "v": "2147483647"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "99999999999999999999x"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"99999999999999999999x\": value out of range",
+   "v": "18446744073709551615"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "1e3",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"1e3\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "1e3",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"1e3\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "1e3"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"1e3\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": " 1",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \" 1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": " 1",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \" 1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": " 1"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \" 1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "+-1",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"+-1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "+-1",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"+-1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "+-1"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"+-1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "١",
+   "bits": 64
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"١\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "int",
+   "s": "١",
+   "bits": 32
+  },
+  "res": {
+   "err": "strconv.ParseInt: parsing \"١\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "uint",
+   "s": "١"
+  },
+  "res": {
+   "err": "strconv.ParseUint: parsing \"١\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": ""
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "0"
+  },
+  "res": {
+   "err": null,
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1"
+  },
+  "res": {
+   "err": null,
+   "v": "1"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "-1"
+  },
+  "res": {
+   "err": null,
+   "v": "-1"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "+1.5"
+  },
+  "res": {
+   "err": null,
+   "v": "1.5"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1."
+  },
+  "res": {
+   "err": null,
+   "v": "1"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": ".5"
+  },
+  "res": {
+   "err": null,
+   "v": "0.5"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "."
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \".\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1e"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"1e\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1e+"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"1e+\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1e-5"
+  },
+  "res": {
+   "err": null,
+   "v": "1e-05"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1E5"
+  },
+  "res": {
+   "err": null,
+   "v": "100000"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1e400"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"1e400\": value out of range",
+   "v": "+Inf"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "-1e400"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"-1e400\": value out of range",
+   "v": "-Inf"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1e-400"
+  },
+  "res": {
+   "err": null,
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "inf"
+  },
+  "res": {
+   "err": null,
+   "v": "+Inf"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "+Inf"
+  },
+  "res": {
+   "err": null,
+   "v": "+Inf"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "-INFINITY"
+  },
+  "res": {
+   "err": null,
+   "v": "-Inf"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "infinity"
+  },
+  "res": {
+   "err": null,
+   "v": "+Inf"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "infin"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"infin\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "nan"
+  },
+  "res": {
+   "err": null,
+   "v": "NaN"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "NaN"
+  },
+  "res": {
+   "err": null,
+   "v": "NaN"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "+nan"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"+nan\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "-nan"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"-nan\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "0x1p-2"
+  },
+  "res": {
+   "err": null,
+   "v": "0.25"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "0x1.8p1"
+  },
+  "res": {
+   "err": null,
+   "v": "3"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "0x1"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"0x1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "0x.p1"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"0x.p1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "0X1P+3"
+  },
+  "res": {
+   "err": null,
+   "v": "8"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1_000.5"
+  },
+  "res": {
+   "err": null,
+   "v": "1000.5"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1__0"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"1__0\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "_1"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"_1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1_e5"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"1_e5\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "0x_1p0"
+  },
+  "res": {
+   "err": null,
+   "v": "1"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "abc"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"abc\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1.2.3"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"1.2.3\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "0.9"
+  },
+  "res": {
+   "err": null,
+   "v": "0.9"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1e308"
+  },
+  "res": {
+   "err": null,
+   "v": "1e+308"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1.7976931348623157e308"
+  },
+  "res": {
+   "err": null,
+   "v": "1.7976931348623157e+308"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1.7976931348623159e308"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"1.7976931348623159e308\": value out of range",
+   "v": "+Inf"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "4.9e-324"
+  },
+  "res": {
+   "err": null,
+   "v": "5e-324"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "2.4e-324"
+  },
+  "res": {
+   "err": null,
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "0.1e1_0"
+  },
+  "res": {
+   "err": null,
+   "v": "1e+09"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "1e_1"
+  },
+  "res": {
+   "err": "strconv.ParseFloat: parsing \"1e_1\": invalid syntax",
+   "v": "0"
+  }
+ },
+ {
+  "req": {
+   "op": "float",
+   "s": "0x1p1_0"
+  },
+  "res": {
+   "err": null,
+   "v": "1024"
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "1"
+  },
+  "res": {
+   "err": null,
+   "v": true
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "t"
+  },
+  "res": {
+   "err": null,
+   "v": true
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "T"
+  },
+  "res": {
+   "err": null,
+   "v": true
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "TRUE"
+  },
+  "res": {
+   "err": null,
+   "v": true
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "true"
+  },
+  "res": {
+   "err": null,
+   "v": true
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "True"
+  },
+  "res": {
+   "err": null,
+   "v": true
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "0"
+  },
+  "res": {
+   "err": null,
+   "v": false
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "f"
+  },
+  "res": {
+   "err": null,
+   "v": false
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "F"
+  },
+  "res": {
+   "err": null,
+   "v": false
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "FALSE"
+  },
+  "res": {
+   "err": null,
+   "v": false
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "false"
+  },
+  "res": {
+   "err": null,
+   "v": false
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "False"
+  },
+  "res": {
+   "err": null,
+   "v": false
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "yes"
+  },
+  "res": {
+   "err": "strconv.ParseBool: parsing \"yes\": invalid syntax",
+   "v": false
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": ""
+  },
+  "res": {
+   "err": "strconv.ParseBool: parsing \"\": invalid syntax",
+   "v": false
+  }
+ },
+ {
+  "req": {
+   "op": "bool",
+   "s": "tRUE"
+  },
+  "res": {
+   "err": "strconv.ParseBool: parsing \"tRUE\": invalid syntax",
+   "v": false
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": "abc"
+  },
+  "res": {
+   "v": "\"abc\""
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": "a\"b"
+  },
+  "res": {
+   "v": "\"a\\\"b\""
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": "a\\b"
+  },
+  "res": {
+   "v": "\"a\\\\b\""
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": "\n\t\r\u0007\b\f\u000b"
+  },
+  "res": {
+   "v": "\"\\n\\t\\r\\a\\b\\f\\v\""
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": "\u0000\u0001"
+  },
+  "res": {
+   "v": "\"\\x00\\x01\\x7f\""
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": "é"
+  },
+  "res": {
+   "v": "\"é\""
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": " "
+  },
+  "res": {
+   "v": "\"\\u00a0\""
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": "​"
+  },
+  "res": {
+   "v": "\"\\u200b\""
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": "😀"
+  },
+  "res": {
+   "v": "\"😀\""
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": "﻿"
+  },
+  "res": {
+   "v": "\"\\ufeff\""
+  }
+ },
+ {
+  "req": {
+   "op": "quote",
+   "s": "󠀁"
+  },
+  "res": {
+   "v": "\"\\U000e0001\""
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": 0.0
+  },
+  "res": {
+   "v": "0.000000"
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": 0.9
+  },
+  "res": {
+   "v": "0.900000"
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": 1.5
+  },
+  "res": {
+   "v": "1.500000"
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": -0.5
+  },
+  "res": {
+   "v": "-0.500000"
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": 0.0078125
+  },
+  "res": {
+   "v": "0.007812"
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": 1e-07
+  },
+  "res": {
+   "v": "0.000000"
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": 20000000000.0
+  },
+  "res": {
+   "v": "20000000000.000000"
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": 123456.1234565
+  },
+  "res": {
+   "v": "123456.123457"
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": 5e-07
+  },
+  "res": {
+   "v": "0.000000"
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": 2.5e-06
+  },
+  "res": {
+   "v": "0.000003"
+  }
+ },
+ {
+  "req": {
+   "op": "fmtf",
+   "f": 1e+21
+  },
+  "res": {
+   "v": "1000000000000000000000.000000"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": []
+  },
+  "res": {
+   "err": null,
+   "v": ""
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    ""
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": ""
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "",
+    ""
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": ""
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "a=b"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "a=b"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "b=1,a=2"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "a=2,b=1"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "",
+    "spec.nodeName=n"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "spec.nodeName=n"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "metadata.namespace!=a,metadata.namespace!=b",
+    "spec.nodeName=n"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "metadata.namespace!=a,metadata.namespace!=b,spec.nodeName=n"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "metadata.namespace!=z,metadata.namespace!=a",
+    ""
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "metadata.namespace!=a,metadata.namespace!=z"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "a==b"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "a=b"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "a"
+   ]
+  },
+  "res": {
+   "err": "invalid selector: 'a'; can't understand 'a'",
+   "v": ""
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "a=b=c"
+   ]
+  },
+  "res": {
+   "err": "invalid field selector: unescaped character in value: 61",
+   "v": ""
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "a=\\x"
+   ]
+  },
+  "res": {
+   "err": "invalid field selector: invalid escape sequence: \\x",
+   "v": ""
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "a=b\\"
+   ]
+  },
+  "res": {
+   "err": "invalid field selector: invalid escape sequence: \\",
+   "v": ""
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "a=b\\,c"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "a=b\\,c"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "=",
+    "a=b"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "a=b"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "c=1",
+    "b=2",
+    "a=3"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "b=2,c=1,a=3"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "x=1,,y=2"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "x=1,y=2"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    ",",
+    "a=1"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "a=1"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "a=1",
+    "bad"
+   ]
+  },
+  "res": {
+   "err": "invalid selector: 'bad'; can't understand 'bad'",
+   "v": ""
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "é=ü,b!=c"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "b!=c,é=ü"
+  }
+ },
+ {
+  "req": {
+   "op": "merge",
+   "sels": [
+    "a!=",
+    "=b"
+   ]
+  },
+  "res": {
+   "err": null,
+   "v": "a!=,=b"
+  }
+ },
+ {
+  "req": {
+   "op": "selectors",
+   "ns": [],
+   "node": ""
+  },
+  "res": {
+   "exclude": "",
+   "node": ""
+  }
+ },
+ {
+  "req": {
+   "op": "selectors",
+   "ns": [
+    "a"
+   ],
+   "node": ""
+  },
+  "res": {
+   "exclude": "metadata.namespace!=a",
+   "node": ""
+  }
+ },
+ {
+  "req": {
+   "op": "selectors",
+   "ns": [
+    "b",
+    "a"
+   ],
+   "node": "n"
+  },
+  "res": {
+   "exclude": "metadata.namespace!=b,metadata.namespace!=a",
+   "node": "spec.nodeName=n"
+  }
+ },
+ {
+  "req": {
+   "op": "selectors",
+   "ns": [
+    "a,b",
+    "c=d",
+    "e\\f"
+   ],
+   "node": "x,y=z"
+  },
+  "res": {
+   "exclude": "metadata.namespace!=a\\,b,metadata.namespace!=c\\=d,metadata.namespace!=e\\\\f",
+   "node": "spec.nodeName=x\\,y\\=z"
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": ""
+  },
+  "res": {
+   "err": null,
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a,b]"
+  },
+  "res": {
+   "err": null,
+   "v": {
+    "pods": [
+     "a",
+     "b"
+    ]
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a,b],nodes=[c]"
+  },
+  "res": {
+   "err": null,
+   "v": {
+    "nodes": [
+     "c"
+    ],
+    "pods": [
+     "a",
+     "b"
+    ]
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[]"
+  },
+  "res": {
+   "err": null,
+   "v": {
+    "pods": []
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[ ]"
+  },
+  "res": {
+   "err": null,
+   "v": {
+    "pods": []
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": " pods =[ a , b ]"
+  },
+  "res": {
+   "err": null,
+   "v": {
+    "pods": [
+     "a",
+     "b"
+    ]
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a,,b]"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a,]"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a],"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a],,nodes=[b]"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a]nodes=[b]"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "=[a]"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "po,ds=[a]"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a=b]"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a[b]"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a]b]"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[*]"
+  },
+  "res": {
+   "err": null,
+   "v": {
+    "pods": [
+     "*"
+    ]
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a*b*]"
+  },
+  "res": {
+   "err": "invalid format, only one wildcard per label allowed",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "*=[*]"
+  },
+  "res": {
+   "err": null,
+   "v": {
+    "*": [
+     "*"
+    ]
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a],pods=[b]"
+  },
+  "res": {
+   "err": null,
+   "v": {
+    "pods": [
+     "b"
+    ]
+   }
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a] ,nodes=[b]"
+  },
+  "res": {
+   "err": "invalid format, metric=[label1,label2,labeln...],metricN=[]",
+   "v": {}
+  }
+ },
+ {
+  "req": {
+   "op": "labels",
+   "s": "pods=[a], nodes=[b]"
+  },
+  "res": {
+   "err": null,
+   "v": {
+    "nodes": [
+     "b"
+    ],
+    "pods": [
+     "a"
+    ]
+   }
+  }
+ }
+]

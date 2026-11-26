@@ -1,0 +1,7 @@
+Print version information.
+
+Usage:
+  kube-state-metrics version [flags]
+
+Flags:
+  -h, --help   help for version

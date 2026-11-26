@@ -439,6 +439,11 @@ dependencies = [
 [[package]]
 name = "kube-state-metrics"
 version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "serde_yaml_ng",
+]
 
 [[package]]
 name = "libc"
