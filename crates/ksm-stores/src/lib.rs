@@ -5,6 +5,7 @@
 //! `families(allow_annotations, allow_labels)`.
 
 pub mod quantity;
+mod resource_names;
 pub mod util;
 
 pub mod certificatesigningrequest;
