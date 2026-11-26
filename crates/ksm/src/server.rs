@@ -167,6 +167,7 @@ pub fn go_io_error(e: &std::io::Error) -> String {
         ErrorKind::PermissionDenied => "permission denied".to_owned(),
         ErrorKind::IsADirectory => "is a directory".to_owned(),
         ErrorKind::NotADirectory => "not a directory".to_owned(),
+        ErrorKind::AddrInUse => "address already in use".to_owned(),
         _ => {
             let s = e.to_string();
             let s = s.split(" (os error").next().unwrap_or(&s).to_owned();
@@ -395,10 +396,20 @@ pub async fn run(
     let telemetry_addr = listen_addr(&opts.telemetry_host, opts.telemetry_port)?;
     let metrics_listener = tokio::net::TcpListener::bind(metrics_addr)
         .await
-        .map_err(|e| format!("run server group error: listen tcp {metrics_addr}: bind: {e}"))?;
+        .map_err(|e| {
+            format!(
+                "run server group error: listen tcp {metrics_addr}: bind: {}",
+                go_io_error(&e)
+            )
+        })?;
     let telemetry_listener = tokio::net::TcpListener::bind(telemetry_addr)
         .await
-        .map_err(|e| format!("run server group error: listen tcp {telemetry_addr}: bind: {e}"))?;
+        .map_err(|e| {
+            format!(
+                "run server group error: listen tcp {telemetry_addr}: bind: {}",
+                go_io_error(&e)
+            )
+        })?;
 
     // `web.ListenAndServe`'s configureServer: a bad --tls-config ends the run.
     let tls = if opts.tls_config.is_empty() {
