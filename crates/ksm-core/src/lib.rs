@@ -9,6 +9,7 @@ pub mod generator;
 pub mod gostd;
 pub mod gostr;
 pub mod labels;
+pub mod log;
 pub mod metric;
 pub mod re2;
 pub mod sharding;

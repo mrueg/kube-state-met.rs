@@ -141,6 +141,11 @@ pub fn parse_uint(s: &str, base: u32, bits: u32) -> Result<u64, NumErr> {
             }
         }
     }
+    // Go: bitSize 0 means 64; a base outside 2..=36 is an error.
+    if !(2..=36).contains(&base) {
+        return Err(NumErr::Syntax);
+    }
+    let bits = if bits == 0 { 64 } else { bits };
     let cutoff = u64::MAX / base + 1;
     let max_val: u64 = if bits >= 64 {
         u64::MAX
@@ -194,6 +199,7 @@ pub fn parse_int(s: &str, base: u32, bits: u32) -> Result<i64, NumErr> {
         Err(NumErr::Syntax) => return Err(NumErr::Syntax),
         Err(NumErr::Range) => u64::MAX,
     };
+    let bits = if bits == 0 { 64 } else { bits.min(64) };
     let cutoff = 1u64 << (bits - 1);
     if !neg && un >= cutoff {
         return Err(NumErr::Range);
@@ -372,19 +378,48 @@ fn hex_float(mantissa: &str, exp: i64) -> f64 {
     if sticky {
         m |= 1;
     }
-    let mut v = m as f64;
-    let mut e = e.clamp(-2200, 2200);
-    while e > 0 {
-        let step = e.min(1000);
-        v *= 2f64.powi(step as i32);
-        e -= step;
+    round_to_f64(m, e)
+}
+
+/// `m * 2^e` rounded once to the nearest f64, ties to even (Go's
+/// `atofHex`); subnormal results are rounded at their own precision.
+fn round_to_f64(m: u64, e: i64) -> f64 {
+    if m == 0 {
+        return 0.0;
     }
-    while e < 0 {
-        let step = (-e).min(1000);
-        v /= 2f64.powi(step as i32);
-        e += step;
+    let lz = m.leading_zeros();
+    let m = m << lz;
+    let e = e - i64::from(lz);
+    // The value is in [2^top, 2^(top+1)).
+    let mut top = e + 63;
+    // Significant bits kept: 53, fewer for subnormals.
+    let prec = if top < -1022 { 53 - (-1022 - top) } else { 53 };
+    if prec < 0 {
+        return 0.0;
     }
-    v
+    let shift = (64 - prec) as u32;
+    let (mut mant, rem, half) = if shift >= 64 {
+        (0u64, m, 1u64 << 63)
+    } else {
+        (m >> shift, m & ((1u64 << shift) - 1), 1u64 << (shift - 1))
+    };
+    if rem > half || (rem == half && mant & 1 == 1) {
+        mant += 1;
+    }
+    if top < -1022 {
+        // Subnormal: the bits are the multiple of 2^-1074 (a carry into bit
+        // 52 is the smallest normal, which these bits also encode).
+        return f64::from_bits(mant);
+    }
+    if mant == 1 << 53 {
+        mant >>= 1;
+        top += 1;
+    }
+    if top > 1023 {
+        return f64::INFINITY;
+    }
+    let biased = (top + 1023) as u64;
+    f64::from_bits((biased << 52) | (mant & ((1 << 52) - 1)))
 }
 
 /// Go's `fmt.Sprintf("%f", f)`.
@@ -742,5 +777,38 @@ mod tests {
             quote("a\"b\\\n\u{1}é\u{a0}"),
             "\"a\\\"b\\\\\\n\\x01é\\u00a0\""
         );
+    }
+
+    /// Go-verified bit patterns (`strconv.ParseFloat(s, 64)`); `true`: a
+    /// range error.
+    #[test]
+    fn hex_floats_round_once() {
+        let cases: &[(&str, u64, bool)] = &[
+            ("0x1.400000000000001p-1073", 0x3, false),
+            ("0x1p-1074", 0x1, false),
+            ("0x1p-1075", 0x0, false),
+            ("0x1.0000000000001p-1075", 0x1, false),
+            ("0x1.8p-1075", 0x1, false),
+            ("0x1.fffffffffffffp1023", 0x7fefffffffffffff, false),
+            ("0x1.fffffffffffff8p1023", 0x7ff0000000000000, true),
+            ("0x1p1024", 0x7ff0000000000000, true),
+            ("0x1.0000000000000801p0", 0x3ff0000000000001, false),
+            ("0x1.00000000000008p0", 0x3ff0000000000000, false),
+            ("0x1.00000000000018p0", 0x3ff0000000000002, false),
+            ("0x.8p-1022", 0x8000000000000, false),
+            ("0x1.ffffffffffffffp-1023", 0x10000000000000, false),
+            ("0xabcdef.123456789abcdefp-30", 0x3f8579bde2468acf, false),
+            ("0x0p0", 0x0, false),
+            ("0x1_0p0", 0x4030000000000000, false),
+        ];
+        for (s, bits, range) in cases {
+            match parse_float(s) {
+                Ok(v) => {
+                    assert!(!range, "{s}: want a range error, got {v}");
+                    assert_eq!(v.to_bits(), *bits, "{s}");
+                }
+                Err(e) => assert!(*range && e == NumErr::Range, "{s}: {e:?}"),
+            }
+        }
     }
 }

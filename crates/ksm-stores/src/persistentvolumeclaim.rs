@@ -209,7 +209,7 @@ pub fn families(
                     }
                     Some(mk(
                         &["condition", "status"],
-                        vec![c.type_.clone(), c.status.to_lowercase()],
+                        vec![c.type_.clone(), ksm_core::gostr::to_lower(&c.status)],
                         time_f64(t),
                     ))
                 })

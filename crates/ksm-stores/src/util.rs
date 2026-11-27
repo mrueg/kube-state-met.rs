@@ -151,12 +151,14 @@ pub fn unix(t: &k8s_openapi::jiff::Timestamp) -> i64 {
     }
 }
 
+/// Go's `time.Time.IsZero()`.
+fn ts_is_zero(t: &k8s_openapi::jiff::Timestamp) -> bool {
+    t.as_second() == GO_ZERO_TIME_UNIX && t.subsec_nanosecond() == 0
+}
+
 /// Go's `metav1.Time.IsZero()` for an optional time.
 pub fn time_is_zero(t: Option<&Time>) -> bool {
-    match t {
-        None => true,
-        Some(t) => t.0.as_second() == GO_ZERO_TIME_UNIX && t.0.subsec_nanosecond() == 0,
-    }
+    t.is_none_or(|t| ts_is_zero(&t.0))
 }
 
 /// Unix seconds of Go's zero `time.Time` (0001-01-01T00:00:00Z).
@@ -180,20 +182,22 @@ pub fn micro_time_f64(t: &MicroTime) -> f64 {
     unix(&t.0) as f64
 }
 
-/// The `_created` sample: none when the creation timestamp is zero.
-pub fn created_metric(m: &ObjectMeta) -> Vec<Metric> {
-    match &m.creation_timestamp {
+/// One sample of a time's Unix seconds; none when the time is zero.
+fn time_metric(t: Option<&Time>) -> Vec<Metric> {
+    match t {
         Some(t) if !time_is_zero(Some(t)) => vec![Metric::value(time_f64(t))],
         _ => Vec::new(),
     }
 }
 
+/// The `_created` sample: none when the creation timestamp is zero.
+pub fn created_metric(m: &ObjectMeta) -> Vec<Metric> {
+    time_metric(m.creation_timestamp.as_ref())
+}
+
 /// The `_deletion_timestamp` sample: none unless the object is being deleted.
 pub fn deletion_metric(m: &ObjectMeta) -> Vec<Metric> {
-    match &m.deletion_timestamp {
-        Some(t) if !time_is_zero(Some(t)) => vec![Metric::value(time_f64(t))],
-        _ => Vec::new(),
-    }
+    time_metric(m.deletion_timestamp.as_ref())
 }
 
 /// The `_metadata_resource_version` sample.
@@ -235,10 +239,7 @@ pub fn conditions_with(keys: &[&'static str], values: &[&str], status: &str) -> 
 
 /// Go's `metav1.MicroTime.IsZero()` for an optional micro time.
 pub fn micro_time_is_zero(t: Option<&MicroTime>) -> bool {
-    match t {
-        None => true,
-        Some(t) => t.0.as_second() == GO_ZERO_TIME_UNIX && t.0.subsec_nanosecond() == 0,
-    }
+    t.is_none_or(|t| ts_is_zero(&t.0))
 }
 
 /// `float64(t.Unix())` of a value-typed Go time that may be unset: an unset
@@ -404,11 +405,20 @@ pub fn scaled_value_from_int_or_percent(
         IntOrString::String(s) => {
             let value: i64 = s.strip_suffix('%')?.parse().ok()?;
             let scaled = value as f64 * total as f64 / 100.0;
-            Some(if round_up {
+            let rounded = if round_up {
                 scaled.ceil()
             } else {
                 scaled.floor()
-            } as i64)
+            };
+            // Go's int(float64) on amd64: out of range (or NaN) gives MinInt64.
+            // i64::MAX as f64 rounds up to 2^63, the first value out of range.
+            Some(
+                if rounded.is_nan() || rounded >= i64::MAX as f64 || rounded < i64::MIN as f64 {
+                    i64::MIN
+                } else {
+                    rounded as i64
+                },
+            )
         }
     }
 }

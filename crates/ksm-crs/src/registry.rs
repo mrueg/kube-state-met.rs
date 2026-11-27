@@ -586,10 +586,9 @@ impl CompiledFamily {
         let base = self.base_labels(obj);
         let (values, errors) = scrape_values_for(&self.each, obj);
         for err in errors {
-            if self.error_log_v == 0 {
-                tracing::error!(family = %self.name, "{err}");
-            } else {
-                tracing::debug!(family = %self.name, v = self.error_log_v, "{err}");
+            // `klog.V(errorLogV).ErrorS(err, name)`.
+            if ksm_core::log::v(self.error_log_v) {
+                tracing::error!(err = %err, "{}", self.name);
             }
         }
         let metrics = values

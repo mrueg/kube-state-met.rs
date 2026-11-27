@@ -235,19 +235,15 @@ pub fn create_prometheus_label_keys_values(
     map_to_prometheus_labels(allowed, prefix)
 }
 
+/// Go's `cachedCompileAllowListPattern` warns once per rejected pattern.
 fn tracing_warn_pattern(pattern: &str) {
-    // Logged by the binary's subscriber when one is installed.
-    eprintln_once(pattern);
-}
-
-fn eprintln_once(pattern: &str) {
     use std::sync::{Mutex, OnceLock};
     static SEEN: OnceLock<Mutex<std::collections::HashSet<String>>> = OnceLock::new();
     let seen = SEEN.get_or_init(Default::default);
     if let Ok(mut s) = seen.lock()
         && s.insert(pattern.to_owned())
     {
-        eprintln!(
+        tracing::warn!(
             "kube-state-metrics: ignoring allowlist pattern {pattern:?}: exceeds maximum of {MAX_PARTIAL_WILDCARDS_PER_LABEL} wildcard(s)"
         );
     }

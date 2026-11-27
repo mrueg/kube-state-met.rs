@@ -101,6 +101,7 @@ impl<S: Subscriber> Layer<S> for Klog {
 
 /// Installs the logger; `-v` above 0 enables debug, above 4 trace.
 pub fn init(verbosity: i32) {
+    ksm_core::log::set_verbosity(verbosity);
     let max = match verbosity {
         v if v >= 5 => tracing::level_filters::LevelFilter::TRACE,
         v if v >= 1 => tracing::level_filters::LevelFilter::DEBUG,
