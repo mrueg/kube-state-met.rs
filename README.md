@@ -53,10 +53,26 @@ The upstream manifests and RBAC in `../kube-state-metrics/examples/standard` wor
 
 ## Benchmarks
 
-`bench/run.sh` builds both and writes [bench/RESULTS.md](bench/RESULTS.md): sync time, scrape latency,
-memory and CPU at 1k/10k/50k pods against the same fake API server, CPU under a steady load of pod watch
-events (`--churn`), plus criterion micro-benchmarks (`cargo bench -p ksm-stores`). At 10k pods: sync 3x, scrape
-3.5x and gzip scrape 3x faster than Go, 1.3x less memory, half the CPU under 1000 pod events per second.
+`bench/run.sh` builds both and writes [bench/RESULTS.md](bench/RESULTS.md) for 1k/10k pods against the same
+fake API server:
+- sync time;
+- scrape latency p50/p90/p99, plain and gzip;
+- throughput with 4 concurrent clients;
+- CPU per scrape and memory;
+- CPU under a steady load of pod watch events (`--churn`);
+- criterion micro-benchmarks (`cargo bench -p ksm-stores`).
+
+At 10k pods, compared with Go:
+- sync is 2x faster;
+- scrapes are 3.3x faster;
+- gzip scrapes are 2x faster;
+- plain-text throughput is 2.5x higher;
+- memory is 1.3x lower;
+- CPU under 1000 pod events per second is about half.
+
+`tools/kind-kwok-bench/run.sh` runs the same comparison against a real HA API server: a kind cluster with three
+control-plane nodes, with kwok simulating the nodes and pods. It writes `bench/RESULTS-kind-kwok.md`. Both
+benchmarks run in the [bench workflow](.github/workflows/bench.yml).
 
 ## Known differences from the Go original
 

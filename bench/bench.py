@@ -5,13 +5,20 @@ Both binaries run against the same fake API server serving a generated
 cluster. For every scale and implementation it measures:
   - sync time: start until /metrics reports every pod (kube_pod_info lines)
   - scrape latency p50 / p90 / p99 and response size (N scrapes, text format)
-  - gzip scrape latency p50
+  - gzip scrape latency p50 / p90 / p99
+  - CPU seconds per scrape (plain and gzip), from the process' own CPU time
+  - throughput: --concurrency clients scrape back to back for --load-seconds
+    (plain, then gzip); scrapes/s, MB/s, latency p50 / p99 under load, CPU
+    cores used and peak RSS
   - RSS after sync, peak RSS (VmHWM), CPU seconds used (start..end)
 With --churn RATE, a second fake API server sends RATE pod MODIFIED events per
 second to the open watches; after sync it measures the CPU (cores) and RSS
 each binary needs to keep up, over --churn-seconds without scrapes.
 
 Scrapes use curl, timing the whole body (gzip: the compressed body, not decompressed).
+
+Against a real cluster (tools/kind-kwok-bench/run.sh): --kubeconfig PATH --pods N
+measures the cluster as it is (N: the pods it holds); no fake server, no churn run.
 
 Usage: bench/bench.py [--scales 1000,10000,50000] [--scrapes 30] [--churn 1000] [--churn-seconds 20] [--out bench/RESULTS.md]
        [--go PATH] [--rust PATH] [--fake PATH]
@@ -82,7 +89,33 @@ def pct(xs, p):
     return xs[min(len(xs) - 1, int(round(p / 100 * (len(xs) - 1))))]
 
 
-def run_one(binary, kubeconfig, pods, scrapes, log):
+def load(port, gzip, clients, seconds, pid):
+    """`clients` threads scrape back to back for `seconds`. Returns throughput, latencies and CPU."""
+    import threading
+    times, sizes, lock = [], [], threading.Lock()
+    stop = time.time() + seconds
+
+    def worker():
+        while time.time() < stop:
+            t, n = scrape(port, gzip=gzip)
+            with lock:
+                times.append(t)
+                sizes.append(n)
+
+    c0, t0 = cpu_seconds(pid), time.time()
+    th = [threading.Thread(target=worker) for _ in range(clients)]
+    for t in th:
+        t.start()
+    for t in th:
+        t.join()
+    wall = time.time() - t0
+    cpu = cpu_seconds(pid) - c0
+    return {"rps": len(times) / wall, "mbps": sum(sizes) / wall / 2**20, "p50_ms": pct(times, 50) * 1e3,
+            "p99_ms": pct(times, 99) * 1e3, "cores": cpu / wall, "cpu_per_scrape_ms": cpu / len(times) * 1e3,
+            "n": len(times)}
+
+
+def run_one(binary, kubeconfig, pods, scrapes, log, clients=4, load_seconds=15):
     port, tport = free_port(), free_port()
     start = time.time()
     p = subprocess.Popen([binary, "--kubeconfig", kubeconfig, "--port", str(port), "--telemetry-port", str(tport),
@@ -105,18 +138,28 @@ def run_one(binary, kubeconfig, pods, scrapes, log):
             raise RuntimeError(f"{binary} did not sync {pods} pods")
         rss_sync = proc_status(p.pid, "VmRSS")
         times, size = [], 0
+        c0 = cpu_seconds(p.pid)
         for _ in range(scrapes):
             t, size = scrape(port)
             times.append(t)
+        cpu_plain = (cpu_seconds(p.pid) - c0) / scrapes
         gz, gz_size = [], 0
-        for _ in range(max(3, scrapes // 3)):
+        c0 = cpu_seconds(p.pid)
+        for _ in range(scrapes):
             t, gz_size = scrape(port, gzip=True)
             gz.append(t)
+        cpu_gz = (cpu_seconds(p.pid) - c0) / scrapes
+        rss_seq_peak = proc_status(p.pid, "VmHWM")
+        thr = load(port, False, clients, load_seconds, p.pid) if load_seconds else None
+        thr_gz = load(port, True, clients, load_seconds, p.pid) if load_seconds else None
         if gz_size >= size:
             raise RuntimeError(f"{binary}: gzip scrape was not compressed")
         return {
             "sync_s": sync, "p50_ms": pct(times, 50) * 1e3, "p90_ms": pct(times, 90) * 1e3,
-            "p99_ms": pct(times, 99) * 1e3, "gzip_p50_ms": pct(gz, 50) * 1e3, "bytes": size, "gz_bytes": gz_size,
+            "p99_ms": pct(times, 99) * 1e3, "gzip_p50_ms": pct(gz, 50) * 1e3,
+            "gzip_p90_ms": pct(gz, 90) * 1e3, "gzip_p99_ms": pct(gz, 99) * 1e3,
+            "cpu_scrape_ms": cpu_plain * 1e3, "cpu_gz_scrape_ms": cpu_gz * 1e3,
+            "rss_seq_peak_mb": rss_seq_peak / 2**20, "load": thr, "load_gz": thr_gz, "bytes": size, "gz_bytes": gz_size,
             "rss_sync_mb": rss_sync / 2**20, "rss_peak_mb": proc_status(p.pid, "VmHWM") / 2**20,
             "rss_end_mb": proc_status(p.pid, "VmRSS") / 2**20, "cpu_s": cpu_seconds(p.pid),
         }
@@ -178,22 +221,44 @@ def main():
     ap.add_argument("--out", default=os.path.join(ROOT, "bench/RESULTS.md"))
     ap.add_argument("--churn", type=int, default=1000, help="pod events per second for the churn run (0: skip)")
     ap.add_argument("--churn-seconds", type=int, default=20)
+    ap.add_argument("--concurrency", type=int, default=4, help="clients in the throughput run")
+    ap.add_argument("--load-seconds", type=int, default=15, help="length of each throughput run (0: skip)")
+    ap.add_argument("--kubeconfig", help="benchmark against this cluster instead of the fake API server")
+    ap.add_argument("--pods", type=int, help="with --kubeconfig: the pods in the cluster (sync is reached when all are listed)")
+    ap.add_argument("--source", default="the same fake API server (tools/fake-apiserver, generated cluster: pods plus "
+                    "deployments, replicasets, services, configmaps, secrets, jobs, namespaces and nodes in proportion)",
+                    help="what the binaries ran against, for the report")
     a = ap.parse_args()
     results, churn = [], []
     tmp = tempfile.mkdtemp(prefix="ksm-bench-")
     log = open(os.path.join(tmp, "bench.log"), "w")
+
+    def measure(kc, pods, spec):
+        for name, binary in (("go", a.go), ("rust", a.rust)):
+            r = run_one(binary, kc, pods, a.scrapes, log, a.concurrency, a.load_seconds)
+            r.update(impl=name, pods=pods, spec=spec)
+            results.append(r)
+            print(f"{pods:>6} pods {name:>4}: sync {r['sync_s']:.2f}s  p50 {r['p50_ms']:.1f}ms  p99 {r['p99_ms']:.1f}ms  gzip {r['gzip_p50_ms']:.1f}ms  "
+                  f"rss {r['rss_end_mb']:.0f}MB (peak {r['rss_peak_mb']:.0f})  cpu {r['cpu_s']:.1f}s", flush=True)
+            for k in ("load", "load_gz"):
+                if r[k]:
+                    l = r[k]
+                    print(f"{'':>17}{k}: {l['rps']:.1f} scrapes/s  {l['mbps']:.0f} MB/s  p50 {l['p50_ms']:.0f}ms  "
+                          f"p99 {l['p99_ms']:.0f}ms  {l['cores']:.2f} cores", flush=True)
+
+    if a.kubeconfig:
+        if not a.pods:
+            ap.error("--kubeconfig needs --pods")
+        measure(a.kubeconfig, a.pods, "cluster")
+        write_report(a.out, results, a.scrapes, (), 0, a.concurrency, a.load_seconds, a.source)
+        return
     for pods in [int(s) for s in a.scales.split(",")]:
         spec = (f"pods={pods},deployments={pods // 10},replicasets={pods // 5},services={pods // 20},"
                 f"configmaps={pods // 10},secrets={pods // 10},jobs={pods // 50}")
         kc = os.path.join(tmp, f"kubeconfig-{pods}")
         fake = start_fake(a.fake, spec, kc, log)
         try:
-            for name, binary in (("go", a.go), ("rust", a.rust)):
-                r = run_one(binary, kc, pods, a.scrapes, log)
-                r.update(impl=name, pods=pods, spec=spec)
-                results.append(r)
-                print(f"{pods:>6} pods {name:>4}: sync {r['sync_s']:.2f}s  p50 {r['p50_ms']:.1f}ms  p99 {r['p99_ms']:.1f}ms  gzip {r['gzip_p50_ms']:.1f}ms  "
-                      f"rss {r['rss_end_mb']:.0f}MB (peak {r['rss_peak_mb']:.0f})  cpu {r['cpu_s']:.1f}s", flush=True)
+            measure(kc, pods, spec)
         finally:
             fake.terminate()
             fake.wait()
@@ -213,10 +278,10 @@ def main():
             finally:
                 fake.terminate()
                 fake.wait()
-    write_report(a.out, results, a.scrapes, churn, a.churn_seconds)
+    write_report(a.out, results, a.scrapes, churn, a.churn_seconds, a.concurrency, a.load_seconds, a.source)
 
 
-def write_report(path, results, scrapes, churn=(), churn_seconds=0):
+def write_report(path, results, scrapes, churn=(), churn_seconds=0, clients=0, load_seconds=0, source=""):
     cpu = "unknown"
     try:
         cpu = next(l.split(":", 1)[1].strip() for l in open("/proc/cpuinfo") if l.startswith("model name"))
@@ -225,24 +290,38 @@ def write_report(path, results, scrapes, churn=(), churn_seconds=0):
     lines = [
         "# Benchmarks: kube-state-metrics (Go) vs kube-state-met.rs (Rust)", "",
         f"Generated by `bench/run.sh` on {time.strftime('%Y-%m-%d')}, {platform.system()} {platform.machine()}, "
-        f"{cpu}, {os.cpu_count()} CPUs. Both binaries ran against the same fake API server "
-        f"(tools/fake-apiserver, generated cluster: pods plus deployments, replicasets, services, configmaps, "
-        f"secrets, jobs, namespaces and nodes in proportion), default resources, {scrapes} scrapes each.", "",
-        "| Pods | Impl | Sync (s) | Scrape p50 (ms) | p90 (ms) | p99 (ms) | gzip p50 (ms) | Body (MB) | gzip body (MB) | RSS after sync (MB) | Peak RSS (MB) | RSS end (MB) | CPU (s) |",
-        "| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        f"{cpu}, {os.cpu_count()} CPUs. Both binaries ran against {source}, default resources, {scrapes} scrapes each.", "",
+        "Latency (one client, scrapes back to back) and memory:", "",
+        "| Pods | Impl | Sync (s) | p50 (ms) | p90 (ms) | p99 (ms) | gzip p50 (ms) | gzip p90 (ms) | gzip p99 (ms) | Body (MB) | gzip body (MB) | CPU/scrape (ms) | CPU/gzip scrape (ms) | RSS after sync (MB) | Peak RSS, 1 client (MB) | Peak RSS (MB) | RSS end (MB) | CPU total (s) |",
+        "| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for r in results:
         lines.append(f"| {r['pods']} | {r['impl']} | {r['sync_s']:.2f} | {r['p50_ms']:.1f} | {r['p90_ms']:.1f} | "
-                     f"{r['p99_ms']:.1f} | {r['gzip_p50_ms']:.1f} | {r['bytes'] / 2**20:.1f} | {r['gz_bytes'] / 2**20:.1f} | {r['rss_sync_mb']:.0f} | "
-                     f"{r['rss_peak_mb']:.0f} | {r['rss_end_mb']:.0f} | {r['cpu_s']:.1f} |")
-    lines += ["", "Ratios (Go / Rust; above 1 means Rust is better):", "",
-              "| Pods | Sync | Scrape p50 | gzip p50 | Peak RSS | RSS end | CPU |", "| ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
+                     f"{r['p99_ms']:.1f} | {r['gzip_p50_ms']:.1f} | {r['gzip_p90_ms']:.1f} | {r['gzip_p99_ms']:.1f} | "
+                     f"{r['bytes'] / 2**20:.1f} | {r['gz_bytes'] / 2**20:.1f} | {r['cpu_scrape_ms']:.0f} | {r['cpu_gz_scrape_ms']:.0f} | "
+                     f"{r['rss_sync_mb']:.0f} | {r['rss_seq_peak_mb']:.0f} | {r['rss_peak_mb']:.0f} | {r['rss_end_mb']:.0f} | {r['cpu_s']:.1f} |")
+    if any(r.get("load") for r in results):
+        lines += ["", f"Throughput: {clients} clients scrape back to back for {load_seconds}s, plain then gzip "
+                  "(cores: the process' CPU time over the run; CPU/scrape: CPU time per completed scrape).", "",
+                  "| Pods | Impl | Encoding | Scrapes/s | MB/s | p50 (ms) | p99 (ms) | Cores | CPU/scrape (ms) |",
+                  "| ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |"]
+        for r in results:
+            for k, enc in (("load", "plain"), ("load_gz", "gzip")):
+                l = r.get(k)
+                if l:
+                    lines.append(f"| {r['pods']} | {r['impl']} | {enc} | {l['rps']:.2f} | {l['mbps']:.0f} | {l['p50_ms']:.0f} | "
+                                 f"{l['p99_ms']:.0f} | {l['cores']:.2f} | {l['cpu_per_scrape_ms']:.0f} |")
+    lines += ["", "Ratios (Go / Rust, throughput Rust / Go; above 1 means Rust is better):", "",
+              "| Pods | Sync | p50 | p99 | gzip p50 | gzip p99 | CPU/scrape | CPU/gzip scrape | Throughput | gzip throughput | Peak RSS | RSS end |",
+              "| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
     by = {(r["pods"], r["impl"]): r for r in results}
     for pods in sorted({r["pods"] for r in results}):
         g, rs = by.get((pods, "go")), by.get((pods, "rust"))
         if g and rs:
             f = lambda k: f"{g[k] / rs[k]:.2f}x" if rs[k] else "-"
-            lines.append(f"| {pods} | {f('sync_s')} | {f('p50_ms')} | {f('gzip_p50_ms')} | {f('rss_peak_mb')} | {f('rss_end_mb')} | {f('cpu_s')} |")
+            t = lambda k: f"{rs[k]['rps'] / g[k]['rps']:.2f}x" if g.get(k) and rs.get(k) and g[k]["rps"] else "-"
+            lines.append(f"| {pods} | {f('sync_s')} | {f('p50_ms')} | {f('p99_ms')} | {f('gzip_p50_ms')} | {f('gzip_p99_ms')} | "
+                         f"{f('cpu_scrape_ms')} | {f('cpu_gz_scrape_ms')} | {t('load')} | {t('load_gz')} | {f('rss_peak_mb')} | {f('rss_end_mb')} |")
     if churn:
         lines += ["", f"Event load: the fake API server modifies {churn[0]['rate']} pods per second (MODIFIED watch events); "
                   f"CPU averaged over {churn_seconds}s after sync, no scrapes.", "",
@@ -250,9 +329,13 @@ def write_report(path, results, scrapes, churn=(), churn_seconds=0):
                   "| ---: | --- | ---: | ---: | ---: | ---: |"]
         for r in churn:
             lines.append(f"| {r['pods']} | {r['impl']} | {r['rate']} | {r['cores']:.2f} | {r['rss_mb']:.0f} | {r['rss_peak_mb']:.0f} |")
-    lines += ["", "Notes: the sync time includes process start and the first full list of every resource; "
-              "the fake API server answers instantly, so it measures kube-state-metrics' own processing. "
-              "The Go client requests protobuf but the fake server answers JSON, as it does for the Rust client.", ""]
+    if "fake API server" in source:
+        notes = ("the fake API server answers instantly, so it measures kube-state-metrics' own processing. "
+                 "The Go client requests protobuf but the fake server answers JSON, as it does for the Rust client.")
+    else:
+        notes = ("a real API server answers, so it includes the API server's list time. "
+                 "The Go client lists in protobuf, the Rust client in JSON.")
+    lines += ["", "Notes: the sync time includes process start and the first full list of every resource; " + notes, ""]
     open(path, "w").write("\n".join(lines))
     print(f"wrote {path}")
 
