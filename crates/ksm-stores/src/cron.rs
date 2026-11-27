@@ -19,6 +19,7 @@ use std::sync::OnceLock;
 
 use jiff::Timestamp;
 use jiff::tz::TimeZone;
+use ksm_core::gostd::{civil_from_days, days_from_civil, parse_duration};
 
 const NS: i128 = 1_000_000_000;
 const MINUTE_NS: i128 = 60 * NS;
@@ -406,29 +407,12 @@ fn validate_range_params(
 /// `parseIntOrName`.
 fn parse_int_or_name(expr: &str, names: &[(&str, u64)]) -> Result<u64, String> {
     if !names.is_empty() {
-        let lower = go_to_lower(expr);
+        let lower = ksm_core::gostr::to_lower(expr);
         if let Some((_, v)) = names.iter().find(|(n, _)| *n == lower) {
             return Ok(*v);
         }
     }
     must_parse_int(expr)
-}
-
-/// Go's `strings.ToLower` (simple case mapping: one rune to one rune).
-fn go_to_lower(s: &str) -> String {
-    s.chars()
-        .map(|c| {
-            if c == '\u{130}' {
-                'i'
-            } else {
-                let mut l = c.to_lowercase();
-                match (l.next(), l.next()) {
-                    (Some(l), None) => l,
-                    _ => c,
-                }
-            }
-        })
-        .collect()
 }
 
 /// `mustParseInt`: Go's `strconv.Atoi`, negative numbers rejected.
@@ -561,142 +545,6 @@ fn every_with_min(duration: i64) -> i64 {
     d - d % 1_000_000_000
 }
 
-/// Go's `time.ParseDuration`.
-pub fn parse_duration(orig: &str) -> Result<i64, String> {
-    let err = |m: &str| Err(format!("time: {m} {orig:?}"));
-    let mut s = orig.as_bytes();
-    let mut d: u64 = 0;
-    let mut neg = false;
-    if let Some(&c) = s.first()
-        && (c == b'-' || c == b'+')
-    {
-        neg = c == b'-';
-        s = &s[1..];
-    }
-    if s == b"0" {
-        return Ok(0);
-    }
-    if s.is_empty() {
-        return err("invalid duration");
-    }
-    const LIMIT: u64 = 1 << 63;
-    while !s.is_empty() {
-        if !(s[0] == b'.' || s[0].is_ascii_digit()) {
-            return err("invalid duration");
-        }
-        // leadingInt
-        let pl = s.len();
-        let mut v: u64 = 0;
-        let mut i = 0;
-        while i < s.len() && s[i].is_ascii_digit() {
-            if v > LIMIT / 10 {
-                return err("invalid duration");
-            }
-            v = v * 10 + u64::from(s[i] - b'0');
-            if v > LIMIT {
-                return err("invalid duration");
-            }
-            i += 1;
-        }
-        s = &s[i..];
-        let pre = pl != s.len();
-
-        // leadingFraction
-        let mut f: u64 = 0;
-        let mut scale: f64 = 1.0;
-        let mut post = false;
-        if s.first() == Some(&b'.') {
-            s = &s[1..];
-            let pl = s.len();
-            let mut overflow = false;
-            let mut i = 0;
-            while i < s.len() && s[i].is_ascii_digit() {
-                if !overflow {
-                    if f > (LIMIT - 1) / 10 {
-                        overflow = true;
-                    } else {
-                        let y = f * 10 + u64::from(s[i] - b'0');
-                        if y > LIMIT {
-                            overflow = true;
-                        } else {
-                            f = y;
-                            scale *= 10.0;
-                        }
-                    }
-                }
-                i += 1;
-            }
-            s = &s[i..];
-            post = pl != s.len();
-        }
-        if !pre && !post {
-            return err("invalid duration");
-        }
-
-        // Unit.
-        let i = s
-            .iter()
-            .position(|&c| c == b'.' || c.is_ascii_digit())
-            .unwrap_or(s.len());
-        if i == 0 {
-            return err("missing unit in duration");
-        }
-        let u = &s[..i];
-        s = &s[i..];
-        let unit: u64 = match u {
-            b"ns" => 1,
-            // "µs" (U+00B5) and "μs" (U+03BC).
-            b"us" | [0xc2, 0xb5, b's'] | [0xce, 0xbc, b's'] => 1_000,
-            b"ms" => 1_000_000,
-            b"s" => 1_000_000_000,
-            b"m" => 60_000_000_000,
-            b"h" => 3_600_000_000_000,
-            _ => {
-                return err(&format!(
-                    "unknown unit {:?} in duration",
-                    String::from_utf8_lossy(u)
-                ));
-            }
-        };
-        if v > LIMIT / unit {
-            return err("invalid duration");
-        }
-        v *= unit;
-        if f > 0 {
-            v += go_f64_to_u64(u64_f64(f) * (u64_f64(unit) / scale));
-            if v > LIMIT {
-                return err("invalid duration");
-            }
-        }
-        d += v;
-        if d > LIMIT {
-            return err("invalid duration");
-        }
-    }
-    if neg {
-        // -Duration(d): 1<<63 wraps to math.MinInt64.
-        return Ok(0i64.wrapping_sub_unsigned(d));
-    }
-    i64::try_from(d).or_else(|_| err("invalid duration"))
-}
-
-#[expect(
-    clippy::cast_precision_loss,
-    reason = "Go converts uint64 to float64 the same way"
-)]
-fn u64_f64(v: u64) -> f64 {
-    v as f64
-}
-
-#[expect(
-    clippy::cast_possible_truncation,
-    clippy::cast_sign_loss,
-    reason = "Go's uint64(float64) for values below 2^63"
-)]
-fn go_f64_to_u64(v: f64) -> u64 {
-    v as u64
-}
-
 impl Schedule {
     /// `Next(t).Unix()` for `t` in Unix nanoseconds; Go's zero time (no
     /// match) gives [`GO_ZERO_TIME_UNIX`].
@@ -773,31 +621,6 @@ struct Parts {
     weekday: i64,
     /// Days since 1970-01-01 of the wall date.
     days: i64,
-}
-
-/// Days since 1970-01-01 of a proleptic Gregorian date (month 1-12).
-fn days_from_civil(y: i64, m: i64, d: i64) -> i64 {
-    let y = if m <= 2 { y - 1 } else { y };
-    let era = y.div_euclid(400);
-    let yoe = y - era * 400;
-    let mp = (m + 9) % 12;
-    let doy = (153 * mp + 2) / 5 + d - 1;
-    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-    era * 146_097 + doe - 719_468
-}
-
-/// The proleptic Gregorian date of a day count since 1970-01-01.
-fn civil_from_days(z: i64) -> (i64, i64, i64) {
-    let z = z + 719_468;
-    let era = z.div_euclid(146_097);
-    let doe = z - era * 146_097;
-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
-    let y = yoe + era * 400;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mp = (5 * doy + 2) / 153;
-    let d = doy - (153 * mp + 2) / 5 + 1;
-    let m = if mp < 10 { mp + 3 } else { mp - 9 };
-    (if m <= 2 { y + 1 } else { y }, m, d)
 }
 
 /// The search of `SpecSchedule.Next` in one zone. Every time it handles is

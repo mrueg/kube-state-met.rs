@@ -7,7 +7,7 @@
 
 mod fields;
 mod flagset;
-pub(crate) mod goparse;
+pub(crate) use ksm_core::gostd as goparse;
 mod yamlnode;
 
 use std::collections::{BTreeMap, BTreeSet};

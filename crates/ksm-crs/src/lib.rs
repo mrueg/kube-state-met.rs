@@ -12,7 +12,7 @@
 mod config;
 pub mod flect;
 mod flect_data;
-mod gostr;
+use ksm_core::gostr;
 mod path;
 mod registry;
 mod value;

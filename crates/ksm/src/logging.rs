@@ -24,21 +24,13 @@ fn header(level: char, file: &str) -> String {
 
 /// Month, day, hour, minute, second (UTC) of a Unix time.
 fn civil(secs: i64) -> (i64, i64, i64, i64, i64) {
-    let days = secs.div_euclid(86_400);
+    let (_, mo, d) = ksm_core::gostd::civil_from_days(secs.div_euclid(86_400));
     let rem = secs.rem_euclid(86_400);
-    let z = days + 719_468;
-    let doe = z - z.div_euclid(146_097) * 146_097;
-    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
-    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-    let mp = (5 * doy + 2) / 153;
-    let d = doy - (153 * mp + 2) / 5 + 1;
-    let mo = if mp < 10 { mp + 3 } else { mp - 9 };
     (mo, d, rem / 3600, (rem % 3600) / 60, rem % 60)
 }
 
-fn quote(s: &str) -> String {
-    format!("{s:?}")
-}
+/// klog quotes string values with `strconv.Quote`.
+use ksm_core::gostd::quote;
 
 /// An error line as Go's `klog.ErrorS(err, msg)` at `file` prints it.
 pub fn error_go(file: &str, msg: &str, err: &str) {

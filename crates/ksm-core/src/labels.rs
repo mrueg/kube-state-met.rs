@@ -50,42 +50,8 @@ pub fn resource_version_metric(rv: Option<&str>) -> Vec<Metric> {
 }
 
 /// Go's `strconv.ParseFloat(s, 64)`, `None` where Go returns an error.
-/// Covers decimal and special forms; hex floats are rejected (Go accepts them,
-/// they do not occur in resource versions or quantities).
 pub fn go_parse_float(s: &str) -> Option<f64> {
-    if s.is_empty() {
-        return None;
-    }
-    let body = s.strip_prefix(['+', '-']).unwrap_or(s);
-    let lower = body.to_ascii_lowercase();
-    if lower == "inf" || lower == "infinity" {
-        return Some(if s.starts_with('-') {
-            f64::NEG_INFINITY
-        } else {
-            f64::INFINITY
-        });
-    }
-    if lower == "nan" {
-        return if body.len() == s.len() {
-            Some(f64::NAN)
-        } else {
-            None
-        };
-    }
-    // Rust accepts exactly the decimal forms Go accepts, except that Go also
-    // allows `_` only after a base prefix, which Rust rejects anyway.
-    if !body
-        .bytes()
-        .all(|c| c.is_ascii_digit() || matches!(c, b'.' | b'e' | b'E' | b'+' | b'-'))
-    {
-        return None;
-    }
-    let v: f64 = s.parse().ok()?;
-    // Go reports out of range (returning ±Inf with an error).
-    if v.is_infinite() {
-        return None;
-    }
-    Some(v)
+    crate::gostd::parse_float(s).ok()
 }
 
 fn is_valid_label_char(c: u8) -> bool {
@@ -351,6 +317,6 @@ mod tests {
         assert_eq!(go_parse_float(""), None);
         assert_eq!(go_parse_float("1e400"), None);
         assert_eq!(go_parse_float("+Inf"), Some(f64::INFINITY));
-        assert_eq!(go_parse_float("1_000"), None);
+        assert_eq!(go_parse_float("1_000"), Some(1000.0));
     }
 }

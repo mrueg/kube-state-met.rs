@@ -138,200 +138,8 @@ fn string_to_float64(s: &str) -> Result<f64, String> {
 
 /// `strconv.ParseFloat(s, 64)` with its error message.
 pub(crate) fn go_parse_float(s: &str) -> Result<f64, String> {
-    let syntax = || {
-        format!(
-            "strconv.ParseFloat: parsing {}: invalid syntax",
-            go_quote(s)
-        )
-    };
-    if let Some(v) = parse_hex_float(s) {
-        return v;
-    }
-    // Underscores may separate digits, as in Go literals.
-    let stripped;
-    let dec = if s.contains('_') {
-        if !underscore_ok(s) {
-            return Err(syntax());
-        }
-        stripped = s.replace('_', "");
-        stripped.as_str()
-    } else {
-        s
-    };
-    if let Some(v) = ksm_core::labels::go_parse_float(dec) {
-        return Ok(v);
-    }
-    // ksm-core reports out of range as None; Go's message differs.
-    if !dec.is_empty() && dec.parse::<f64>().is_ok_and(f64::is_infinite) {
-        return Err(format!(
-            "strconv.ParseFloat: parsing {}: value out of range",
-            go_quote(s)
-        ));
-    }
-    Err(syntax())
-}
-
-/// Go's `strconv.Quote` for the error messages (printable ASCII kept as is).
-fn go_quote(s: &str) -> String {
-    let mut out = String::with_capacity(s.len() + 2);
-    out.push('"');
-    for c in s.chars() {
-        match c {
-            '"' => out.push_str("\\\""),
-            '\\' => out.push_str("\\\\"),
-            '\n' => out.push_str("\\n"),
-            '\t' => out.push_str("\\t"),
-            '\r' => out.push_str("\\r"),
-            c if (c as u32) < 0x20 || c as u32 == 0x7f => {
-                out.push_str(&format!("\\x{:02x}", c as u32));
-            }
-            c => out.push(c),
-        }
-    }
-    out.push('"');
-    out
-}
-
-/// Go's `underscoreOK` for a literal with a base prefix: underscores only
-/// between digits or between the prefix and a digit.
-fn underscore_ok(s: &str) -> bool {
-    // saw: '^' start, '0' digit or prefix, '_' underscore, '!' other.
-    let b = s.as_bytes();
-    let mut saw = b'^';
-    let mut i = 0;
-    if i < b.len() && (b[i] == b'+' || b[i] == b'-') {
-        i += 1;
-    }
-    let mut hex = false;
-    if i + 1 < b.len() && b[i] == b'0' && matches!(b[i + 1] | 0x20, b'x' | b'b' | b'o') {
-        hex = (b[i + 1] | 0x20) == b'x';
-        i += 2;
-        saw = b'0';
-    }
-    while i < b.len() {
-        let c = b[i];
-        if c.is_ascii_digit() || (hex && c.is_ascii_hexdigit()) {
-            saw = b'0';
-        } else if c == b'_' {
-            if saw != b'0' {
-                return false;
-            }
-            saw = b'_';
-        } else {
-            if saw == b'_' {
-                return false;
-            }
-            saw = b'!';
-        }
-        i += 1;
-    }
-    saw != b'_'
-}
-
-/// Hexadecimal floats (`0x1.8p3`) as `strconv.ParseFloat` accepts them.
-/// `None` when `s` is not a hex float; `Some(Err)` when it overflows.
-fn parse_hex_float(s: &str) -> Option<Result<f64, String>> {
-    let (neg, body) = match s.as_bytes().first() {
-        Some(b'+') => (false, &s[1..]),
-        Some(b'-') => (true, &s[1..]),
-        _ => (false, s),
-    };
-    let rest = body
-        .strip_prefix("0x")
-        .or_else(|| body.strip_prefix("0X"))?;
-    let mut mant: u64 = 0;
-    let mut exp: i64 = 0;
-    let mut sticky = false;
-    let mut digits = 0usize;
-    let mut seen_dot = false;
-    let mut underscores = false;
-    let bytes = rest.as_bytes();
-    let mut i = 0;
-    while i < bytes.len() {
-        let c = bytes[i];
-        if c == b'_' {
-            underscores = true;
-        } else if c == b'.' {
-            if seen_dot {
-                return None;
-            }
-            seen_dot = true;
-        } else if let Some(d) = (c as char).to_digit(16) {
-            digits += 1;
-            if mant >> 56 == 0 {
-                mant = mant * 16 + u64::from(d);
-                if seen_dot {
-                    exp -= 4;
-                }
-            } else {
-                if d != 0 {
-                    sticky = true;
-                }
-                if !seen_dot {
-                    exp += 4;
-                }
-            }
-        } else {
-            break;
-        }
-        i += 1;
-    }
-    if digits == 0 {
-        return None;
-    }
-    // The 'p' exponent is mandatory for hexadecimal mantissas.
-    if i >= bytes.len() || (bytes[i] | 0x20) != b'p' {
-        return None;
-    }
-    i += 1;
-    let mut esign = 1i64;
-    if i < bytes.len() && (bytes[i] == b'+' || bytes[i] == b'-') {
-        if bytes[i] == b'-' {
-            esign = -1;
-        }
-        i += 1;
-    }
-    let estart = i;
-    let mut e: i64 = 0;
-    while i < bytes.len() && (bytes[i].is_ascii_digit() || bytes[i] == b'_') {
-        if bytes[i] == b'_' {
-            underscores = true;
-        } else if e < 100_000 {
-            e = e * 10 + i64::from(bytes[i] - b'0');
-        }
-        i += 1;
-    }
-    if i == estart || i != bytes.len() {
-        return None;
-    }
-    if underscores && !underscore_ok(s) {
-        return None;
-    }
-    if sticky {
-        mant |= 1;
-    }
-    let total = exp + esign * e;
-    let mut v = mant as f64;
-    // Scale in steps so intermediate powers stay finite.
-    let mut t = total;
-    while t > 0 {
-        let step = t.min(1000);
-        v *= 2f64.powi(step as i32);
-        t -= step;
-    }
-    while t < 0 {
-        let step = (-t).min(1000);
-        v /= 2f64.powi(step as i32);
-        t += step;
-    }
-    let v = if neg { -v } else { v };
-    if v.is_infinite() {
-        return Some(Err(format!(
-            "strconv.ParseFloat: parsing {}: value out of range",
-            go_quote(s)
-        )));
-    }
-    Some(Ok(v))
+    use ksm_core::gostd::{num_error, parse_float};
+    parse_float(s).map_err(|e| num_error("ParseFloat", s, e))
 }
 
 fn is_leap(year: i64) -> bool {
@@ -345,17 +153,6 @@ fn days_in(month: i64, year: i64) -> i64 {
         4 | 6 | 9 | 11 => 30,
         _ => 31,
     }
-}
-
-/// Days since 1970-01-01 of a proleptic Gregorian date.
-fn days_from_civil(y: i64, m: i64, d: i64) -> i64 {
-    let y = if m <= 2 { y - 1 } else { y };
-    let era = y.div_euclid(400);
-    let yoe = y - era * 400;
-    let mp = (m + 9) % 12;
-    let doy = (153 * mp + 2) / 5 + d - 1;
-    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-    era * 146_097 + doe - 719_468
 }
 
 fn is_digit(b: &[u8], i: usize) -> bool {
@@ -464,7 +261,7 @@ pub(crate) fn parse_rfc3339_unix(s: &str) -> Option<i64> {
     if day < 1 || day > days_in(month, year) {
         return None;
     }
-    let days = days_from_civil(year, month, day);
+    let days = ksm_core::gostd::days_from_civil(year, month, day);
     Some(days * 86_400 + hour * 3600 + min * 60 + sec - offset)
 }
 

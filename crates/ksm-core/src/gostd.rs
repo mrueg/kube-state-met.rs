@@ -1,11 +1,12 @@
-//! Ports of the Go standard library parsers and formatters the command line
-//! depends on: `strconv.ParseInt`/`ParseUint`/`ParseFloat`/`ParseBool`,
-//! `strconv.Quote`, `time.ParseDuration`, `time.Duration.String` and `%f`.
+//! Ports of the Go standard library parsers and formatters the port depends
+//! on: `strconv.ParseInt`/`ParseUint`/`ParseFloat`/`ParseBool`,
+//! `strconv.Quote`, `time.ParseDuration`, `time.Duration.String`, `%f`, and
+//! the proleptic Gregorian day arithmetic of package `time`.
 //! Error texts match Go byte for byte.
 
 /// The two `strconv` failure kinds (`strconv.ErrSyntax`, `strconv.ErrRange`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(crate) enum NumErr {
+pub enum NumErr {
     Syntax,
     Range,
 }
@@ -20,12 +21,12 @@ impl NumErr {
 }
 
 /// Formats a `*strconv.NumError`: `strconv.ParseInt: parsing "x": invalid syntax`.
-pub(crate) fn num_error(func: &str, input: &str, err: NumErr) -> String {
+pub fn num_error(func: &str, input: &str, err: NumErr) -> String {
     format!("strconv.{func}: parsing {}: {}", quote(input), err.text())
 }
 
 /// Go's `strconv.Quote` (and therefore `fmt`'s `%q` for strings).
-pub(crate) fn quote(s: &str) -> String {
+pub fn quote(s: &str) -> String {
     let mut out = String::with_capacity(s.len() + 2);
     out.push('"');
     for c in s.chars() {
@@ -114,7 +115,7 @@ fn underscore_ok(s: &str) -> bool {
 }
 
 /// `strconv.ParseUint(s, base, bits)` for base 0 or 2..=36.
-pub(crate) fn parse_uint(s: &str, base: u32, bits: u32) -> Result<u64, NumErr> {
+pub fn parse_uint(s: &str, base: u32, bits: u32) -> Result<u64, NumErr> {
     if s.is_empty() {
         return Err(NumErr::Syntax);
     }
@@ -179,7 +180,7 @@ pub(crate) fn parse_uint(s: &str, base: u32, bits: u32) -> Result<u64, NumErr> {
 }
 
 /// `strconv.ParseInt(s, base, bits)`.
-pub(crate) fn parse_int(s: &str, base: u32, bits: u32) -> Result<i64, NumErr> {
+pub fn parse_int(s: &str, base: u32, bits: u32) -> Result<i64, NumErr> {
     if s.is_empty() {
         return Err(NumErr::Syntax);
     }
@@ -208,7 +209,7 @@ pub(crate) fn parse_int(s: &str, base: u32, bits: u32) -> Result<i64, NumErr> {
 }
 
 /// `strconv.ParseBool`.
-pub(crate) fn parse_bool(s: &str) -> Result<bool, NumErr> {
+pub fn parse_bool(s: &str) -> Result<bool, NumErr> {
     match s {
         "1" | "t" | "T" | "true" | "TRUE" | "True" => Ok(true),
         "0" | "f" | "F" | "false" | "FALSE" | "False" => Ok(false),
@@ -248,7 +249,7 @@ fn parse_special(s: &str) -> Option<(f64, usize)> {
 }
 
 /// `strconv.ParseFloat(s, 64)`.
-pub(crate) fn parse_float(s: &str) -> Result<f64, NumErr> {
+pub fn parse_float(s: &str) -> Result<f64, NumErr> {
     if let Some((v, n)) = parse_special(s) {
         return if n == s.len() {
             Ok(v)
@@ -387,7 +388,7 @@ fn hex_float(mantissa: &str, exp: i64) -> f64 {
 }
 
 /// Go's `fmt.Sprintf("%f", f)`.
-pub(crate) fn format_f(f: f64) -> String {
+pub fn format_f(f: f64) -> String {
     if f.is_nan() {
         "NaN".to_owned()
     } else if f == f64::INFINITY {
@@ -479,7 +480,7 @@ fn leading_fraction(s: &str) -> (u64, f64, &str) {
 }
 
 /// `time.ParseDuration`, returning nanoseconds.
-pub(crate) fn parse_duration(orig: &str) -> Result<i64, String> {
+pub fn parse_duration(orig: &str) -> Result<i64, String> {
     let invalid = || format!("time: invalid duration {}", time_quote(orig));
     let mut s = orig;
     let mut neg = false;
@@ -590,7 +591,7 @@ fn fmt_int(out: &mut Vec<u8>, mut v: u64) {
 }
 
 /// `time.Duration(nanos).String()`.
-pub(crate) fn format_duration(nanos: i64) -> String {
+pub fn format_duration(nanos: i64) -> String {
     // Built back to front, as in Go, then reversed.
     let mut out: Vec<u8> = Vec::with_capacity(32);
     let neg = nanos < 0;
@@ -634,6 +635,31 @@ pub(crate) fn format_duration(nanos: i64) -> String {
     }
     out.reverse();
     String::from_utf8_lossy(&out).into_owned()
+}
+
+/// Days since 1970-01-01 of a proleptic Gregorian date (month 1-12).
+pub fn days_from_civil(y: i64, m: i64, d: i64) -> i64 {
+    let y = if m <= 2 { y - 1 } else { y };
+    let era = y.div_euclid(400);
+    let yoe = y - era * 400;
+    let mp = (m + 9) % 12;
+    let doy = (153 * mp + 2) / 5 + d - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    era * 146_097 + doe - 719_468
+}
+
+/// The proleptic Gregorian date of a day count since 1970-01-01.
+pub fn civil_from_days(z: i64) -> (i64, i64, i64) {
+    let z = z + 719_468;
+    let era = z.div_euclid(146_097);
+    let doe = z - era * 146_097;
+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+    let y = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    (if m <= 2 { y + 1 } else { y }, m, d)
 }
 
 #[cfg(test)]
@@ -687,6 +713,25 @@ mod tests {
         assert_eq!(parse_float("1e400"), Err(NumErr::Range));
         assert_eq!(parse_float("inf"), Ok(f64::INFINITY));
         assert_eq!(parse_float("+nan"), Err(NumErr::Syntax));
+        // Checked against Go's strconv.ParseFloat.
+        for (s, want) in [
+            ("1_000", Ok(1000.0)),
+            ("0x1_0p0", Ok(16.0)),
+            ("+Inf", Ok(f64::INFINITY)),
+            ("infinity", Ok(f64::INFINITY)),
+            ("-nan", Err(NumErr::Syntax)),
+            ("0x1", Err(NumErr::Syntax)),
+            ("0x", Err(NumErr::Syntax)),
+            (".5", Ok(0.5)),
+            ("1.", Ok(1.0)),
+            ("-0X1.8P1", Ok(-3.0)),
+            ("1__0", Err(NumErr::Syntax)),
+            ("_1", Err(NumErr::Syntax)),
+            ("0x_1p0", Ok(1.0)),
+            ("", Err(NumErr::Syntax)),
+        ] {
+            assert_eq!(parse_float(s), want, "{s}");
+        }
         assert_eq!(format_f(0.9), "0.900000");
         assert_eq!(format_f(f64::NEG_INFINITY), "-Inf");
     }

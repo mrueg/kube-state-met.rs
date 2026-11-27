@@ -6,6 +6,8 @@
 pub mod ecma;
 pub mod filter;
 pub mod generator;
+pub mod gostd;
+pub mod gostr;
 pub mod labels;
 pub mod metric;
 pub mod sharding;

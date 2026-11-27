@@ -30,15 +30,6 @@ struct PathOp {
 #[derive(Clone, Debug, Default)]
 pub(crate) struct ValuePath(Vec<PathOp>);
 
-/// `strconv.ParseBool`.
-fn go_parse_bool(s: &str) -> Option<bool> {
-    match s {
-        "1" | "t" | "T" | "TRUE" | "true" | "True" => Some(true),
-        "0" | "f" | "F" | "FALSE" | "false" | "False" => Some(false),
-        _ => None,
-    }
-}
-
 /// `compilePath`.
 pub(crate) fn compile_path(path: &[String]) -> Result<ValuePath, String> {
     let mut out = Vec::with_capacity(path.len());
@@ -55,7 +46,7 @@ pub(crate) fn compile_path(path: &[String]) -> Result<ValuePath, String> {
                     key: key.to_owned(),
                     val: val.to_owned(),
                     num: to_float64(Some(&val_value), false).ok(),
-                    boolean: go_parse_bool(val),
+                    boolean: ksm_core::gostd::parse_bool(val).ok(),
                 },
             });
         } else {
