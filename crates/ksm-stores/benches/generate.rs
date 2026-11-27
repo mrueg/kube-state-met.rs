@@ -48,7 +48,7 @@ fn bench_store<K: DeserializeOwned + 'static>(
     let store = Arc::new(MetricsStore::default());
     for i in 0..10_000 {
         let o = &objs[i % objs.len()];
-        store.add(&i.to_string(), "1", || render(&fams, o));
+        store.add(&i.to_string(), || render(&fams, o));
     }
     let w = MetricsWriter::new(
         kind,

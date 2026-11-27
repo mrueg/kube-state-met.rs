@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Records the whole-app HTTP cases (ADR-007 layer 2): the Go kube-state-metrics
-# against tools/fake-apiserver serving testdata/fixtures, all resources enabled.
+# against tools/fake-apiserver serving testdata/fixtures/{basic,golden} (not
+# crs/: the recorded resourceVersions depend on the objects loaded), all
+# resources enabled.
 # Usage: tools/app-cases/record.sh            (record with the Go binary)
 #        tools/app-cases/record.sh replay     (replay the Rust binary)
 set -euo pipefail
@@ -8,7 +10,7 @@ cd "$(dirname "$0")/../.."
 export PATH="$HOME/.cargo/bin:$HOME/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:$PATH" TZ=UTC
 cargo build -q --release -p fake-apiserver -p kube-state-metrics
 kc="$PWD/target/app-cases-kubeconfig.yaml"
-target/release/fake-apiserver --listen 127.0.0.1:16444 --fixtures testdata/fixtures --kubeconfig-out "$kc" &
+target/release/fake-apiserver --listen 127.0.0.1:16444 --fixtures testdata/fixtures/basic --fixtures testdata/fixtures/golden --kubeconfig-out "$kc" &
 fake=$!
 trap 'kill $fake 2>/dev/null || true' EXIT
 sleep 1

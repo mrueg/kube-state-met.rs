@@ -16,7 +16,7 @@ const WINDOW: usize = 32 * 1024;
 /// (what Go's compress/gzip writes).
 const HEADER: [u8; 10] = [0x1f, 0x8b, 8, 0, 0, 0, 0, 0, 0, 0xff];
 
-pub struct ParallelGzip<F: FnMut(Vec<u8>)> {
+pub struct ParallelGzip<F: FnMut(Vec<u8>) -> io::Result<()>> {
     level: Compression,
     /// Raw chunks waiting to be compressed together.
     pending: Vec<Vec<u8>>,
@@ -29,8 +29,9 @@ pub struct ParallelGzip<F: FnMut(Vec<u8>)> {
     sink: F,
 }
 
-impl<F: FnMut(Vec<u8>)> ParallelGzip<F> {
-    /// Compresses up to `batch` chunks at a time and hands compressed output to `sink` in order.
+impl<F: FnMut(Vec<u8>) -> io::Result<()>> ParallelGzip<F> {
+    /// Compresses up to `batch` chunks at a time and hands compressed output to
+    /// `sink` in order; a sink error (the reader went away) stops the stream.
     pub fn new(level: Compression, batch: usize, sink: F) -> Self {
         ParallelGzip {
             level,
@@ -72,33 +73,33 @@ impl<F: FnMut(Vec<u8>)> ParallelGzip<F> {
                 Ok((deflate_chunk(level, d, c, FlushCompress::Sync)?, h))
             })
             .collect();
-        self.send_header();
+        self.send_header()?;
         for (part, c) in parts.into_iter().zip(&chunks) {
             let (data, h) = part?;
             self.crc.combine(&h);
             self.len += c.len() as u64;
-            (self.sink)(data);
+            (self.sink)(data)?;
         }
         Ok(())
     }
 
-    fn send_header(&mut self) {
-        if !self.header_sent {
-            self.header_sent = true;
-            (self.sink)(HEADER.to_vec());
+    fn send_header(&mut self) -> io::Result<()> {
+        if self.header_sent {
+            return Ok(());
         }
+        self.header_sent = true;
+        (self.sink)(HEADER.to_vec())
     }
 
     /// Compresses what is left, then ends the stream (final block and trailer).
     pub fn finish(mut self) -> io::Result<()> {
         self.compress_pending()?;
-        self.send_header();
+        self.send_header()?;
         let mut end = deflate_chunk(self.level, &[], &[], FlushCompress::Finish)?;
         end.extend_from_slice(&self.crc.clone().finalize().to_le_bytes());
         // ISIZE is the length modulo 2^32.
         end.extend_from_slice(&(self.len as u32).to_le_bytes());
-        (self.sink)(end);
-        Ok(())
+        (self.sink)(end)
     }
 }
 
@@ -150,8 +151,10 @@ mod tests {
 
     fn roundtrip(chunks: &[Vec<u8>], batch: usize) -> Vec<u8> {
         let mut out = Vec::new();
-        let mut gz =
-            ParallelGzip::new(Compression::default(), batch, |b| out.extend_from_slice(&b));
+        let mut gz = ParallelGzip::new(Compression::default(), batch, |b| {
+            out.extend_from_slice(&b);
+            Ok(())
+        });
         for c in chunks {
             gz.push(c.clone()).unwrap();
         }
@@ -203,7 +206,10 @@ mod tests {
     fn ratio_is_close_to_single_pass() {
         let chunks: Vec<Vec<u8>> = (0..8).map(|i| sample(1 << 20, i)).collect();
         let mut par = Vec::new();
-        let mut gz = ParallelGzip::new(Compression::default(), 8, |b| par.extend_from_slice(&b));
+        let mut gz = ParallelGzip::new(Compression::default(), 8, |b| {
+            par.extend_from_slice(&b);
+            Ok(())
+        });
         for c in &chunks {
             gz.push(c.clone()).unwrap();
         }

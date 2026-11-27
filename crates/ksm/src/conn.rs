@@ -19,9 +19,9 @@ use std::time::Duration;
 
 use axum::Router;
 use axum::body::Body;
-use axum::extract::Request;
-use axum::middleware::Next;
+use axum::response::Response;
 use hyper_util::rt::TokioIo;
+use hyper_util::server::graceful::Watcher;
 use parking_lot::Mutex;
 use tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
 use tokio::time::{Instant, Sleep};
@@ -400,23 +400,37 @@ impl http_body::Body for NotifyBody {
     }
 }
 
-/// Adds the per-connection deadline hooks to `app`.
-pub fn with_deadlines(app: Router, deadlines: Deadlines) -> Router {
-    app.layer(axum::middleware::from_fn(
-        move |req: Request, next: Next| {
-            let d = deadlines.clone();
-            async move {
+/// The service hyper runs for one connection: `app` with the connection's
+/// deadline hooks (request headers read, response body written).
+pub fn service(
+    app: Router,
+    deadlines: Deadlines,
+) -> impl hyper::service::Service<
+    http::Request<hyper::body::Incoming>,
+    Response = Response,
+    Error = std::convert::Infallible,
+    Future: Send,
+> + Clone
++ Send
++ 'static {
+    let d = deadlines.clone();
+    hyper_util::service::TowerToHyperService::new(
+        tower::ServiceBuilder::new()
+            .map_request(move |r: http::Request<hyper::body::Incoming>| {
                 d.headers_read();
-                let resp = next.run(req).await;
+                r.map(Body::new)
+            })
+            .map_response(move |resp: Response| {
+                let d = deadlines.clone();
                 resp.map(|b| {
                     Body::new(NotifyBody {
                         inner: b,
                         deadlines: Some(d),
                     })
                 })
-            }
-        },
-    ))
+            })
+            .service(app),
+    )
 }
 
 /// Accepts the next connection. After an accept error (such as running out
@@ -438,36 +452,53 @@ pub async fn accept(
     }
 }
 
-/// Serves `app` over plain HTTP/1.1 with Go's server timeouts until `stop`,
-/// then lets open connections finish (the caller bounds the wait).
+/// Accepts connections until `stop` and runs `serve` on each, then lets
+/// open connections finish (the caller bounds the wait).
+pub async fn serve_connections<F, Fut>(
+    listener: tokio::net::TcpListener,
+    stop: CancellationToken,
+    serve: F,
+) where
+    F: Fn(tokio::net::TcpStream, std::net::SocketAddr, Watcher) -> Fut,
+    Fut: Future<Output = ()> + Send + 'static,
+{
+    let graceful = hyper_util::server::graceful::GracefulShutdown::new();
+    loop {
+        let (tcp, addr) = tokio::select! {
+            () = stop.cancelled() => break,
+            c = accept(&listener) => c,
+        };
+        tokio::spawn(serve(tcp, addr, graceful.watcher()));
+    }
+    drop(listener);
+    graceful.shutdown().await;
+}
+
+/// Serves one plain HTTP/1.1 connection with Go's server timeouts.
+pub async fn serve_http1(
+    tcp: tokio::net::TcpStream,
+    app: Router,
+    timeouts: Timeouts,
+    watcher: Watcher,
+) {
+    let deadlines = Deadlines::new(timeouts);
+    let svc = service(app, deadlines.clone());
+    let io = TokioIo::new(DeadlineIo::new(tcp, deadlines));
+    let conn = hyper::server::conn::http1::Builder::new().serve_connection(io, svc);
+    let _ = watcher.watch(conn).await;
+}
+
+/// Serves `app` over plain HTTP/1.1 with Go's server timeouts until `stop`.
 pub async fn serve_plain(
     listener: tokio::net::TcpListener,
     app: Router,
     timeouts: Timeouts,
     stop: CancellationToken,
 ) {
-    let graceful = hyper_util::server::graceful::GracefulShutdown::new();
-    loop {
-        let (tcp, _) = tokio::select! {
-            () = stop.cancelled() => break,
-            c = accept(&listener) => c,
-        };
-        let deadlines = Deadlines::new(timeouts);
-        let app = with_deadlines(app.clone(), deadlines.clone());
-        let watcher = graceful.watcher();
-        tokio::spawn(async move {
-            let svc = hyper_util::service::TowerToHyperService::new(
-                tower::ServiceBuilder::new()
-                    .map_request(|r: http::Request<hyper::body::Incoming>| r.map(Body::new))
-                    .service(app),
-            );
-            let io = TokioIo::new(DeadlineIo::new(tcp, deadlines));
-            let conn = hyper::server::conn::http1::Builder::new().serve_connection(io, svc);
-            let _ = watcher.watch(conn).await;
-        });
-    }
-    drop(listener);
-    graceful.shutdown().await;
+    serve_connections(listener, stop, move |tcp, _, w| {
+        serve_http1(tcp, app.clone(), timeouts, w)
+    })
+    .await;
 }
 
 #[cfg(test)]

@@ -13,7 +13,6 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use axum::Router;
-use axum::body::Body;
 use axum::extract::{Request, State};
 use axum::http::{HeaderValue, StatusCode, header};
 use axum::middleware::Next;
@@ -76,26 +75,25 @@ fn custom<E: serde::de::Error>(msg: String) -> E {
     E::custom(format!("\u{1}{msg}"))
 }
 
-fn cipher_list<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<String>, D::Error> {
-    let v: Option<Vec<String>> = Option::deserialize(d)?;
-    let v = v.unwrap_or_default();
-    for c in &v {
-        if !CIPHERS.contains(&c.as_str()) {
-            return Err(custom(format!("unknown cipher: {c}")));
-        }
+/// A list of names from `allowed`; an unknown one is "unknown {what}: name".
+fn checked_list<'de, D: Deserializer<'de>>(
+    d: D,
+    allowed: &[&str],
+    what: &str,
+) -> Result<Vec<String>, D::Error> {
+    let v: Vec<String> = Option::deserialize(d)?.unwrap_or_default();
+    match v.iter().find(|c| !allowed.contains(&c.as_str())) {
+        Some(c) => Err(custom(format!("unknown {what}: {c}"))),
+        None => Ok(v),
     }
-    Ok(v)
+}
+
+fn cipher_list<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<String>, D::Error> {
+    checked_list(d, CIPHERS, "cipher")
 }
 
 fn curve_list<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<String>, D::Error> {
-    let v: Option<Vec<String>> = Option::deserialize(d)?;
-    let v = v.unwrap_or_default();
-    for c in &v {
-        if !CURVES.contains(&c.as_str()) {
-            return Err(custom(format!("unknown curve: {c}")));
-        }
-    }
-    Ok(v)
+    checked_list(d, CURVES, "curve")
 }
 
 fn tls_version<'de, D: Deserializer<'de>>(d: D) -> Result<Option<u16>, D::Error> {
@@ -408,19 +406,11 @@ fn bcrypt_cost(hash: &str) -> Result<u32, String> {
     Ok(u32::try_from(c).unwrap_or(4))
 }
 
-/// `validateUsers`.
-fn validate_users(path: &str) -> Result<(), String> {
-    let c = get_config(path)?;
-    for h in c.users.values() {
-        bcrypt_cost(h)?;
-    }
-    Ok(())
-}
+/// A certificate chain and its private key.
+type CertPair = (Vec<CertificateDer<'static>>, PrivateKeyDer<'static>);
 
 /// Reads PEM certificates, Go's `X509KeyPair` error texts.
-fn load_cert(
-    c: &TlsConfig,
-) -> Result<(Vec<CertificateDer<'static>>, PrivateKeyDer<'static>), String> {
+fn load_cert(c: &TlsConfig) -> Result<CertPair, String> {
     let cert_data = if c.cert_path.is_empty() {
         c.cert.as_bytes().to_vec()
     } else {
@@ -466,8 +456,9 @@ fn load_cert(
     Ok((certs, key))
 }
 
-/// `ConfigToTLSConfig`'s checks; `Ok(None)` is `errNoTLSConfig`.
-pub fn check_tls(c: &TlsConfig) -> Result<Option<()>, String> {
+/// `ConfigToTLSConfig`'s checks, returning the loaded certificate;
+/// `Ok(None)` is `errNoTLSConfig`.
+pub fn check_tls(c: &TlsConfig) -> Result<Option<CertPair>, String> {
     if !c.is_enabled() {
         return Ok(None);
     }
@@ -477,7 +468,7 @@ pub fn check_tls(c: &TlsConfig) -> Result<Option<()>, String> {
     if c.key_path.is_empty() && c.key.is_empty() {
         return Err("missing one of key or key_file".to_owned());
     }
-    load_cert(c)?;
+    let pair = load_cert(c)?;
     if !c.client_cas.is_empty() {
         std::fs::read(&c.client_cas)
             .map_err(|e| format!("open {}: {}", c.client_cas, go_io_error(&e)))?;
@@ -497,7 +488,7 @@ pub fn check_tls(c: &TlsConfig) -> Result<Option<()>, String> {
         }
         other => return Err(format!("invalid ClientAuth: {other}")),
     }
-    Ok(Some(()))
+    Ok(Some(pair))
 }
 
 /// Go's client authentication modes on rustls (`tls.ClientAuthType`).
@@ -655,8 +646,10 @@ fn pem_certs(pem: &[u8]) -> Vec<CertificateDer<'static>> {
 /// plus the ALPN protocols of `http2`).
 pub fn rustls_config(c: &WebConfig) -> Result<Arc<ServerConfig>, String> {
     let t = &c.tls;
-    check_tls(t)?;
-    let (certs, key) = load_cert(t)?;
+    let (certs, key) = match check_tls(t)? {
+        Some(pair) => pair,
+        None => load_cert(t)?,
+    };
     let mut provider = rustls::crypto::ring::default_provider();
     if !t.cipher_suites.is_empty() {
         let wanted: Vec<rustls::CipherSuite> = t
@@ -842,12 +835,19 @@ impl WebHandler {
 
     /// `rateLimiter`: whether the request passes the configured limit.
     fn rate_allows(&self, c: RateConfig) -> bool {
+        let mut s = self.limiter.lock();
+        let c = Self::sync_rate(&mut s, c);
+        c.interval == 0 || s.limiter.as_mut().is_none_or(Limiter::allow)
+    }
+
+    /// Applies a (re)read rate config: retunes or creates the limiter and logs
+    /// a change. Returns the effective config.
+    fn sync_rate(s: &mut LimiterState, c: RateConfig) -> RateConfig {
         let c = if c.interval == 0 {
             RateConfig::default()
         } else {
             c
         };
-        let mut s = self.limiter.lock();
         let changed = c != s.config;
         if changed && c.interval != 0 {
             match &mut s.limiter {
@@ -870,10 +870,7 @@ impl WebHandler {
                 tracing::info!(burst = c.burst, interval = %crate::options::goparse::format_duration(c.interval), "Rate Limiter is enabled.");
             }
         }
-        if c.interval == 0 {
-            return true;
-        }
-        s.limiter.as_mut().is_none_or(Limiter::allow)
+        c
     }
 
     fn cache_get(&self, key: &str) -> Option<bool> {
@@ -909,7 +906,12 @@ fn basic_auth(req: &Request) -> Option<(String, String)> {
 }
 
 fn hex(s: &str) -> String {
-    s.bytes().map(|b| format!("{b:02x}")).collect()
+    use std::fmt::Write as _;
+    let mut out = String::with_capacity(s.len() * 2);
+    for b in s.bytes() {
+        let _ = write!(out, "{b:02x}");
+    }
+    out
 }
 
 /// `webHandler.ServeHTTP` as an axum middleware.
@@ -968,7 +970,7 @@ pub async fn web_middleware(
                 ok
             }
         };
-        if ok && valid_user {
+        if ok {
             return with_headers(next.run(req).await);
         }
     }
@@ -980,8 +982,11 @@ pub async fn web_middleware(
 
 /// `configureServer`'s startup checks. Returns whether TLS is on.
 pub fn configure(path: &str) -> Result<bool, String> {
-    validate_users(path)?;
+    // `validateUsers`.
     let c = get_config(path)?;
+    for h in c.users.values() {
+        bcrypt_cost(h)?;
+    }
     let tls = check_tls(&c.tls)?.is_some();
     // net/http's http2.ConfigureServer check, done when ServeTLS starts.
     if tls
@@ -1010,66 +1015,34 @@ pub async fn serve(
     let handler = Arc::new(WebHandler::new(&path));
     // Log the initial rate limiter state.
     if let Ok(c) = get_config(&path) {
-        handler.rate_allows(RateConfig {
-            burst: c.rate.burst,
-            interval: c.rate.interval,
-        });
-        // The probe above must not use up a token.
-        if let Some(l) = handler.limiter.lock().limiter.as_mut() {
-            l.tokens = l.burst;
-        }
+        WebHandler::sync_rate(&mut handler.limiter.lock(), c.rate);
     }
     let app = app.layer(axum::middleware::from_fn_with_state(
         Arc::clone(&handler),
         web_middleware,
     ));
-    let graceful = hyper_util::server::graceful::GracefulShutdown::new();
-    loop {
-        let (tcp, addr) = tokio::select! {
-            () = stop.cancelled() => break,
-            c = crate::conn::accept(&listener) => c,
-        };
-        let deadlines = crate::conn::Deadlines::new(timeouts);
-        let app = crate::conn::with_deadlines(app.clone(), deadlines.clone());
-        let path = path.clone();
-        let watcher = graceful.watcher();
-        tokio::spawn(async move {
-            let svc = hyper_util::service::TowerToHyperService::new(
-                tower::ServiceBuilder::new()
-                    .map_request(|r: http::Request<hyper::body::Incoming>| r.map(Body::new))
-                    .service(app),
-            );
-            if !tls {
-                let b = hyper::server::conn::http1::Builder::new();
-                let io = crate::conn::DeadlineIo::new(tcp, deadlines);
-                let conn = b.serve_connection(TokioIo::new(io), svc);
-                let _ = watcher.watch(conn).await;
-                return;
+    crate::conn::serve_connections(listener, stop, move |tcp, addr, watcher| {
+        let (app, path) = (app.clone(), path.clone());
+        async move {
+            if tls {
+                serve_tls(tcp, addr, &path, app, timeouts, watcher).await;
+            } else {
+                crate::conn::serve_http1(tcp, app, timeouts, watcher).await;
             }
-            serve_tls(tcp, addr, &path, svc, watcher, deadlines).await;
-        });
-    }
-    drop(listener);
-    graceful.shutdown().await;
+        }
+    })
+    .await;
 }
 
-async fn serve_tls<S>(
+async fn serve_tls(
     tcp: tokio::net::TcpStream,
     addr: SocketAddr,
     path: &str,
-    svc: S,
+    app: Router,
+    timeouts: crate::conn::Timeouts,
     watcher: hyper_util::server::graceful::Watcher,
-    deadlines: crate::conn::Deadlines,
-) where
-    S: hyper::service::Service<
-            http::Request<hyper::body::Incoming>,
-            Response = Response,
-            Error = std::convert::Infallible,
-        > + Clone
-        + Send
-        + 'static,
-    S::Future: Send + 'static,
-{
+) {
+    let deadlines = crate::conn::Deadlines::new(timeouts);
     let mut tcp = tcp;
     // Go bounds the handshake with tlsHandshakeTimeout, then the request
     // deadlines apply. The deadline also covers waiting for the first byte.
@@ -1130,6 +1103,7 @@ async fn serve_tls<S>(
     } else {
         deadlines.handshake_done();
     }
+    let svc = crate::conn::service(app, deadlines);
     let b = auto::Builder::new(TokioExecutor::new());
     let conn = b.serve_connection_with_upgrades(TokioIo::new(stream), svc);
     let _ = watcher.watch(conn.into_owned()).await;

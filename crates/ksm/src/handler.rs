@@ -16,7 +16,6 @@ const CHUNK: usize = 1 << 20;
 pub const TEXT_CONTENT_TYPE: &str = "text/plain; version=0.0.4; charset=utf-8";
 
 /// The writers currently served; `None` until sharding is configured.
-#[derive(Default)]
 pub struct MetricsHandler {
     writers: RwLock<Option<Arc<Vec<Arc<MetricsWriter>>>>>,
     pub enable_gzip: bool,
@@ -106,7 +105,7 @@ pub fn negotiate(accept: Option<&str>) -> Format {
     Format::Text
 }
 
-fn parse_resources(values: &[&str]) -> Option<HashSet<String>> {
+fn parse_resources(values: &[String]) -> Option<HashSet<String>> {
     if values.is_empty() {
         return None;
     }
@@ -188,8 +187,8 @@ impl MetricsHandler {
                 _ => {}
             }
         }
-        let requested = parse_resources(&requested.iter().map(String::as_str).collect::<Vec<_>>());
-        let excluded = parse_resources(&excluded.iter().map(String::as_str).collect::<Vec<_>>());
+        let requested = parse_resources(&requested);
+        let excluded = parse_resources(&excluded);
         // Stream the body in chunks: a large cluster's output is hundreds of
         // megabytes, which should not be held in memory at once.
         let (tx, rx) = tokio::sync::mpsc::channel::<bytes::Bytes>(4);
@@ -209,35 +208,31 @@ impl MetricsHandler {
                 })
                 .collect();
             let sanitized = sanitize_headers(format == Format::Text, &active);
-            // A closed channel means the client went away: stop rendering
-            // and compressing instead of finishing a body nobody reads.
+            // A failed send means the client went away: stop rendering and
+            // compressing instead of finishing a body nobody reads.
             let gz_tx = tx.clone();
             let mut gz = gzip.then(|| {
                 crate::pgzip::ParallelGzip::new(
                     flate2::Compression::default(),
                     rayon::current_num_threads(),
                     move |data: Vec<u8>| {
-                        let _ = gz_tx.blocking_send(bytes::Bytes::from(data));
+                        gz_tx
+                            .blocking_send(bytes::Bytes::from(data))
+                            .map_err(|_| std::io::ErrorKind::BrokenPipe.into())
                     },
                 )
             });
             let mut send = |buf: &mut Vec<u8>| {
-                if tx.is_closed() {
-                    return ControlFlow::Break(());
-                }
                 let data = std::mem::replace(buf, Vec::with_capacity(CHUNK + CHUNK / 4));
-                match gz.as_mut() {
-                    Some(enc) => {
-                        if let Err(e) = enc.push(data) {
-                            tracing::error!("gzip: {e}");
-                            return ControlFlow::Break(());
-                        }
-                    }
-                    None => {
-                        let _ = tx.blocking_send(bytes::Bytes::from(data));
-                    }
+                let sent = match gz.as_mut() {
+                    Some(enc) => enc.push(data).is_ok(),
+                    None => tx.blocking_send(bytes::Bytes::from(data)).is_ok(),
+                };
+                if sent {
+                    ControlFlow::Continue(())
+                } else {
+                    ControlFlow::Break(())
                 }
-                ControlFlow::Continue(())
             };
             let mut out = Vec::with_capacity(CHUNK + CHUNK / 4);
             let mut flow = ControlFlow::Continue(());
@@ -258,9 +253,8 @@ impl MetricsHandler {
             // reading sees an error rather than a truncated body.
             if let Some(enc) = gz
                 && flow.is_continue()
-                && let Err(e) = enc.finish()
             {
-                tracing::error!("gzip: {e}");
+                let _ = enc.finish();
             }
         });
         let stream = futures::stream::unfold(rx, |mut rx| async move {

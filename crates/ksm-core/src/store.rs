@@ -6,7 +6,7 @@ use std::collections::{HashMap, HashSet};
 use std::ops::ControlFlow;
 use std::sync::Arc;
 
-use parking_lot::{Mutex, RwLock};
+use parking_lot::RwLock;
 
 /// The rendered families of one object: one buffer, family `i` ends at `ends[i]`.
 #[derive(Debug, Default)]
@@ -133,12 +133,11 @@ fn parse_header_static(header: &str, is_text_plain: bool) -> (String, String) {
 /// Called for every add or update of an object a full store drops.
 pub type OnDropped = Box<dyn Fn() + Send + Sync>;
 
-/// The metrics of one resource (in one namespace), by object UID.
+/// The metrics of one resource (in one namespace), by object UID. Written by
+/// one watcher; with an object limit, the map's size is the object count.
 pub struct MetricsStore {
     metrics: RwLock<HashMap<String, Arc<Rendered>>>,
-    last_resource_version: Mutex<String>,
-    object_limit: i64,
-    object_count: Mutex<i64>,
+    object_limit: usize,
     on_dropped: Option<OnDropped>,
 }
 
@@ -149,94 +148,52 @@ impl Default for MetricsStore {
 }
 
 impl MetricsStore {
-    /// A store keeping at most `object_limit` objects (0: no limit).
+    /// A store keeping at most `object_limit` objects (0 or less: no limit).
     pub fn new(object_limit: i64, on_dropped: Option<OnDropped>) -> Self {
         MetricsStore {
             metrics: RwLock::new(HashMap::new()),
-            last_resource_version: Mutex::new(String::new()),
-            object_limit,
-            object_count: Mutex::new(0),
+            object_limit: usize::try_from(object_limit).unwrap_or(0),
             on_dropped,
         }
     }
 
+    /// Whether a full store refuses `uid` (a new object); counts the drop.
+    fn refuses(&self, m: &HashMap<String, Arc<Rendered>>, uid: &str) -> bool {
+        let full = self.object_limit > 0 && m.len() >= self.object_limit && !m.contains_key(uid);
+        if full && let Some(cb) = &self.on_dropped {
+            cb();
+        }
+        full
+    }
+
     /// Adds or updates an object; `render` runs only if the object is kept.
-    pub fn add(&self, uid: &str, resource_version: &str, render: impl FnOnce() -> Rendered) {
-        self.set_last_resource_version(resource_version);
-        if self.object_limit > 0 && !self.metrics.read().contains_key(uid) {
-            let mut count = self.object_count.lock();
-            if *count >= self.object_limit {
-                if let Some(cb) = &self.on_dropped {
-                    cb();
-                }
-                return;
-            }
-            *count += 1;
+    pub fn add(&self, uid: &str, render: impl FnOnce() -> Rendered) {
+        if self.refuses(&self.metrics.read(), uid) {
+            return;
         }
         let rendered = Arc::new(render());
         self.metrics.write().insert(uid.to_owned(), rendered);
     }
 
     /// Removes an object.
-    pub fn delete(&self, uid: &str, resource_version: &str) {
-        self.set_last_resource_version(resource_version);
-        let removed = self.metrics.write().remove(uid).is_some();
-        if removed && self.object_limit > 0 {
-            *self.object_count.lock() -= 1;
-        }
+    pub fn delete(&self, uid: &str) {
+        self.metrics.write().remove(uid);
     }
 
-    /// Replaces the contents with `items` (`(uid, resource version, object)`):
-    /// objects missing from the list are deleted first, then every listed one
+    /// Replaces the contents with `items` (`(uid, metrics)`, rendered while
+    /// the list was buffered: Go's `Transformer` during a WatchList sync).
+    /// Objects missing from the list are deleted first, then every listed one
     /// is upserted, so a concurrent scrape never sees an empty store.
-    pub fn replace<O>(
-        &self,
-        items: &[(String, String, O)],
-        resource_version: &str,
-        render: impl Fn(&O) -> Rendered,
-    ) {
-        let listed: HashSet<&str> = items.iter().map(|(uid, _, _)| uid.as_str()).collect();
-        let kept = {
-            let mut m = self.metrics.write();
+    pub fn replace(&self, items: Vec<(String, Rendered)>) {
+        let mut m = self.metrics.write();
+        {
+            let listed: HashSet<&str> = items.iter().map(|(uid, _)| uid.as_str()).collect();
             m.retain(|uid, _| listed.contains(uid.as_str()));
-            m.len() as i64
-        };
-        if self.object_limit > 0 {
-            *self.object_count.lock() = kept;
         }
-        for (uid, rv, obj) in items {
-            self.add(uid, rv, || render(obj));
-        }
-        self.set_last_resource_version(resource_version);
-    }
-
-    /// [`replace`](Self::replace) with metrics rendered while the list was
-    /// buffered (Go: the store's `Transformer` during a WatchList sync).
-    pub fn replace_rendered(&self, items: Vec<(String, String, Rendered)>, resource_version: &str) {
-        let listed: HashSet<&str> = items.iter().map(|(uid, _, _)| uid.as_str()).collect();
-        let kept = {
-            let mut m = self.metrics.write();
-            m.retain(|uid, _| listed.contains(uid.as_str()));
-            m.len() as i64
-        };
-        drop(listed);
-        if self.object_limit > 0 {
-            *self.object_count.lock() = kept;
-        }
-        for (uid, rv, rendered) in items {
-            self.add(&uid, &rv, || rendered);
-        }
-        self.set_last_resource_version(resource_version);
-    }
-
-    pub fn last_resource_version(&self) -> String {
-        self.last_resource_version.lock().clone()
-    }
-
-    fn set_last_resource_version(&self, rv: &str) {
-        let mut l = self.last_resource_version.lock();
-        if *l != rv {
-            rv.clone_into(&mut l);
+        for (uid, rendered) in items {
+            if !self.refuses(&m, &uid) {
+                m.insert(uid, Arc::new(rendered));
+            }
         }
     }
 
@@ -379,19 +336,23 @@ mod tests {
     #[test]
     fn store_limit_and_replace() {
         let s = MetricsStore::new(2, None);
-        s.add("a", "1", || r("a 1\n"));
-        s.add("b", "2", || r("b 1\n"));
-        s.add("c", "3", || r("c 1\n"));
+        s.add("a", || r("a 1\n"));
+        s.add("b", || r("b 1\n"));
+        s.add("c", || r("c 1\n"));
         assert_eq!(s.len(), 2);
-        s.add("a", "4", || r("a 2\n"));
+        s.add("a", || r("a 2\n"));
         assert_eq!(s.len(), 2);
-        s.delete("b", "5");
-        s.add("c", "6", || r("c 1\n"));
+        s.delete("b");
+        s.add("c", || r("c 1\n"));
         assert_eq!(s.len(), 2);
-        let items = vec![("x".to_owned(), "7".to_owned(), "x 1\n")];
-        s.replace(&items, "9", |o| r(o));
+        s.replace(vec![
+            ("x".to_owned(), r("x 1\n")),
+            ("y".to_owned(), r("y 1\n")),
+            ("z".to_owned(), r("z 1\n")),
+        ]);
+        assert_eq!(s.len(), 2, "the limit applies to a replace too");
+        s.replace(vec![("x".to_owned(), r("x 1\n"))]);
         assert_eq!(s.len(), 1);
-        assert_eq!(s.last_resource_version(), "9");
     }
 
     #[test]
@@ -405,7 +366,7 @@ mod tests {
         let mut out = Vec::new();
         w1.write_all(&san[0], &mut out);
         assert!(out.is_empty(), "no objects: no header");
-        st.add("u", "1", || r("m 1\n"));
+        st.add("u", || r("m 1\n"));
         w1.write_all(&san[0], &mut out);
         assert_eq!(
             String::from_utf8(out).unwrap(),

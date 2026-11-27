@@ -6,10 +6,9 @@
 use std::borrow::Cow;
 use std::sync::Arc;
 
-use futures::StreamExt;
 use k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta;
-use ksm_core::generator::{FamilyGenerator, render};
-use ksm_core::store::{MetricsStore, Rendered};
+use ksm_core::generator::FamilyGenerator;
+use ksm_core::store::MetricsStore;
 use kube::api::{Api, ApiResource};
 use kube::core::DynamicResourceScope;
 use kube::runtime::watcher;
@@ -17,7 +16,7 @@ use serde::{Deserialize, Deserializer};
 use serde_json::Value;
 use tokio_util::sync::CancellationToken;
 
-use crate::watch::WatchSettings;
+use crate::watch::{Driver, WatchSettings, drive, keep, watcher_config};
 
 /// Go's `reflect.TypeOf(expectedType).String()` for custom resources.
 pub const GO_TYPE: &str = "*unstructured.Unstructured";
@@ -103,24 +102,6 @@ pub fn api(client: kube::Client, ar: &ApiResource, namespace: &str) -> Api<Unstr
     }
 }
 
-/// `watch.rs`'s watcher configuration.
-pub fn watcher_config(s: &WatchSettings) -> watcher::Config {
-    let mut cfg = watcher::Config::default();
-    if !s.field_selector.is_empty() {
-        cfg = cfg.fields(&s.field_selector);
-    }
-    if s.object_limit > 0 {
-        cfg = cfg.page_size(u32::try_from(s.object_limit).unwrap_or(u32::MAX));
-    }
-    if s.use_api_server_cache {
-        cfg = cfg.any_semantic();
-        if s.object_limit <= 0 {
-            cfg.page_size = None;
-        }
-    }
-    cfg
-}
-
 /// Starts a watcher of the custom resource `ar` feeding `store`, until the
 /// settings' token or `gvk_stop` (the CRD left discovery) is cancelled.
 pub fn spawn_dynamic(
@@ -131,103 +112,48 @@ pub fn spawn_dynamic(
     store: Arc<MetricsStore>,
     gvk_stop: CancellationToken,
 ) {
-    let api = api(settings.client.clone(), ar, namespace);
-    let cfg = watcher_config(settings);
-    let s = settings.clone();
-    let ar = ar.clone();
-    let go_type = GO_TYPE;
-    tokio::spawn(async move {
-        let stream = watcher(api, cfg);
-        futures::pin_mut!(stream);
-        let mut buffer: Vec<(String, String, Rendered)> = Vec::new();
-        let limit_mode = s.object_limit > 0;
-        if limit_mode {
-            s.metrics
-                .list_objects_limit
-                .set(&[go_type], s.object_limit as f64);
-        }
-        loop {
-            let ev = tokio::select! {
-                () = s.cancel.cancelled() => break,
-                () = gvk_stop.cancelled() => break,
-                ev = stream.next() => ev,
-            };
-            let Some(ev) = ev else { break };
-            match ev {
-                Ok(watcher::Event::Init) => buffer.clear(),
-                Ok(watcher::Event::InitApply(obj)) => {
-                    if let Some((uid, rv)) = keep(&s, &obj, (!limit_mode).then_some(&ar)) {
-                        let v = obj.into_value(&ar);
-                        buffer.push((uid, rv, render(&families, &v)));
-                    }
-                }
-                Ok(watcher::Event::InitDone) => {
-                    let items = std::mem::take(&mut buffer);
-                    if limit_mode {
-                        s.metrics.list_total.inc(&["success", go_type]);
-                        let n = items
-                            .len()
-                            .min(usize::try_from(s.object_limit).unwrap_or(usize::MAX));
-                        s.metrics.list_objects.set(&[go_type], n as f64);
-                    }
-                    s.metrics.watch_total.inc(&["success", go_type]);
-                    store.replace_rendered(items, "");
-                }
-                Ok(watcher::Event::Apply(obj)) => {
-                    if let Some((uid, rv)) = keep(&s, &obj, Some(&ar)) {
-                        let v = obj.into_value(&ar);
-                        store.add(&uid, &rv, || render(&families, &v));
-                    }
-                }
-                Ok(watcher::Event::Delete(obj)) => {
-                    if let Some((uid, rv)) = keep(&s, &obj, Some(&ar)) {
-                        store.delete(&uid, &rv);
-                    }
-                }
-                Err(e) => {
-                    match &e {
-                        watcher::Error::InitialListFailed(_) if limit_mode => {
-                            s.metrics.list_total.inc(&["error", go_type]);
-                        }
-                        _ => s.metrics.watch_total.inc(&["error", go_type]),
-                    }
-                    tracing::error!(resource = %ar.plural, error = %e, "Failed to watch");
-                    tokio::select! {
-                        () = s.cancel.cancelled() => break,
-                        () = gvk_stop.cancelled() => break,
-                        () = tokio::time::sleep(std::time::Duration::from_secs(1)) => {}
-                    }
-                }
+    let stream = watcher(
+        api(settings.client.clone(), ar, namespace),
+        watcher_config(settings),
+    );
+    let check_listed = settings.object_limit <= 0;
+    let sharding = settings.sharding;
+    let (ar1, ar2) = (ar.clone(), ar.clone());
+    tokio::spawn(drive(
+        stream,
+        Driver {
+            settings: settings.clone(),
+            go_type: GO_TYPE,
+            resource: ar.plural.clone(),
+            families,
+            store,
+            stop: Some(gvk_stop),
+        },
+        // client-go's reflector skips objects of another apiVersion/kind in
+        // watch events when its expected type carries a GVK (a listed object,
+        // without WatchList, is not checked).
+        move |obj: &Unstructured, initial| {
+            if (!initial || check_listed) && !has_gvk(obj, &ar1) {
+                return None;
             }
-        }
-    });
+            keep(&sharding, &obj.meta)
+        },
+        move |obj| obj.into_value(&ar2),
+    ));
 }
 
-/// UID and resource version of an object this shard keeps. With `expected`,
-/// objects of another apiVersion/kind are skipped, as client-go's reflector
-/// does for watch events when its expected type carries a GVK (a listed
-/// object, without WatchList, is not checked).
-fn keep(
-    s: &WatchSettings,
-    obj: &Unstructured,
-    expected: Option<&ApiResource>,
-) -> Option<(String, String)> {
-    if let Some(ar) = expected {
-        let field = |k: &str| obj.raw.get(k).and_then(Value::as_str).unwrap_or("");
-        if field("apiVersion") != ar.api_version || field("kind") != ar.kind {
-            tracing::error!(
-                expected = %format!("{}, Kind={}", ar.api_version, ar.kind),
-                got = %format!("{}, Kind={}", field("apiVersion"), field("kind")),
-                "expected gvk, but watch event object had another gvk"
-            );
-            return None;
-        }
+/// Whether `obj` has `ar`'s apiVersion and kind (logged when not).
+fn has_gvk(obj: &Unstructured, ar: &ApiResource) -> bool {
+    let field = |k: &str| obj.raw.get(k).and_then(Value::as_str).unwrap_or("");
+    let same = field("apiVersion") == ar.api_version && field("kind") == ar.kind;
+    if !same {
+        tracing::error!(
+            expected = %format!("{}, Kind={}", ar.api_version, ar.kind),
+            got = %format!("{}, Kind={}", field("apiVersion"), field("kind")),
+            "expected gvk, but watch event object had another gvk"
+        );
     }
-    let uid = obj.meta.uid.clone().unwrap_or_default();
-    if !s.sharding.keep(&uid) {
-        return None;
-    }
-    Some((uid, obj.meta.resource_version.clone().unwrap_or_default()))
+    same
 }
 
 #[cfg(test)]
