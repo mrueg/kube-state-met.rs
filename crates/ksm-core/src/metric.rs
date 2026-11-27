@@ -76,46 +76,43 @@ impl Metric {
     ///
     /// Panics when keys and values differ in length, as the Go original does.
     pub fn write(&self, buf: &mut Vec<u8>) {
+        self.write_prefixed(buf, &[]);
+    }
+
+    /// [`write`](Self::write) with `prefix` (rendered `k="v"` pairs, see
+    /// [`Family::with_default_labels`]) before this sample's own labels.
+    fn write_prefixed(&self, buf: &mut Vec<u8>, prefix: &[u8]) {
         assert!(
             self.label_keys.len() == self.label_values.len(),
             "expected labelKeys {:?} to be of same length as labelValues {:?}",
             self.label_keys,
             self.label_values
         );
-        labels_to_string(buf, &self.label_keys, &self.label_values);
+        if !prefix.is_empty() || !self.label_keys.is_empty() {
+            buf.push(b'{');
+            buf.extend_from_slice(prefix);
+            let mut separator = !prefix.is_empty();
+            for (k, v) in self.label_keys.iter().zip(&self.label_values) {
+                if separator {
+                    buf.push(b',');
+                }
+                write_label(buf, k, v);
+                separator = true;
+            }
+            buf.push(b'}');
+        }
         buf.push(b' ');
         write_float(buf, self.value);
         buf.push(b'\n');
     }
-
-    /// Prepends `keys`/`values` to this sample's labels (Go `mergeKeyValues`
-    /// with the resource's default labels first).
-    pub fn prepend_labels(&mut self, keys: &[&'static str], values: &[&str]) {
-        let mut k: Vec<LabelKey> = Vec::with_capacity(keys.len() + self.label_keys.len());
-        k.extend(keys.iter().map(|s| Cow::Borrowed(*s)));
-        k.append(&mut self.label_keys);
-        self.label_keys = k;
-        let mut v: Vec<String> = Vec::with_capacity(values.len() + self.label_values.len());
-        v.extend(values.iter().map(|s| (*s).to_owned()));
-        v.append(&mut self.label_values);
-        self.label_values = v;
-    }
 }
 
-fn labels_to_string(buf: &mut Vec<u8>, keys: &[LabelKey], values: &[String]) {
-    if keys.is_empty() {
-        return;
-    }
-    let mut separator = b'{';
-    for (k, v) in keys.iter().zip(values) {
-        buf.push(separator);
-        buf.extend_from_slice(k.as_bytes());
-        buf.extend_from_slice(b"=\"");
-        escape_string(buf, v);
-        buf.push(b'"');
-        separator = b',';
-    }
-    buf.push(b'}');
+/// `k="v"` with the value escaped.
+fn write_label(buf: &mut Vec<u8>, k: &str, v: &str) {
+    buf.extend_from_slice(k.as_bytes());
+    buf.extend_from_slice(b"=\"");
+    escape_string(buf, v);
+    buf.push(b'"');
 }
 
 /// Escapes `\`, newline and `"` in a label value.
@@ -295,6 +292,8 @@ pub fn go_float_string(f: f64) -> String {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Family {
     pub metrics: Vec<Metric>,
+    /// Labels every sample starts with, rendered once (`k="v",k2="v2"`).
+    prefix: Vec<u8>,
 }
 
 /// Assumed rendered length of a value plus the space before it and the newline.
@@ -302,7 +301,30 @@ const VALUE_SIZE_HINT: usize = 16;
 
 impl Family {
     pub fn new(metrics: Vec<Metric>) -> Self {
-        Family { metrics }
+        Family {
+            metrics,
+            prefix: Vec::new(),
+        }
+    }
+
+    /// Samples that all start with the resource's default labels (Go's
+    /// `wrapXFunc`: `mergeKeyValues` with `keys`/`values` first). The labels
+    /// are escaped and rendered once, not per sample.
+    ///
+    /// Panics when keys and values differ in length, as the Go original does.
+    pub fn with_default_labels(metrics: Vec<Metric>, keys: &[&str], values: &[&str]) -> Self {
+        assert!(
+            keys.len() == values.len(),
+            "expected labelKeys {keys:?} to be of same length as labelValues {values:?}"
+        );
+        let mut prefix = Vec::new();
+        for (i, (k, v)) in keys.iter().zip(values).enumerate() {
+            if i > 0 {
+                prefix.push(b',');
+            }
+            write_label(&mut prefix, k, v);
+        }
+        Family { metrics, prefix }
     }
 
     /// Appends every sample, each prefixed with `name`.
@@ -313,7 +335,7 @@ impl Family {
         buf.reserve(self.size_hint(name));
         for m in &self.metrics {
             buf.extend_from_slice(name.as_bytes());
-            m.write(buf);
+            m.write_prefixed(buf, &self.prefix);
         }
     }
 
@@ -323,7 +345,8 @@ impl Family {
             .iter()
             .map(|m| {
                 name.len()
-                    + 2
+                    + 3
+                    + self.prefix.len()
                     + VALUE_SIZE_HINT
                     + m.label_keys
                         .iter()
@@ -374,6 +397,25 @@ mod tests {
         assert_eq!(w(f64::NAN), "NaN");
         assert_eq!(w(f64::INFINITY), "+Inf");
         assert_eq!(w(f64::NEG_INFINITY), "-Inf");
+    }
+
+    #[test]
+    fn default_labels_come_first() {
+        let f = Family::with_default_labels(
+            vec![
+                Metric::with(&["phase"], vec!["Running".into()], 1.0),
+                Metric::value(0.0),
+            ],
+            &["namespace", "pod"],
+            &["ns", "a\"b"],
+        );
+        let mut b = Vec::new();
+        f.append_bytes("kube_x", &mut b);
+        assert_eq!(
+            String::from_utf8(b).unwrap(),
+            "kube_x{namespace=\"ns\",pod=\"a\\\"b\",phase=\"Running\"} 1\n\
+             kube_x{namespace=\"ns\",pod=\"a\\\"b\"} 0\n"
+        );
     }
 
     #[test]

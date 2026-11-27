@@ -161,6 +161,7 @@ pub async fn drive<K, T, S>(
     };
     let mut buffer: Vec<(String, Rendered)> = Vec::new();
     let mut pending: Vec<(String, T)> = Vec::new();
+    let mut rendering: std::collections::VecDeque<Batch> = std::collections::VecDeque::new();
     let limit_mode = s.object_limit > 0;
     if limit_mode {
         s.metrics
@@ -177,17 +178,30 @@ pub async fn drive<K, T, S>(
             Ok(watcher::Event::Init) => {
                 buffer.clear();
                 pending.clear();
+                rendering.clear();
             }
             Ok(watcher::Event::InitApply(obj)) => {
                 if let Some(uid) = keep(&obj, true) {
                     pending.push((uid, convert(obj)));
                     if pending.len() >= RENDER_BATCH {
-                        render_batch(&families, &mut pending, &mut buffer).await;
+                        // Decode the next batch while this one renders; keep
+                        // a few batches in flight at most.
+                        if rendering.len() >= MAX_BATCHES_IN_FLIGHT
+                            && let Some(b) = rendering.pop_front()
+                        {
+                            collect_batch(b, &mut buffer).await;
+                        }
+                        rendering.push_back(render_batch(&families, std::mem::take(&mut pending)));
                     }
                 }
             }
             Ok(watcher::Event::InitDone) => {
-                render_batch(&families, &mut pending, &mut buffer).await;
+                if !pending.is_empty() {
+                    rendering.push_back(render_batch(&families, std::mem::take(&mut pending)));
+                }
+                while let Some(b) = rendering.pop_front() {
+                    collect_batch(b, &mut buffer).await;
+                }
                 let items = std::mem::take(&mut buffer);
                 if limit_mode {
                     // Go lists (and counts the list) only with an object limit;
@@ -232,20 +246,19 @@ pub async fn drive<K, T, S>(
 
 /// Objects rendered together during the initial sync.
 const RENDER_BATCH: usize = 512;
+/// Batches rendering while the next one is decoded.
+const MAX_BATCHES_IN_FLIGHT: usize = 4;
 
-/// Renders the buffered objects on all cores (Go renders them one by one in
+type Batch = tokio::task::JoinHandle<Vec<(String, Rendered)>>;
+
+/// Renders a batch of objects on all cores (Go renders them one by one in
 /// the store's transformer; the result is the same).
-async fn render_batch<T: Send + Sync + 'static>(
+fn render_batch<T: Send + Sync + 'static>(
     families: &Arc<Vec<FamilyGenerator<T>>>,
-    pending: &mut Vec<(String, T)>,
-    out: &mut Vec<(String, Rendered)>,
-) {
-    if pending.is_empty() {
-        return;
-    }
-    let batch = std::mem::take(pending);
+    batch: Vec<(String, T)>,
+) -> Batch {
     let fams = Arc::clone(families);
-    let rendered = tokio::task::spawn_blocking(move || {
+    tokio::task::spawn_blocking(move || {
         use rayon::prelude::*;
         batch
             .into_par_iter()
@@ -253,10 +266,13 @@ async fn render_batch<T: Send + Sync + 'static>(
                 let r = render(&fams, &obj);
                 (uid, r)
             })
-            .collect::<Vec<_>>()
+            .collect()
     })
-    .await;
-    match rendered {
+}
+
+/// Waits for a rendered batch and appends it, in list order.
+async fn collect_batch(batch: Batch, out: &mut Vec<(String, Rendered)>) {
+    match batch.await {
         Ok(r) => out.extend(r),
         Err(e) => tracing::error!(error = %e, "rendering metrics failed"),
     }

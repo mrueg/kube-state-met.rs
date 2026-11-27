@@ -1,6 +1,6 @@
 //! Port of `internal/store/pod.go`.
 
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap};
 
 use k8s_openapi::api::core::v1::{
     Container, ContainerState, ContainerStatus, Pod, PodCondition, PodSpec, PodStatus,
@@ -1032,26 +1032,33 @@ pub fn families(
         Alpha,
         "",
         |p| {
-            // getUniqueTolerations: first occurrence of each identity key.
-            let mut seen: HashSet<[String; 5]> = HashSet::new();
+            // getUniqueTolerations: first occurrence of each identity key
+            // (pods have a handful of tolerations: a linear scan is cheapest).
+            let mut seen = Vec::new();
             let mut ms = Vec::new();
             for t in spec(p).tolerations.iter().flatten() {
-                let values = [
-                    s(&t.key).to_owned(),
-                    s(&t.operator).to_owned(),
-                    s(&t.value).to_owned(),
-                    s(&t.effect).to_owned(),
-                    t.toleration_seconds
-                        .map(|n| n.to_string())
-                        .unwrap_or_default(),
-                ];
-                if seen.insert(values.clone()) {
-                    ms.push(mk(
-                        &["key", "operator", "value", "effect", "toleration_seconds"],
-                        values.to_vec(),
-                        1.0,
-                    ));
+                let id = (
+                    s(&t.key),
+                    s(&t.operator),
+                    s(&t.value),
+                    s(&t.effect),
+                    t.toleration_seconds,
+                );
+                if seen.contains(&id) {
+                    continue;
                 }
+                seen.push(id);
+                ms.push(mk(
+                    &["key", "operator", "value", "effect", "toleration_seconds"],
+                    vec![
+                        id.0.to_owned(),
+                        id.1.to_owned(),
+                        id.2.to_owned(),
+                        id.3.to_owned(),
+                        id.4.map(|n| n.to_string()).unwrap_or_default(),
+                    ],
+                    1.0,
+                ));
             }
             ms
         },

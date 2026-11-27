@@ -3,7 +3,7 @@
 //! samples and resource-version samples.
 
 use std::borrow::Cow;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use crate::metric::{LabelKey, Metric};
 
@@ -28,15 +28,20 @@ pub fn bool_f64(b: bool) -> f64 {
 pub fn condition_metrics(cs: &str) -> Vec<Metric> {
     CONDITION_STATUSES
         .iter()
-        .map(|s| Metric::new(Vec::new(), vec![s.to_lowercase()], bool_f64(cs == *s)))
+        .zip(CONDITION_STATUS_LABELS)
+        .map(|(s, l)| Metric::new(Vec::new(), vec![l.to_owned()], bool_f64(cs == *s)))
         .collect()
 }
+
+/// The status label values: `CONDITION_STATUSES` lowercased.
+const CONDITION_STATUS_LABELS: [&str; 3] = ["true", "false", "unknown"];
 
 /// Like [`condition_metrics`], with the label key set.
 pub fn condition_metrics_keyed(key: &'static str, cs: &str) -> Vec<Metric> {
     CONDITION_STATUSES
         .iter()
-        .map(|s| Metric::with(&[key], vec![s.to_lowercase()], bool_f64(cs == *s)))
+        .zip(CONDITION_STATUS_LABELS)
+        .map(|(s, l)| Metric::with(&[key], vec![l.to_owned()], bool_f64(cs == *s)))
         .collect()
 }
 
@@ -131,7 +136,21 @@ where
     I: IntoIterator<Item = (&'a String, &'a String)>,
 {
     let mut sorted: Vec<(&String, &String)> = labels.into_iter().collect();
-    sorted.sort_unstable_by(|a, b| a.0.cmp(b.0));
+    // Labels and annotations come from BTreeMaps: usually sorted already.
+    if !sorted.is_sorted_by(|a, b| a.0 <= b.0) {
+        sorted.sort_unstable_by(|a, b| a.0.cmp(b.0));
+    }
+    // Fast path: no two keys sanitize to the same name.
+    let names: Vec<String> = sorted.iter().map(|(k, _)| label_name(prefix, k)).collect();
+    let mut seen = HashSet::with_capacity(names.len());
+    if names.iter().all(|n| seen.insert(n.as_str())) {
+        drop(seen);
+        return (
+            names.into_iter().map(Cow::Owned).collect(),
+            sorted.into_iter().map(|(_, v)| v.clone()).collect(),
+        );
+    }
+    drop(seen);
     let mut keys: Vec<String> = Vec::with_capacity(sorted.len());
     let mut values: Vec<String> = Vec::with_capacity(sorted.len());
     let mut used: HashMap<String, usize> = HashMap::with_capacity(sorted.len());

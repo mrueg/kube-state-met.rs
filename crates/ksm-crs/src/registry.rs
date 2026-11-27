@@ -65,6 +65,8 @@ struct Gauge {
     common: Common,
     label_from_key: String,
     value_from: ValuePath,
+    /// The map key a unit-length `valueFrom` (`[x]`) selects, if it is one.
+    value_from_key: Option<String>,
     nil_is_zero: bool,
 }
 
@@ -135,10 +137,15 @@ fn new_compiled_metric(
                 compile_common(&g.meta, common_labels).map_err(|e| format!("each.gauge: {e}"))?;
             let value_from =
                 compile_path(&g.value_from).map_err(|e| format!("each.gauge.valueFrom: {e}"))?;
+            // A unit-length valueFrom ("[...]", not "[]", no comma).
+            let s = value_from.to_string();
+            let value_from_key =
+                (!s.contains(',') && s.len() > 2).then(|| s[1..s.len() - 1].to_owned());
             Ok(Compiled::Gauge(Gauge {
                 common,
                 label_from_key: g.label_from_key.clone(),
                 value_from,
+                value_from_key,
                 nil_is_zero: g.nil_is_zero,
             }))
         }
@@ -315,10 +322,7 @@ impl Gauge {
         let mut on_error = |e: String| errs.push(format!("{path}: {e}"));
         match v {
             Some(Value::Object(iter)) => {
-                let s_value_from = self.value_from.to_string();
-                // A unit-length valueFrom ("[...]", not "[]", no comma).
-                let extracted = (!s_value_from.contains(',') && s_value_from.len() > 2)
-                    .then(|| &s_value_from[1..s_value_from.len() - 1]);
+                let extracted = self.value_from_key.as_deref();
                 for (key, it) in iter {
                     let it = non_nil(Some(it));
                     let mut ev = None;

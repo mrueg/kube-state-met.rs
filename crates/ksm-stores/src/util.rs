@@ -42,14 +42,11 @@ impl<K: 'static> Families<K> {
         let keys = self.keys;
         let values = self.values;
         move |obj: &K| {
-            let mut metrics = f(obj);
-            if !keys.is_empty() {
-                let v = values(obj);
-                for m in &mut metrics {
-                    m.prepend_labels(keys, &v);
-                }
+            let metrics = f(obj);
+            if keys.is_empty() || metrics.is_empty() {
+                return Family::new(metrics);
             }
-            Family::new(metrics)
+            Family::with_default_labels(metrics, keys, &values(obj))
         }
     }
 
@@ -224,14 +221,13 @@ pub fn mk(keys: &[&'static str], values: Vec<String>, v: f64) -> Metric {
 pub fn conditions_with(keys: &[&'static str], values: &[&str], status: &str) -> Vec<Metric> {
     condition_metrics(status)
         .into_iter()
-        .map(|c| {
-            let mut k: Vec<ksm_core::metric::LabelKey> = keys
-                .iter()
-                .map(|k| std::borrow::Cow::Borrowed(*k))
-                .collect();
+        .map(|mut c| {
+            let mut k: Vec<ksm_core::metric::LabelKey> = Vec::with_capacity(keys.len() + 1);
+            k.extend(keys.iter().map(|k| std::borrow::Cow::Borrowed(*k)));
             k.push(std::borrow::Cow::Borrowed("status"));
-            let mut v: Vec<String> = values.iter().map(|s| (*s).to_owned()).collect();
-            v.extend(c.label_values);
+            let mut v: Vec<String> = Vec::with_capacity(values.len() + 1);
+            v.extend(values.iter().map(|s| (*s).to_owned()));
+            v.append(&mut c.label_values);
             Metric::new(k, v, c.value)
         })
         .collect()

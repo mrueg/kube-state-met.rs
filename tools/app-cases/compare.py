@@ -92,6 +92,16 @@ def main():
                     "--telemetry-host", "127.0.0.1", "--enable-gzip-encoding"]
             args += (["--resources=" + a.resources] if a.resources else []) + extra
             procs.append(subprocess.Popen(args, stdout=log, stderr=log, env=env))
+        # Both must listen before the sync wait starts (startup is slower
+        # on a busy machine).
+        deadline = time.time() + 60
+        for p in list(ports.values()) + list(tports.values()):
+            while time.time() < deadline:
+                try:
+                    socket.create_connection(("127.0.0.1", p), timeout=0.2).close()
+                    break
+                except OSError:
+                    time.sleep(0.05)
         time.sleep(a.wait)
         ok = True
         for path, hdr in [("/metrics", None), ("/metrics", {"Accept": "application/openmetrics-text; version=1.0.0"}),
