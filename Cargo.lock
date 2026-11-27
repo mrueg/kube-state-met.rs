@@ -1374,6 +1374,7 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
+ "tracing",
 ]
 
 [[package]]
@@ -1509,8 +1510,9 @@ dependencies = [
  "bcrypt",
  "bytes",
  "crc32fast",
- "fake-apiserver",
+ "fastrand",
  "flate2",
+ "form_urlencoded",
  "futures",
  "http",
  "http-body",

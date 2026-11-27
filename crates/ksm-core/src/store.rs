@@ -184,15 +184,20 @@ impl MetricsStore {
     /// the list was buffered: Go's `Transformer` during a WatchList sync).
     /// Objects missing from the list are deleted first, then every listed one
     /// is upserted, so a concurrent scrape never sees an empty store.
+    /// The work that doesn't need the lock is done before taking it, so
+    /// scrapes are held up only by the map updates.
     pub fn replace(&self, items: Vec<(String, Rendered)>) {
+        let items: Vec<(String, Arc<Rendered>)> = items
+            .into_iter()
+            .map(|(uid, r)| (uid, Arc::new(r)))
+            .collect();
+        let listed: HashSet<&str> = items.iter().map(|(uid, _)| uid.as_str()).collect();
         let mut m = self.metrics.write();
-        {
-            let listed: HashSet<&str> = items.iter().map(|(uid, _)| uid.as_str()).collect();
-            m.retain(|uid, _| listed.contains(uid.as_str()));
-        }
+        m.retain(|uid, _| listed.contains(uid.as_str()));
+        drop(listed);
         for (uid, rendered) in items {
             if !self.refuses(&m, &uid) {
-                m.insert(uid, Arc::new(rendered));
+                m.insert(uid, rendered);
             }
         }
     }

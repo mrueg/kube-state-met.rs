@@ -6,6 +6,7 @@ use std::fmt::Debug;
 use std::sync::Arc;
 
 use futures::StreamExt;
+use futures::stream::BoxStream;
 use k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta;
 use k8s_openapi::{ClusterResourceScope, NamespaceResourceScope};
 use ksm_core::generator::{FamilyGenerator, render};
@@ -17,6 +18,7 @@ use kube::runtime::watcher;
 use serde::de::DeserializeOwned;
 use tokio_util::sync::CancellationToken;
 
+use crate::backoff::Backoff;
 use crate::telemetry::ListWatchMetrics;
 
 /// Picks the API endpoint for a resource scope: namespaced resources in one
@@ -68,23 +70,39 @@ pub struct WatchSettings {
     pub cancel: CancellationToken,
 }
 
-/// The watcher configuration of the settings (field selector, page size,
-/// `resourceVersion=0` lists).
-pub fn watcher_config(s: &WatchSettings) -> watcher::Config {
-    let mut cfg = watcher::Config::default();
-    if !s.field_selector.is_empty() {
-        cfg = cfg.fields(&s.field_selector);
-    }
+/// The events of a store's objects: kube-runtime's watcher, or with
+/// `--object-limit` a one-page list and a watch (`crate::limited`).
+/// Cluster-scoped built-in resources get no field selector: Go's
+/// `create*ListWatch` for them drop it (custom resources always use it).
+pub fn events<K>(
+    api: Api<K>,
+    s: &WatchSettings,
+    go_type: &'static str,
+    with_fields: bool,
+) -> BoxStream<'static, watcher::Result<watcher::Event<K>>>
+where
+    K: Resource + Clone + DeserializeOwned + Debug + Send + 'static,
+{
+    let fields = (with_fields && !s.field_selector.is_empty()).then(|| s.field_selector.clone());
     if s.object_limit > 0 {
-        cfg = cfg.page_size(u32::try_from(s.object_limit).unwrap_or(u32::MAX));
+        let cfg = crate::limited::Limited {
+            limit: u32::try_from(s.object_limit).unwrap_or(u32::MAX),
+            fields,
+            use_api_server_cache: s.use_api_server_cache,
+            metrics: s.metrics.clone(),
+            go_type,
+        };
+        return crate::limited::stream(api, cfg).boxed();
+    }
+    let mut cfg = watcher::Config::default();
+    if let Some(f) = &fields {
+        cfg = cfg.fields(f);
     }
     if s.use_api_server_cache {
         cfg = cfg.any_semantic();
-        if s.object_limit <= 0 {
-            cfg.page_size = None;
-        }
+        cfg.page_size = None;
     }
-    cfg
+    watcher(api, cfg).boxed()
 }
 
 /// Starts a watcher feeding `store` with the rendered families of every
@@ -100,7 +118,7 @@ pub fn spawn<K>(
     K::Scope: ScopeApi,
 {
     let api: Api<K> = <K::Scope as ScopeApi>::api(settings.client.clone(), namespace);
-    let stream = watcher(api, watcher_config(settings));
+    let stream = events(api, settings, go_type, !<K::Scope as ScopeApi>::CLUSTER);
     let sharding = settings.sharding;
     tokio::spawn(drive(
         stream,
@@ -110,7 +128,7 @@ pub fn spawn<K>(
             resource: go_type.to_owned(),
             families,
             store,
-            stop: None,
+            stop: CancellationToken::new(),
         },
         move |obj: &K, _initial| keep(&sharding, obj.meta()),
         |obj| obj,
@@ -126,8 +144,9 @@ pub struct Driver<T> {
     pub resource: String,
     pub families: Arc<Vec<FamilyGenerator<T>>>,
     pub store: Arc<MetricsStore>,
-    /// Stops this watcher besides the settings' token.
-    pub stop: Option<CancellationToken>,
+    /// Stops this watcher besides the settings' token (one that never fires
+    /// when nothing else stops it).
+    pub stop: CancellationToken,
 }
 
 /// Feeds a watcher's events into the store (ADR-011): the initial list is
@@ -156,13 +175,15 @@ pub async fn drive<K, T, S>(
     let stopped = || async {
         tokio::select! {
             () = s.cancel.cancelled() => {}
-            () = async { match &stop { Some(t) => t.cancelled().await, None => std::future::pending().await } } => {}
+            () = stop.cancelled() => {}
         }
     };
     let mut buffer: Vec<(String, Rendered)> = Vec::new();
     let mut pending: Vec<(String, T)> = Vec::new();
     let mut rendering: std::collections::VecDeque<Batch> = std::collections::VecDeque::new();
+    // With an object limit the lister counts its own lists and watches.
     let limit_mode = s.object_limit > 0;
+    let mut backoff = Backoff::default();
     if limit_mode {
         s.metrics
             .list_objects_limit
@@ -202,18 +223,11 @@ pub async fn drive<K, T, S>(
                 while let Some(b) = rendering.pop_front() {
                     collect_batch(b, &mut buffer).await;
                 }
-                let items = std::mem::take(&mut buffer);
-                if limit_mode {
-                    // Go lists (and counts the list) only with an object limit;
-                    // otherwise client-go streams the initial list over a watch.
-                    s.metrics.list_total.inc(&["success", go_type]);
-                    let n = items
-                        .len()
-                        .min(usize::try_from(s.object_limit).unwrap_or(usize::MAX));
-                    s.metrics.list_objects.set(&[go_type], n as f64);
+                if !limit_mode {
+                    // client-go streams the initial list over a watch.
+                    s.metrics.watch_total.inc(&["success", go_type]);
                 }
-                s.metrics.watch_total.inc(&["success", go_type]);
-                store.replace(items);
+                store.replace(std::mem::take(&mut buffer));
             }
             Ok(watcher::Event::Apply(obj)) => {
                 if let Some(uid) = keep(&obj, false) {
@@ -227,17 +241,12 @@ pub async fn drive<K, T, S>(
                 }
             }
             Err(e) => {
-                match &e {
-                    watcher::Error::InitialListFailed(_) if limit_mode => {
-                        s.metrics.list_total.inc(&["error", go_type]);
-                    }
-                    _ => s.metrics.watch_total.inc(&["error", go_type]),
+                if !limit_mode {
+                    s.metrics.watch_total.inc(&["error", go_type]);
                 }
                 tracing::error!(resource = %resource, error = %e, "Failed to watch");
-                // kube's backoff resets on every event; slow down failing relists.
-                tokio::select! {
-                    () = stopped() => break,
-                    () = tokio::time::sleep(std::time::Duration::from_secs(1)) => {}
+                if !backoff.wait(stopped()).await {
+                    break;
                 }
             }
         }

@@ -11,12 +11,11 @@ use ksm_core::generator::FamilyGenerator;
 use ksm_core::store::MetricsStore;
 use kube::api::{Api, ApiResource};
 use kube::core::DynamicResourceScope;
-use kube::runtime::watcher;
 use serde::{Deserialize, Deserializer};
 use serde_json::Value;
 use tokio_util::sync::CancellationToken;
 
-use crate::watch::{Driver, WatchSettings, drive, keep, watcher_config};
+use crate::watch::{Driver, WatchSettings, drive, events, keep};
 
 /// Go's `reflect.TypeOf(expectedType).String()` for custom resources.
 pub const GO_TYPE: &str = "*unstructured.Unstructured";
@@ -112,9 +111,11 @@ pub fn spawn_dynamic(
     store: Arc<MetricsStore>,
     gvk_stop: CancellationToken,
 ) {
-    let stream = watcher(
+    let stream = events(
         api(settings.client.clone(), ar, namespace),
-        watcher_config(settings),
+        settings,
+        GO_TYPE,
+        true,
     );
     let check_listed = settings.object_limit <= 0;
     let sharding = settings.sharding;
@@ -127,7 +128,7 @@ pub fn spawn_dynamic(
             resource: ar.plural.clone(),
             families,
             store,
-            stop: Some(gvk_stop),
+            stop: gvk_stop,
         },
         // client-go's reflector skips objects of another apiVersion/kind in
         // watch events when its expected type carries a GVK (a listed object,

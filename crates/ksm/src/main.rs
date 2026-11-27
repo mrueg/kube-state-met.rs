@@ -3,12 +3,14 @@
 //! Go entry points: `main.go`, `internal/wrapper.go`.
 
 mod auth;
+mod backoff;
 mod builder;
 mod client;
 mod conn;
 mod crs;
 mod discovery;
 mod handler;
+mod limited;
 mod logging;
 mod options;
 mod pgzip;

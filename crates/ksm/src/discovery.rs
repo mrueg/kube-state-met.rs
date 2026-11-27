@@ -286,8 +286,9 @@ impl CrDiscoverer {
     /// kind may be empty or `*`) stands for.
     pub fn resolve(&self, group: &str, version: &str, kind: &str) -> Result<Vec<Gvkp>, String> {
         if group.is_empty() || group == "*" {
+            // `%v` of a schema.GroupVersionKind: its String method.
             return Err(format!(
-                "group is required in the defined GVK {{{group} {version} {kind}}}"
+                "group is required in the defined GVK {group}/{version}, Kind={kind}"
             ));
         }
         let has_version = !version.is_empty() && version != "*";
@@ -376,6 +377,7 @@ impl CrDiscoverer {
             // The informer's store: name → last object seen.
             let mut known: HashMap<String, Value> = HashMap::new();
             let mut relisted: HashSet<String> = HashSet::new();
+            let mut backoff = crate::backoff::Backoff::default();
             loop {
                 let ev = tokio::select! {
                     () = cancel.cancelled() => {
@@ -411,9 +413,8 @@ impl CrDiscoverer {
                     }
                     Err(e) => {
                         tracing::error!(error = %e, "Failed to watch CustomResourceDefinitions");
-                        tokio::select! {
-                            () = cancel.cancelled() => break,
-                            () = tokio::time::sleep(std::time::Duration::from_secs(1)) => {}
+                        if !backoff.wait(cancel.cancelled()).await {
+                            break;
                         }
                     }
                 }
