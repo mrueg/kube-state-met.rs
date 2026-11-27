@@ -65,13 +65,13 @@ fake API server:
 - CPU under a steady load of pod watch events (`--churn`);
 - criterion micro-benchmarks (`cargo bench -p ksm-stores`).
 
-At 10k pods, compared with Go:
-- sync is 2x faster;
-- scrapes are 3.3x faster;
-- gzip scrapes are 2x faster;
-- plain-text throughput is 2.5x higher;
-- memory is 1.3x lower;
-- CPU under 1000 pod events per second is about half.
+At 10k pods on a 4-CPU GitHub Actions runner, compared with Go:
+- sync is 3.7x faster;
+- scrapes are 6x faster (p50 33 ms against 198 ms);
+- gzip scrapes are 2x faster, for about the same CPU;
+- plain-text throughput is 3.3x higher;
+- peak memory is 1.4x lower;
+- CPU under 1000 pod events per second is about a third.
 
 `tools/kind-kwok-bench/run.sh` runs the same comparison against a real HA API server: a kind cluster with three
 control-plane nodes, with kwok simulating the nodes and pods. It writes `bench/RESULTS-kind-kwok.md`. Both
