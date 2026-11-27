@@ -19,14 +19,14 @@ jobs:
     # micro-benchmarks.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           repository: kubernetes/kube-state-metrics
           ref: 46cd52ff39af128e15e64ffd8ba8c75eb6f5a213 # the ported commit
           path: kube-state-metrics-go
       - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: kube-state-metrics-go/go.mod
           cache-dependency-path: kube-state-metrics-go/go.sum
@@ -35,7 +35,7 @@ jobs:
           KSM_GO_SRC: kube-state-metrics-go
       - run: cat bench/RESULTS.md >> "$GITHUB_STEP_SUMMARY"
         if: always()
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: bench-results
@@ -50,14 +50,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           repository: kubernetes/kube-state-metrics
           ref: 46cd52ff39af128e15e64ffd8ba8c75eb6f5a213 # the ported commit
           path: kube-state-metrics-go
       - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v7
         with:
           go-version-file: kube-state-metrics-go/go.mod
           cache-dependency-path: kube-state-metrics-go/go.sum
@@ -70,12 +70,12 @@ jobs:
           KIND_LOGS: kind-logs
       - run: if [ -f bench/RESULTS-kind-kwok.md ]; then cat bench/RESULTS-kind-kwok.md >> "$GITHUB_STEP_SUMMARY"; fi
         if: always()
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: bench-kind-kwok-results
           path: bench/RESULTS-kind-kwok.md
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: kind-logs
