@@ -29,12 +29,12 @@ Generated plan: [analyze-whole-app.md](analyze-whole-app.md). Research: [researc
 | 4 | TLS web config (exporter-toolkit `web`) | `ksm::web` | done: all 49 exporter-toolkit test configs equal to Go (startup errors, HTTP/TLS answers); rustls limits in ADR-013 |
 | 4 | `--auth-filter` (controller-runtime `WithAuthenticationAndAuthorization`) | `ksm::auth` | done: 19 request cases equal to Go against the fake apiserver's TokenReview/SubjectAccessReview (`--auth-token`, `--auth-allow`); WebSocket-protocol tokens not ported |
 | 4 | hot reload (`internal/wrapper.go`, `internal/watch.go`) | `ksm::{main,reload}` | done: options config, CRS config and kubeconfig watched (parent dir, symlink swaps, movable watches), restart with reload flag + 3 s port wait, `--continue-without-*`; edit/break/fix/atomic-save sequence serves the same as Go at every step |
+| 2 | `--server-*-timeout` (Go `http.Server` deadlines) | `ksm::conn` | done: header/read/write/idle deadlines with Go's semantics, TLS handshake timeout; `tools/app-cases/timeouts.py` closes connections at the same moment as Go |
 | 5 | benchmarks report | `bench/` | done: `bench/run.sh` → `bench/RESULTS.md` |
 | 5 | container image, CI | `Dockerfile`, `.github/workflows/ci.yml` | done: amd64 image runs against the fake apiserver; arm64 image builds (static aarch64, not run: no emulation on the build host); CI not run yet |
 | 5 | lift | — | not applicable (ADR-012: no front door or unit bridges to remove) |
 
 ## Open questions
-- `--server-*-timeout` flags are parsed but not applied to the HTTP servers (follow-up).
 - Cobra's hidden `__complete` command is not ported (zsh/fish dynamic completion).
 
 ## Out of scope

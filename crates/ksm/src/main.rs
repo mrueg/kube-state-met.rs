@@ -5,6 +5,7 @@
 mod auth;
 mod builder;
 mod client;
+mod conn;
 mod crs;
 mod discovery;
 mod handler;

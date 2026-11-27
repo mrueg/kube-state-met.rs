@@ -57,5 +57,4 @@ memory and CPU at 1k/10k/50k pods against the same fake API server, plus criteri
 See the ADRs in [docs/port/DECISIONS.md](docs/port/DECISIONS.md). In short: no `go_*` telemetry metrics and no
 pprof; `--auto-gomemlimit*` are accepted and ignored; JSON instead of protobuf to the API server; rustls has no
 TLS 1.0/1.1, CBC suites or P-521; log lines keep klog's layout but not its exact text; cobra's hidden
-`__complete` command (dynamic shell completion) is not implemented; the `--server-*-timeout` flags are accepted
-but not yet applied to the HTTP servers.
+`__complete` command (dynamic shell completion) is not implemented.

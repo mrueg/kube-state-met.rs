@@ -1512,6 +1512,7 @@ dependencies = [
  "flate2",
  "futures",
  "http",
+ "http-body",
  "hyper",
  "hyper-util",
  "k8s-openapi",

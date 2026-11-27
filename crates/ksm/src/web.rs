@@ -1004,6 +1004,7 @@ pub async fn serve(
     app: Router,
     path: String,
     tls: bool,
+    timeouts: crate::conn::Timeouts,
     stop: CancellationToken,
 ) {
     let handler = Arc::new(WebHandler::new(&path));
@@ -1034,7 +1035,8 @@ pub async fn serve(
                 }
             },
         };
-        let app = app.clone();
+        let deadlines = crate::conn::Deadlines::new(timeouts);
+        let app = crate::conn::with_deadlines(app.clone(), deadlines.clone());
         let path = path.clone();
         let watcher = graceful.watcher();
         tokio::spawn(async move {
@@ -1045,11 +1047,12 @@ pub async fn serve(
             );
             if !tls {
                 let b = hyper::server::conn::http1::Builder::new();
-                let conn = b.serve_connection(TokioIo::new(tcp), svc);
+                let io = crate::conn::DeadlineIo::new(tcp, deadlines);
+                let conn = b.serve_connection(TokioIo::new(io), svc);
                 let _ = watcher.watch(conn).await;
                 return;
             }
-            serve_tls(tcp, addr, &path, svc, watcher).await;
+            serve_tls(tcp, addr, &path, svc, watcher, deadlines).await;
         });
     }
     drop(listener);
@@ -1062,6 +1065,7 @@ async fn serve_tls<S>(
     path: &str,
     svc: S,
     watcher: hyper_util::server::graceful::Watcher,
+    deadlines: crate::conn::Deadlines,
 ) where
     S: hyper::service::Service<
             http::Request<hyper::body::Incoming>,
@@ -1091,6 +1095,9 @@ async fn serve_tls<S>(
         let _ = tcp.shutdown().await;
         return;
     }
+    // Go bounds the handshake with tlsHandshakeTimeout, then the request deadlines apply.
+    deadlines.for_handshake();
+    let tcp = crate::conn::DeadlineIo::new(tcp, deadlines.clone());
     let start = match tokio_rustls::LazyConfigAcceptor::new(Acceptor::default(), tcp).await {
         Ok(s) => s,
         Err(e) => {
@@ -1113,6 +1120,7 @@ async fn serve_tls<S>(
             return;
         }
     };
+    deadlines.handshake_done();
     let b = auto::Builder::new(TokioExecutor::new());
     let conn = b.serve_connection_with_upgrades(TokioIo::new(stream), svc);
     let _ = watcher.watch(conn.into_owned()).await;

@@ -424,9 +424,34 @@ pub async fn run(
     let servers_stop = CancellationToken::new();
     let (s1, s2) = (servers_stop.clone(), servers_stop.clone());
     tracing::info!(telemetryAddress = %telemetry_addr, "Started kube-state-metrics self metrics server");
-    let telemetry = spawn_server(telemetry_listener, telemetry_app, &opts.tls_config, tls, s1);
+    // Go sets only ReadHeaderTimeout (5s) on the telemetry server.
+    let telemetry_timeouts = crate::conn::Timeouts {
+        read_header: Duration::from_secs(5),
+        ..Default::default()
+    };
+    let metrics_timeouts = crate::conn::Timeouts {
+        read_header: opts.server_read_header_timeout,
+        read: opts.server_read_timeout,
+        write: opts.server_write_timeout,
+        idle: opts.server_idle_timeout,
+    };
+    let telemetry = spawn_server(
+        telemetry_listener,
+        telemetry_app,
+        &opts.tls_config,
+        tls,
+        telemetry_timeouts,
+        s1,
+    );
     tracing::info!(metricsServerAddress = %metrics_addr, "Started metrics server");
-    let metrics_srv = spawn_server(metrics_listener, metrics_app, &opts.tls_config, tls, s2);
+    let metrics_srv = spawn_server(
+        metrics_listener,
+        metrics_app,
+        &opts.tls_config,
+        tls,
+        metrics_timeouts,
+        s2,
+    );
 
     let sharding_task = {
         let ctl = Arc::clone(&shard_ctl);
@@ -471,17 +496,14 @@ fn spawn_server(
     app: Router,
     web_config: &str,
     tls: Option<bool>,
+    timeouts: crate::conn::Timeouts,
     stop: CancellationToken,
 ) -> tokio::task::JoinHandle<()> {
     let path = web_config.to_owned();
     tokio::spawn(async move {
         match tls {
-            None => {
-                let _ = axum::serve(listener, app)
-                    .with_graceful_shutdown(async move { stop.cancelled().await })
-                    .await;
-            }
-            Some(tls) => crate::web::serve(listener, app, path, tls, stop).await,
+            None => crate::conn::serve_plain(listener, app, timeouts, stop).await,
+            Some(tls) => crate::web::serve(listener, app, path, tls, timeouts, stop).await,
         }
     })
 }
