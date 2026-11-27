@@ -1508,6 +1508,7 @@ dependencies = [
  "base64 0.22.1",
  "bcrypt",
  "bytes",
+ "crc32fast",
  "fake-apiserver",
  "flate2",
  "futures",

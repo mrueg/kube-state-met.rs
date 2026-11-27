@@ -11,6 +11,7 @@ mod discovery;
 mod handler;
 mod logging;
 mod options;
+mod pgzip;
 mod process;
 mod reload;
 mod server;

@@ -8,12 +8,14 @@ cluster. For every scale and implementation it measures:
   - gzip scrape latency p50
   - RSS after sync, peak RSS (VmHWM), CPU seconds used (start..end)
 
+Scrapes use curl, timing the whole body (gzip: the compressed body, not decompressed).
+
 Usage: bench/bench.py [--scales 1000,10000,50000] [--scrapes 30] [--out bench/RESULTS.md]
        [--go PATH] [--rust PATH] [--fake PATH]
 Build first: cargo build --release -p kube-state-metrics -p fake-apiserver,
 and the Go binary (bench/run.sh does all of it).
 """
-import argparse, os, platform, signal, socket, statistics, subprocess, sys, tempfile, time, urllib.request
+import argparse, os, platform, signal, socket, statistics, subprocess, sys, tempfile, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -44,14 +46,20 @@ def cpu_seconds(pid):
         return 0.0
 
 
-def scrape(port, gzip=False, timeout=120):
-    req = urllib.request.Request(f"http://127.0.0.1:{port}/metrics")
+def scrape(port, gzip=False, timeout=120, keep=False):
+    """One scrape with curl (urllib adds ~0.4s per 400MB body). Returns (seconds, body or size)."""
+    out = tempfile.NamedTemporaryFile(delete=False) if keep else None
+    cmd = ["curl", "-sS", "--fail", "--max-time", str(timeout), "-o", out.name if out else "/dev/null",
+           "-w", "%{time_total} %{size_download}", f"http://127.0.0.1:{port}/metrics"]
     if gzip:
-        req.add_header("Accept-Encoding", "gzip")
-    t = time.perf_counter()
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        body = r.read()
-    return time.perf_counter() - t, body
+        cmd[1:1] = ["-H", "Accept-Encoding: gzip"]
+    r = subprocess.run(cmd, capture_output=True, text=True, check=True)
+    t, size = r.stdout.split()
+    if out:
+        body = open(out.name, "rb").read()
+        os.unlink(out.name)
+        return float(t), body
+    return float(t), int(size)
 
 
 def wait_port(port, deadline):
@@ -73,7 +81,7 @@ def run_one(binary, kubeconfig, pods, scrapes, log):
     port, tport = free_port(), free_port()
     start = time.time()
     p = subprocess.Popen([binary, "--kubeconfig", kubeconfig, "--port", str(port), "--telemetry-port", str(tport),
-                          "--host", "127.0.0.1", "--telemetry-host", "127.0.0.1"],
+                          "--host", "127.0.0.1", "--telemetry-host", "127.0.0.1", "--enable-gzip-encoding"],
                          stdout=log, stderr=log)
     try:
         if not wait_port(port, start + 60):
@@ -81,7 +89,7 @@ def run_one(binary, kubeconfig, pods, scrapes, log):
         sync = None
         while time.time() < start + 600:
             try:
-                _, body = scrape(port)
+                _, body = scrape(port, keep=True)
                 if body.count(b"\nkube_pod_info{") >= pods:
                     sync = time.time() - start
                     break
@@ -93,13 +101,17 @@ def run_one(binary, kubeconfig, pods, scrapes, log):
         rss_sync = proc_status(p.pid, "VmRSS")
         times, size = [], 0
         for _ in range(scrapes):
-            t, body = scrape(port)
+            t, size = scrape(port)
             times.append(t)
-            size = len(body)
-        gz = [scrape(port, gzip=True)[0] for _ in range(max(3, scrapes // 3))]
+        gz, gz_size = [], 0
+        for _ in range(max(3, scrapes // 3)):
+            t, gz_size = scrape(port, gzip=True)
+            gz.append(t)
+        if gz_size >= size:
+            raise RuntimeError(f"{binary}: gzip scrape was not compressed")
         return {
             "sync_s": sync, "p50_ms": pct(times, 50) * 1e3, "p90_ms": pct(times, 90) * 1e3,
-            "p99_ms": pct(times, 99) * 1e3, "gzip_p50_ms": pct(gz, 50) * 1e3, "bytes": size,
+            "p99_ms": pct(times, 99) * 1e3, "gzip_p50_ms": pct(gz, 50) * 1e3, "bytes": size, "gz_bytes": gz_size,
             "rss_sync_mb": rss_sync / 2**20, "rss_peak_mb": proc_status(p.pid, "VmHWM") / 2**20,
             "rss_end_mb": proc_status(p.pid, "VmRSS") / 2**20, "cpu_s": cpu_seconds(p.pid),
         }
@@ -137,7 +149,7 @@ def main():
                 r = run_one(binary, kc, pods, a.scrapes, log)
                 r.update(impl=name, pods=pods, spec=spec)
                 results.append(r)
-                print(f"{pods:>6} pods {name:>4}: sync {r['sync_s']:.2f}s  p50 {r['p50_ms']:.1f}ms  p99 {r['p99_ms']:.1f}ms  "
+                print(f"{pods:>6} pods {name:>4}: sync {r['sync_s']:.2f}s  p50 {r['p50_ms']:.1f}ms  p99 {r['p99_ms']:.1f}ms  gzip {r['gzip_p50_ms']:.1f}ms  "
                       f"rss {r['rss_end_mb']:.0f}MB (peak {r['rss_peak_mb']:.0f})  cpu {r['cpu_s']:.1f}s", flush=True)
         finally:
             fake.terminate()
@@ -157,21 +169,21 @@ def write_report(path, results, scrapes):
         f"{cpu}, {os.cpu_count()} CPUs. Both binaries ran against the same fake API server "
         f"(tools/fake-apiserver, generated cluster: pods plus deployments, replicasets, services, configmaps, "
         f"secrets, jobs, namespaces and nodes in proportion), default resources, {scrapes} scrapes each.", "",
-        "| Pods | Impl | Sync (s) | Scrape p50 (ms) | p90 (ms) | p99 (ms) | gzip p50 (ms) | Body (MB) | RSS after sync (MB) | Peak RSS (MB) | RSS end (MB) | CPU (s) |",
-        "| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Pods | Impl | Sync (s) | Scrape p50 (ms) | p90 (ms) | p99 (ms) | gzip p50 (ms) | Body (MB) | gzip body (MB) | RSS after sync (MB) | Peak RSS (MB) | RSS end (MB) | CPU (s) |",
+        "| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for r in results:
         lines.append(f"| {r['pods']} | {r['impl']} | {r['sync_s']:.2f} | {r['p50_ms']:.1f} | {r['p90_ms']:.1f} | "
-                     f"{r['p99_ms']:.1f} | {r['gzip_p50_ms']:.1f} | {r['bytes'] / 2**20:.1f} | {r['rss_sync_mb']:.0f} | "
+                     f"{r['p99_ms']:.1f} | {r['gzip_p50_ms']:.1f} | {r['bytes'] / 2**20:.1f} | {r['gz_bytes'] / 2**20:.1f} | {r['rss_sync_mb']:.0f} | "
                      f"{r['rss_peak_mb']:.0f} | {r['rss_end_mb']:.0f} | {r['cpu_s']:.1f} |")
     lines += ["", "Ratios (Go / Rust; above 1 means Rust is better):", "",
-              "| Pods | Sync | Scrape p50 | Peak RSS | RSS end | CPU |", "| ---: | ---: | ---: | ---: | ---: | ---: |"]
+              "| Pods | Sync | Scrape p50 | gzip p50 | Peak RSS | RSS end | CPU |", "| ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
     by = {(r["pods"], r["impl"]): r for r in results}
     for pods in sorted({r["pods"] for r in results}):
         g, rs = by.get((pods, "go")), by.get((pods, "rust"))
         if g and rs:
             f = lambda k: f"{g[k] / rs[k]:.2f}x" if rs[k] else "-"
-            lines.append(f"| {pods} | {f('sync_s')} | {f('p50_ms')} | {f('rss_peak_mb')} | {f('rss_end_mb')} | {f('cpu_s')} |")
+            lines.append(f"| {pods} | {f('sync_s')} | {f('p50_ms')} | {f('gzip_p50_ms')} | {f('rss_peak_mb')} | {f('rss_end_mb')} | {f('cpu_s')} |")
     lines += ["", "Notes: the sync time includes process start and the first full list of every resource; "
               "the fake API server answers instantly, so it measures kube-state-metrics' own processing. "
               "The Go client requests protobuf but the fake server answers JSON, as it does for the Rust client.", ""]

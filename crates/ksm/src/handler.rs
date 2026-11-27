@@ -1,7 +1,6 @@
 //! The `/metrics` handler of the metrics port (Go: `pkg/metricshandler`).
 
 use std::collections::HashSet;
-use std::io::Write as _;
 use std::sync::Arc;
 
 use axum::body::Body;
@@ -209,28 +208,30 @@ impl MetricsHandler {
                 })
                 .collect();
             let sanitized = sanitize_headers(format == Format::Text, &active);
+            let gz_tx = tx.clone();
             let mut gz = gzip.then(|| {
-                flate2::write::GzEncoder::new(
-                    Vec::with_capacity(CHUNK),
+                crate::pgzip::ParallelGzip::new(
                     flate2::Compression::default(),
+                    rayon::current_num_threads(),
+                    move |data: Vec<u8>| {
+                        let _ = gz_tx.blocking_send(bytes::Bytes::from(data));
+                    },
                 )
             });
+            let mut failed = false;
             let mut send = |buf: &mut Vec<u8>| {
-                let data = match gz.as_mut() {
+                let data = std::mem::replace(buf, Vec::with_capacity(CHUNK + CHUNK / 4));
+                match gz.as_mut() {
                     Some(enc) => {
-                        if enc.write_all(buf).is_err() {
-                            return;
+                        if !failed && enc.push(data).is_err() {
+                            failed = true;
                         }
-                        buf.clear();
-                        if enc.get_ref().len() < CHUNK {
-                            return;
-                        }
-                        std::mem::take(enc.get_mut())
                     }
-                    None => std::mem::replace(buf, Vec::with_capacity(CHUNK + CHUNK / 4)),
-                };
-                // A closed channel means the client went away; stop quietly.
-                let _ = tx.blocking_send(bytes::Bytes::from(data));
+                    // A closed channel means the client went away; stop quietly.
+                    None => {
+                        let _ = tx.blocking_send(bytes::Bytes::from(data));
+                    }
+                }
             };
             let mut out = Vec::with_capacity(CHUNK + CHUNK / 4);
             for (w, h) in active.iter().zip(&sanitized) {
@@ -241,11 +242,12 @@ impl MetricsHandler {
             }
             send(&mut out);
             drop(send);
+            // A failed compression leaves the stream unterminated, so the client sees an error.
             if let Some(enc) = gz
-                && let Ok(rest) = enc.finish()
-                && !rest.is_empty()
+                && !failed
+                && let Err(e) = enc.finish()
             {
-                let _ = tx.blocking_send(bytes::Bytes::from(rest));
+                tracing::error!("gzip: {e}");
             }
         });
         let stream = futures::stream::unfold(rx, |mut rx| async move {
