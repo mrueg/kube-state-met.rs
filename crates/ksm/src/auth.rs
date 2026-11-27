@@ -133,7 +133,7 @@ impl AuthFilter {
         let mut last = String::new();
         for attempt in 0..5 {
             if attempt > 0 {
-                let jitter = 1.0 + 0.2 * f64::from(u32::from(rand_byte())) / 255.0;
+                let jitter = 1.0 + 0.2 * fastrand::f64();
                 tokio::time::sleep(delay.mul_f64(jitter)).await;
                 delay = delay.mul_f64(1.5);
             }
@@ -258,14 +258,6 @@ impl AuthFilter {
         c.insert(key, (now + ttl, d, tick));
         Ok(d)
     }
-}
-
-/// A cheap pseudo-random byte for the retry jitter.
-fn rand_byte() -> u8 {
-    let n = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |d| d.subsec_nanos());
-    n.to_le_bytes()[0]
 }
 
 /// The filter as an axum middleware.

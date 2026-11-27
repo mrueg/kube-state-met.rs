@@ -386,14 +386,7 @@ pub fn completion_help_text(shell_env: Option<&str>) -> String {
 /// trailing newline (the caller prints it with one, as Go's `version`
 /// command does). The `go version` line reports the rustc version.
 pub fn version_text(version: &str, revision: &str, branch: &str) -> String {
-    let arch = match std::env::consts::ARCH {
-        "x86_64" => "amd64",
-        "aarch64" => "arm64",
-        "x86" => "386",
-        "powerpc64" => "ppc64",
-        "loongarch64" => "loong64",
-        other => other,
-    };
+    let arch = crate::client::go_arch();
     let text = format!(
         "\nkube-state-metrics, version {version} (branch: {branch}, revision: {revision})\n  build user:       \n  build date:       \n  go version:       {}\n  platform:         {}/{arch}\n  tags:             unknown\n",
         env!("KSM_RUSTC_VERSION"),

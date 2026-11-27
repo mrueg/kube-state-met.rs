@@ -19,7 +19,11 @@ pub fn read_yaml_file(path: &str) -> Result<(), std::io::Error> {
     if text.trim().is_empty() {
         return Ok(());
     }
-    serde_yaml_ng::from_str::<Option<serde_yaml_ng::Mapping>>(&text)
+    // yaml.v3's Unmarshal reads the first document only.
+    let Some(doc) = serde_yaml_ng::Deserializer::from_str(&text).next() else {
+        return Ok(());
+    };
+    <Option<serde_yaml_ng::Mapping> as serde::Deserialize>::deserialize(doc)
         .map(|_| ())
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e.to_string()))
 }
@@ -83,10 +87,9 @@ pub fn watch_file(path: &str, tx: UnboundedSender<String>) -> Result<FileWatch, 
                 .unwrap_or_default();
             let _ = tx.send(name);
         } else if is_file
-            && matches!(
-                ev.kind,
-                EventKind::Remove(_) | EventKind::Modify(ModifyKind::Name(RenameMode::From))
-            )
+            // Go stops on Remove only: a file renamed away and written again
+            // (an editor's save) keeps being watched.
+            && matches!(ev.kind, EventKind::Remove(_))
         {
             stopped.store(true, Ordering::SeqCst);
         }
@@ -162,7 +165,21 @@ mod tests {
             .unwrap();
         assert_eq!(got, f.display().to_string());
         assert!(read_yaml_file(&f.to_string_lossy()).is_ok());
+        // Moved aside and written anew (vim's save): still watched.
+        while rx.try_recv().is_ok() {}
+        std::fs::rename(&f, dir.join("config.yaml~")).unwrap();
+        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+        std::fs::write(&f, "a: 4\n").unwrap();
+        let got = tokio::time::timeout(std::time::Duration::from_secs(5), rx.recv())
+            .await
+            .unwrap()
+            .unwrap();
+        assert_eq!(got, f.display().to_string());
         std::fs::write(&f, "- a\n").unwrap();
         assert!(read_yaml_file(&f.to_string_lossy()).is_err());
+        // yaml.v3 reads the first document only.
+        std::fs::write(&f, "a: 1\n---\n- b\n").unwrap();
+        assert!(read_yaml_file(&f.to_string_lossy()).is_ok());
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

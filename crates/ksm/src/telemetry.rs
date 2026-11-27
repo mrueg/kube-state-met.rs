@@ -185,13 +185,19 @@ impl Registry {
             .sum()
     }
 
-    /// The text exposition format (0.0.4) of every family with series.
-    pub fn render(&self, extra: &[crate::process::ExtraFamily]) -> Vec<u8> {
+    /// The text exposition format (0.0.4) of every family with series, or
+    /// only of those named in `only` (promhttp's `name[]` query filter).
+    pub fn render(
+        &self,
+        extra: &[crate::process::ExtraFamily],
+        only: Option<&std::collections::HashSet<String>>,
+    ) -> Vec<u8> {
         let fams = self.families.lock();
         let mut out = Vec::with_capacity(4096);
         // Extra families (process metrics) are merged into the sorted order.
         let mut names: Vec<&str> = fams.keys().map(String::as_str).collect();
         names.extend(extra.iter().map(|(n, ..)| n.as_str()));
+        names.retain(|n| only.is_none_or(|o| o.contains(*n)));
         names.sort_unstable();
         for name in names {
             if let Some(f) = fams.get(name) {
@@ -478,7 +484,7 @@ mod tests {
             &[0.1, 1.0],
         );
         h.observe(&["get"], 0.05);
-        let out = String::from_utf8(r.render(&[])).unwrap();
+        let out = String::from_utf8(r.render(&[], None)).unwrap();
         assert_eq!(
             out,
             "# HELP a_gauge A.\n# TYPE a_gauge gauge\na_gauge 5.4304768e+07\n\

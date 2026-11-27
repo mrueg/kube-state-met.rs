@@ -186,6 +186,26 @@ pub fn go_io_error(e: &std::io::Error) -> String {
     }
 }
 
+/// An `os.ReadFile` error as Go prints it: opening fails ("open"), or
+/// reading a directory ("read").
+pub fn read_file_error(path: &str, e: &std::io::Error) -> String {
+    let op = if e.kind() == std::io::ErrorKind::IsADirectory {
+        "read"
+    } else {
+        "open"
+    };
+    format!("{op} {path}: {}", go_io_error(e))
+}
+
+/// `net.JoinHostPort`.
+pub fn join_host_port(host: &str, port: impl std::fmt::Display) -> String {
+    if host.contains(':') {
+        format!("[{host}]:{port}")
+    } else {
+        format!("{host}:{port}")
+    }
+}
+
 /// Go's `filepath.Clean` for the label value (enough for config paths).
 pub fn clean_path(p: &str) -> String {
     let abs = p.starts_with('/');
@@ -219,11 +239,21 @@ pub async fn run(
 
     if !opts.config.is_empty() {
         let file = clean_path(&opts.config);
-        match std::fs::read(&file) {
+        // Go stats the file first: a missing file is logged and skipped, one
+        // that exists but can't be read (a directory, no permission) fails the run.
+        match std::fs::metadata(&file).map(|_| {
+            std::fs::read(&file).map_err(|e| {
+                format!(
+                    "failed to read opts config file: {}",
+                    read_file_error(&file, &e)
+                )
+            })
+        }) {
             Err(e) => {
                 tracing::error!(error = %e, file = %opts.config, "encountered error while processing the file")
             }
             Ok(bytes) => {
+                let bytes = bytes?;
                 let text = String::from_utf8_lossy(&bytes).into_owned();
                 if let Err(e) = opts.merge_config_yaml(&text) {
                     tracing::error!(error = %e, "failed to unmarshal opts config file");
@@ -315,7 +345,12 @@ pub async fn run(
     let filters: Vec<Box<dyn FamilyFilter>> = vec![Box::new(allow_deny), Box::new(opt_in)];
     builder.filter = Arc::new(CompositeFilter { filters });
 
-    let client = create_client(&opts.apiserver, &opts.kubeconfig).await?;
+    // `CreateKubeClientWithContext`: a signal stops the run even while the
+    // API server is slow to answer.
+    let client = tokio::select! {
+        () = cancel.cancelled() => return Ok(()),
+        c = create_client(&opts.apiserver, &opts.kubeconfig) => c?,
+    };
 
     builder.allow_annotations = builder
         .expand_allow_list(&opts.annotations_allow_list)
@@ -348,6 +383,8 @@ pub async fn run(
         parent: stores_cancel.clone(),
         build_lock: parking_lot::Mutex::new(()),
     };
+    // `WithSharding`: the gauges show the flags until autosharding says otherwise.
+    shard_ctl.set_gauges(opts.shard, opts.total_shards);
     let shard_ctl = Arc::new(shard_ctl);
 
     // A missing CRS config holds off on all custom resource operations.
@@ -487,11 +524,7 @@ fn spawn_server(
 }
 
 fn listen_addr(host: &str, port: i64) -> Result<SocketAddr, String> {
-    let joined = if host.contains(':') {
-        format!("[{host}]:{port}")
-    } else {
-        format!("{host}:{port}")
-    };
+    let joined = join_host_port(host, port);
     if let Ok(a) = joined.parse() {
         return Ok(a);
     }
@@ -536,13 +569,17 @@ impl ShardControl {
                 "Configuring sharding of this instance to be shard index (zero-indexed) out of total shards"
             );
         }
+        self.set_gauges(shard, total);
+        let _g = self.build_lock.lock();
+        self.build_writers(shard, total);
+    }
+
+    fn set_gauges(&self, shard: i32, total: i64) {
         self.metrics.ordinal.reset();
         self.metrics
             .ordinal
             .set(&[&shard.to_string()], f64::from(shard));
         self.metrics.total.set(&[], total as f64);
-        let _g = self.build_lock.lock();
-        self.build_writers(shard, total);
     }
 
     /// `buildWritersLocked`: stops the old watchers and builds new writers.
@@ -589,6 +626,7 @@ impl ShardControl {
         let cfg = watcher::Config::default().fields(&format!("metadata.name={ss_name}"));
         let stream = watcher(api, cfg);
         futures::pin_mut!(stream);
+        let mut backoff = crate::backoff::Backoff::default();
         loop {
             let ev = tokio::select! {
                 () = stop.cancelled() => return Ok(()),
@@ -600,6 +638,9 @@ impl ShardControl {
                 Ok(_) => continue,
                 Err(e) => {
                     tracing::error!(error = %e, "Failed to watch StatefulSet");
+                    if !backoff.wait(stop.cancelled()).await {
+                        return Ok(());
+                    }
                     continue;
                 }
             };
@@ -666,11 +707,56 @@ fn landing(page: &'static str) -> Response {
 }
 
 async fn fallback(req: Request, page: &'static str) -> Response {
+    if let Some(to) = unclean_path_redirect(&req) {
+        return to;
+    }
     if req.uri().path() == "/" {
         landing(page)
     } else {
         plain_error(StatusCode::NOT_FOUND, "404 page not found")
     }
+}
+
+/// Go's `ServeMux` sends a request for an unclean path (`//metrics`,
+/// `/./metrics`, `/a/../metrics`) to the cleaned one with a 301.
+fn unclean_path_redirect(req: &Request) -> Option<Response> {
+    if req.method() == http::Method::CONNECT {
+        return None;
+    }
+    let path = req.uri().path();
+    let mut clean = clean_path(path);
+    if path.ends_with('/') && clean != "/" {
+        clean.push('/');
+    }
+    if clean == path {
+        return None;
+    }
+    let location = match req.uri().query() {
+        Some(q) => format!("{clean}?{q}"),
+        None => clean,
+    };
+    let mut resp = StatusCode::MOVED_PERMANENTLY.into_response();
+    if let Ok(v) = header::HeaderValue::from_str(&location) {
+        resp.headers_mut().insert(header::LOCATION, v);
+    }
+    // http.Redirect: an HTML note for GET, the content type for GET and HEAD.
+    if matches!(*req.method(), http::Method::GET | http::Method::HEAD) {
+        resp.headers_mut().insert(
+            header::CONTENT_TYPE,
+            header::HeaderValue::from_static("text/html; charset=utf-8"),
+        );
+    }
+    if req.method() == http::Method::GET {
+        let escaped = location
+            .replace('&', "&amp;")
+            .replace('<', "&lt;")
+            .replace('>', "&gt;")
+            .replace('"', "&#34;")
+            .replace('\'', "&#39;");
+        *resp.body_mut() =
+            axum::body::Body::from(format!("<a href=\"{escaped}\">Moved Permanently</a>.\n\n"));
+    }
+    Some(resp)
 }
 
 fn ok_text() -> Response {
@@ -682,13 +768,30 @@ fn ok_text() -> Response {
         .into_response()
 }
 
-fn method_label(m: &http::Method) -> String {
-    match m.as_str() {
-        "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "PATCH" | "TRACE" => {
-            m.as_str().to_lowercase()
-        }
-        _ => "unknown".to_owned(),
+/// Records a scrape's duration once its body is dropped.
+struct ObserveOnDrop {
+    durations: HistogramVec,
+    method: String,
+    start: Instant,
+}
+
+impl Drop for ObserveOnDrop {
+    fn drop(&mut self) {
+        self.durations
+            .observe(&[&self.method], self.start.elapsed().as_secs_f64());
     }
+}
+
+/// promhttp's `sanitizeMethod`: the usual methods, all upper or all lower case.
+fn method_label(m: &http::Method) -> String {
+    const KNOWN: [&str; 10] = [
+        "get", "put", "head", "post", "delete", "connect", "options", "notify", "trace", "patch",
+    ];
+    let s = m.as_str();
+    KNOWN
+        .iter()
+        .find(|k| s == **k || s == k.to_ascii_uppercase())
+        .map_or_else(|| "unknown".to_owned(), |k| (*k).to_owned())
 }
 
 /// `/metrics` behind the auth filter when there is one.
@@ -713,8 +816,14 @@ fn metrics_router(
             let method = method_label(req.method());
             let query = req.uri().query().map(str::to_owned);
             let resp = handler.serve(query, req.headers().clone()).await;
-            durations.observe(&[&method], start.elapsed().as_secs_f64());
-            resp
+            // promhttp.InstrumentHandlerDuration: the scrape ends when the
+            // body is written (or the client went away), not when it starts.
+            let done = ObserveOnDrop {
+                durations,
+                method,
+                start,
+            };
+            resp.map(|body| crate::conn::GuardedBody::wrap(body, done))
         }
     };
     let livez = move || {
@@ -748,21 +857,48 @@ fn metrics_router(
         .fallback(|req: Request| fallback(req, include_str!("landing/metrics.html")))
 }
 
+/// The telemetry `/metrics` (Go: `promhttp.HandlerFor` without OpenMetrics):
+/// the text format is negotiated (0.0.4 or 1.0.0, with the escaping asked
+/// for), gzip is used when the client accepts it, and `name[]` selects
+/// families. A client asking for protobuf gets text (ADR-010).
+fn telemetry_metrics(reg: &Registry, req: &Request) -> Response {
+    let accept = req
+        .headers()
+        .get(header::ACCEPT)
+        .and_then(|v| v.to_str().ok());
+    let content_type = crate::handler::negotiate_telemetry(accept);
+    let names = crate::handler::query_values(req.uri().query().unwrap_or(""), "name[]");
+    let only: Option<std::collections::HashSet<String>> =
+        (!names.is_empty()).then(|| names.into_iter().collect());
+    let body = reg.render(&crate::process::families(), only.as_ref());
+    let gzip = crate::handler::accepts_gzip_promhttp(req.headers());
+    let mut resp = if gzip {
+        let mut enc = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
+        let gz = std::io::Write::write_all(&mut enc, &body).and_then(|()| enc.finish());
+        match gz {
+            Ok(b) => ([(header::CONTENT_ENCODING, "gzip")], b).into_response(),
+            Err(_) => body.into_response(),
+        }
+    } else {
+        body.into_response()
+    };
+    let h = resp.headers_mut();
+    if let Ok(ct) = header::HeaderValue::from_str(&content_type) {
+        h.insert(header::CONTENT_TYPE, ct);
+    }
+    h.append(header::VARY, header::HeaderValue::from_static("Accept"));
+    h.append(
+        header::VARY,
+        header::HeaderValue::from_static("Accept-Encoding"),
+    );
+    resp
+}
+
 fn telemetry_router(registry: Registry, auth: Option<Arc<AuthFilter>>) -> Router {
     let reg = registry.clone();
-    let metrics = move || {
+    let metrics = move |req: Request| {
         let reg = reg.clone();
-        async move {
-            let body = reg.render(&crate::process::families());
-            (
-                [(
-                    header::CONTENT_TYPE,
-                    "text/plain; version=0.0.4; charset=utf-8; escaping=underscores",
-                )],
-                body,
-            )
-                .into_response()
-        }
+        async move { telemetry_metrics(&reg, &req) }
     };
     let readyz = move || {
         let reg = registry.clone();

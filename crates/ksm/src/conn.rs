@@ -71,8 +71,17 @@ struct State {
     request_start: Instant,
     /// The response body ended; the connection idles once it is flushed.
     response_ended: bool,
-    /// No deadlines apply any more (an HTTP/2 connection).
-    off: bool,
+    /// HTTP/2 (`Some`): the open streams; with none the idle timeout runs.
+    /// The HTTP/1 deadlines do not apply.
+    h2_streams: Option<usize>,
+    /// The request's headers are read and its response is not out yet: past
+    /// the read deadline, reads wait instead of failing. Go's background read
+    /// only cancels the request's context then, and the response is still
+    /// written until the write deadline.
+    serving: bool,
+    /// The request body is still being read: past the read deadline that
+    /// read fails, as Go's ReadTimeout covers the whole request.
+    body_pending: bool,
     /// Wakers of a pending read and write, woken when deadlines change.
     read_waker: Option<std::task::Waker>,
     write_waker: Option<std::task::Waker>,
@@ -108,7 +117,9 @@ impl Deadlines {
                 idle: false,
                 request_start: now,
                 response_ended: false,
-                off: false,
+                h2_streams: None,
+                serving: false,
+                body_pending: false,
                 read_waker: None,
                 write_waker: None,
             })),
@@ -128,12 +139,14 @@ impl Deadlines {
     }
 
     /// HTTP/2 multiplexes requests on one connection, so per-request
-    /// connection deadlines do not apply (Go's http2 server handles them per
-    /// stream). Only the TLS handshake deadline is used.
-    pub fn disable(&self) {
+    /// connection deadlines do not apply. As in Go's http2 server, the
+    /// connection is closed once it had no open stream for the idle timeout
+    /// (`IdleTimeout`, else `ReadTimeout`).
+    pub fn http2(&self) {
+        let now = Instant::now();
         let mut s = self.state.lock();
-        s.off = true;
-        s.read_deadline = None;
+        s.h2_streams = Some(0);
+        s.read_deadline = self.timeouts.idle().map(|d| now + d);
         s.write_deadline = None;
         s.wake();
     }
@@ -150,15 +163,19 @@ impl Deadlines {
 
     /// Headers read: the read deadline covers the rest of the request, the
     /// write deadline starts.
-    fn headers_read(&self) {
+    fn headers_read(&self, body_pending: bool) {
         let now = Instant::now();
         let mut s = self.state.lock();
-        if s.off {
+        if let Some(n) = s.h2_streams.as_mut() {
+            *n += 1;
+            s.read_deadline = None;
             return;
         }
         s.read_deadline = nonzero(self.timeouts.read).map(|d| s.request_start + d);
         s.write_deadline = nonzero(self.timeouts.write).map(|d| now + d);
         s.response_ended = false;
+        s.serving = true;
+        s.body_pending = body_pending;
         // A pipelined request read before the last response was flushed.
         s.idle = false;
         s.wake();
@@ -166,16 +183,26 @@ impl Deadlines {
 
     /// The response body ended; it still has to reach the socket.
     fn response_done(&self) {
-        self.state.lock().response_ended = true;
+        let mut s = self.state.lock();
+        if let Some(n) = s.h2_streams.as_mut() {
+            *n = n.saturating_sub(1);
+            if *n == 0 {
+                s.read_deadline = self.timeouts.idle().map(|d| Instant::now() + d);
+                s.wake();
+            }
+            return;
+        }
+        s.response_ended = true;
     }
 
     /// Flushed: once a finished response is out, the connection idles until
     /// the next request.
     fn flushed(&self) {
         let mut s = self.state.lock();
-        if s.response_ended && !s.off {
+        if s.response_ended && s.h2_streams.is_none() {
             let now = Instant::now();
             s.response_ended = false;
+            s.serving = false;
             s.idle = true;
             s.read_deadline = self.timeouts.idle().map(|d| now + d);
             s.write_deadline = None;
@@ -194,7 +221,7 @@ impl Deadlines {
     /// Bytes arrived: if the connection was idle, a new request starts now.
     fn bytes_read(&self) {
         let mut s = self.state.lock();
-        if s.idle && !s.off {
+        if s.idle && s.h2_streams.is_none() {
             let now = Instant::now();
             s.idle = false;
             s.request_start = now;
@@ -207,6 +234,22 @@ impl Deadlines {
 
     fn read_deadline(&self) -> Option<Instant> {
         self.state.lock().read_deadline
+    }
+
+    /// Whether a read past the deadline waits for the response to finish;
+    /// if so the reader is woken once it has.
+    fn read_waits(&self, w: &std::task::Waker) -> bool {
+        let mut s = self.state.lock();
+        let waits = s.serving && !s.body_pending;
+        if waits {
+            s.read_waker = Some(w.clone());
+        }
+        waits
+    }
+
+    /// The request body was read to its end or dropped.
+    fn body_done(&self) {
+        self.state.lock().body_pending = false;
     }
 
     fn write_deadline(&self) -> Option<Instant> {
@@ -261,6 +304,16 @@ fn poll_deadline(
     }
 }
 
+impl<T> DeadlineIo<T> {
+    fn expired_read(&mut self, cx: &mut Context<'_>) -> Poll<io::Result<()>> {
+        if self.deadlines.read_waits(cx.waker()) {
+            self.read_sleep = None;
+            return Poll::Pending;
+        }
+        Poll::Ready(Err(timed_out()))
+    }
+}
+
 impl<T: AsyncRead + Unpin> AsyncRead for DeadlineIo<T> {
     fn poll_read(
         mut self: Pin<&mut Self>,
@@ -268,13 +321,14 @@ impl<T: AsyncRead + Unpin> AsyncRead for DeadlineIo<T> {
         buf: &mut ReadBuf<'_>,
     ) -> Poll<io::Result<()>> {
         let this = &mut *self;
-        // Past the deadline reads fail even with data ready, as in Go.
+        // Past the deadline reads fail even with data ready, as in Go; while
+        // a response is being written they wait for it to end instead.
         if this
             .deadlines
             .read_deadline()
             .is_some_and(|d| Instant::now() >= d)
         {
-            return Poll::Ready(Err(timed_out()));
+            return this.expired_read(cx);
         }
         let before = buf.filled().len();
         match Pin::new(&mut this.inner).poll_read(cx, buf) {
@@ -289,7 +343,7 @@ impl<T: AsyncRead + Unpin> AsyncRead for DeadlineIo<T> {
                 this.deadlines.park_read(cx.waker());
                 let deadline = this.deadlines.read_deadline();
                 match poll_deadline(&mut this.read_sleep, deadline, cx) {
-                    Poll::Ready(()) => Poll::Ready(Err(timed_out())),
+                    Poll::Ready(()) => this.expired_read(cx),
                     Poll::Pending => Poll::Pending,
                 }
             }
@@ -312,28 +366,52 @@ impl<T: AsyncWrite + Unpin> DeadlineIo<T> {
     }
 }
 
-impl<T: AsyncWrite + Unpin> AsyncWrite for DeadlineIo<T> {
-    fn poll_write(
-        mut self: Pin<&mut Self>,
+impl<T: AsyncWrite + Unpin> DeadlineIo<T> {
+    /// A write under the write deadline: past it nothing more reaches the
+    /// socket, as in Go; a blocked write fails when it passes.
+    fn write_with(
+        &mut self,
         cx: &mut Context<'_>,
-        data: &[u8],
+        write: impl FnOnce(Pin<&mut T>, &mut Context<'_>) -> Poll<io::Result<usize>>,
     ) -> Poll<io::Result<usize>> {
-        let this = &mut *self;
-        // Past the deadline nothing more reaches the socket, as in Go.
-        if this
+        if self
             .deadlines
             .write_deadline()
             .is_some_and(|d| Instant::now() >= d)
         {
             return Poll::Ready(Err(timed_out()));
         }
-        match Pin::new(&mut this.inner).poll_write(cx, data) {
-            Poll::Pending => match this.check_write(cx) {
+        match write(Pin::new(&mut self.inner), cx) {
+            Poll::Pending => match self.check_write(cx) {
                 Some(e) => Poll::Ready(Err(e)),
                 None => Poll::Pending,
             },
             r => r,
         }
+    }
+}
+
+impl<T: AsyncWrite + Unpin> AsyncWrite for DeadlineIo<T> {
+    fn poll_write(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        data: &[u8],
+    ) -> Poll<io::Result<usize>> {
+        self.write_with(cx, |io, cx| io.poll_write(cx, data))
+    }
+
+    // Forwarded so hyper queues body chunks as they are instead of copying
+    // each one into its own write buffer first.
+    fn poll_write_vectored(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+        bufs: &[io::IoSlice<'_>],
+    ) -> Poll<io::Result<usize>> {
+        self.write_with(cx, |io, cx| io.poll_write_vectored(cx, bufs))
+    }
+
+    fn is_write_vectored(&self) -> bool {
+        self.inner.is_write_vectored()
     }
 
     fn poll_flush(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<io::Result<()>> {
@@ -356,27 +434,42 @@ impl<T: AsyncWrite + Unpin> AsyncWrite for DeadlineIo<T> {
     }
 }
 
-/// A response body that tells the connection when it has been written.
-struct NotifyBody {
-    inner: Body,
-    deadlines: Option<Deadlines>,
-}
+/// One request on the connection, from its headers to its response body's
+/// end. Dropped without a response too (an HTTP/2 stream reset while the
+/// handler runs), so the connection's stream count always comes back down.
+struct InFlight(Deadlines);
 
-impl NotifyBody {
-    fn done(&mut self) {
-        if let Some(d) = self.deadlines.take() {
-            d.response_done();
-        }
+impl InFlight {
+    fn open(d: &Deadlines, body_pending: bool) -> Self {
+        d.headers_read(body_pending);
+        InFlight(d.clone())
     }
 }
 
-impl Drop for NotifyBody {
+impl Drop for InFlight {
     fn drop(&mut self) {
-        self.done();
+        self.0.response_done();
     }
 }
 
-impl http_body::Body for NotifyBody {
+/// A response body that holds `guard` until the body ends or is dropped (the
+/// response was written, or the client went away). Size and end of stream
+/// are the inner body's, so fixed-size bodies keep their Content-Length.
+pub struct GuardedBody<G> {
+    inner: Body,
+    guard: Option<G>,
+}
+
+impl<G: Send + Unpin + 'static> GuardedBody<G> {
+    pub fn wrap(inner: Body, guard: G) -> Body {
+        Body::new(GuardedBody {
+            inner,
+            guard: Some(guard),
+        })
+    }
+}
+
+impl<G: Unpin> http_body::Body for GuardedBody<G> {
     type Data = bytes::Bytes;
     type Error = axum::Error;
 
@@ -386,6 +479,50 @@ impl http_body::Body for NotifyBody {
     ) -> Poll<Option<Result<http_body::Frame<Self::Data>, Self::Error>>> {
         let p = Pin::new(&mut self.inner).poll_frame(cx);
         if matches!(p, Poll::Ready(None)) {
+            self.guard = None;
+        }
+        p
+    }
+
+    fn is_end_stream(&self) -> bool {
+        self.inner.is_end_stream()
+    }
+
+    fn size_hint(&self) -> http_body::SizeHint {
+        self.inner.size_hint()
+    }
+}
+
+/// A request body that tells the connection when it has been read.
+struct RequestBody {
+    inner: hyper::body::Incoming,
+    deadlines: Option<Deadlines>,
+}
+
+impl RequestBody {
+    fn done(&mut self) {
+        if let Some(d) = self.deadlines.take() {
+            d.body_done();
+        }
+    }
+}
+
+impl Drop for RequestBody {
+    fn drop(&mut self) {
+        self.done();
+    }
+}
+
+impl http_body::Body for RequestBody {
+    type Data = bytes::Bytes;
+    type Error = hyper::Error;
+
+    fn poll_frame(
+        mut self: Pin<&mut Self>,
+        cx: &mut Context<'_>,
+    ) -> Poll<Option<Result<http_body::Frame<Self::Data>, Self::Error>>> {
+        let p = Pin::new(&mut self.inner).poll_frame(cx);
+        if matches!(p, Poll::Ready(None | Some(Err(_)))) {
             self.done();
         }
         p
@@ -413,24 +550,28 @@ pub fn service(
 > + Clone
 + Send
 + 'static {
-    let d = deadlines.clone();
-    hyper_util::service::TowerToHyperService::new(
-        tower::ServiceBuilder::new()
-            .map_request(move |r: http::Request<hyper::body::Incoming>| {
-                d.headers_read();
-                r.map(Body::new)
-            })
-            .map_response(move |resp: Response| {
-                let d = deadlines.clone();
-                resp.map(|b| {
-                    Body::new(NotifyBody {
-                        inner: b,
-                        deadlines: Some(d),
-                    })
+    hyper_util::service::TowerToHyperService::new(tower::service_fn(
+        move |r: http::Request<hyper::body::Incoming>| {
+            let pending = !http_body::Body::is_end_stream(r.body());
+            let request = InFlight::open(&deadlines, pending);
+            let r = r.map(|inner| {
+                Body::new(RequestBody {
+                    inner,
+                    deadlines: Some(deadlines.clone()),
                 })
-            })
-            .service(app),
-    )
+            });
+            let app = app.clone();
+            async move {
+                let resp = match tower::ServiceExt::oneshot(app, r).await {
+                    Ok(resp) => resp,
+                    Err(e) => match e {},
+                };
+                Ok::<_, std::convert::Infallible>(
+                    resp.map(|inner| GuardedBody::wrap(inner, request)),
+                )
+            }
+        },
+    ))
 }
 
 /// Accepts the next connection. After an accept error (such as running out
@@ -518,7 +659,26 @@ mod tests {
                     tokio::time::sleep(Duration::from_millis(400)).await;
                     "late"
                 }),
+            )
+            .route(
+                "/stream",
+                axum::routing::get(|| async {
+                    let parts = futures::StreamExt::then(
+                        futures::stream::iter(["a", "b", "c", "end"]),
+                        |p| async move {
+                            tokio::time::sleep(Duration::from_millis(150)).await;
+                            Ok::<_, std::io::Error>(p)
+                        },
+                    );
+                    axum::body::Body::from_stream(parts)
+                }),
             );
+        let app = app.route(
+            "/upload",
+            axum::routing::post(
+                |body: axum::body::Bytes| async move { format!("got {}", body.len()) },
+            ),
+        );
         tokio::spawn(serve_plain(listener, app, timeouts, stop.clone()));
         (addr, stop)
     }
@@ -572,6 +732,56 @@ mod tests {
         assert!(!read_all(&mut s).await.contains("late"));
     }
 
+    /// Go's read timeout only cancels the request's context: a response
+    /// still being written goes out in full (here with no write timeout).
+    #[tokio::test]
+    async fn read_timeout_does_not_cut_responses() {
+        let t = Timeouts {
+            read: Duration::from_millis(100),
+            ..Default::default()
+        };
+        let (addr, _stop) = server(t).await;
+        let mut s = tokio::net::TcpStream::connect(addr).await.unwrap();
+        s.write_all(b"GET /stream HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n")
+            .await
+            .unwrap();
+        let out = read_all(&mut s).await;
+        assert!(out.contains("end"), "{out}");
+    }
+
+    #[tokio::test]
+    async fn read_timeout_covers_the_request_body() {
+        let t = Timeouts {
+            read: Duration::from_millis(200),
+            ..Default::default()
+        };
+        let (addr, _stop) = server(t).await;
+        let mut s = tokio::net::TcpStream::connect(addr).await.unwrap();
+        s.write_all(b"POST /upload HTTP/1.1\r\nHost: x\r\nContent-Length: 10\r\n\r\nab")
+            .await
+            .unwrap();
+        // The rest of the body would come after the deadline: the request
+        // fails instead of the read waiting for a response.
+        let out = tokio::time::timeout(Duration::from_secs(3), read_all(&mut s))
+            .await
+            .expect("connection left open past the read deadline");
+        assert!(!out.contains("got 10"), "{out}");
+    }
+
+    #[test]
+    fn a_cancelled_http2_request_closes_its_stream() {
+        let t = Timeouts {
+            idle: Duration::from_secs(5),
+            ..Default::default()
+        };
+        let d = Deadlines::new(t);
+        d.http2();
+        // The handler future is dropped (stream reset) before it responds.
+        drop(InFlight::open(&d, false));
+        assert_eq!(d.state.lock().h2_streams, Some(0));
+        assert!(d.read_deadline().is_some(), "idle timeout must run again");
+    }
+
     #[tokio::test]
     async fn idle_timeout_closes_kept_alive_connections() {
         let t = Timeouts {
@@ -623,12 +833,12 @@ mod tests {
             ..Default::default()
         };
         let d = Deadlines::new(t);
-        d.headers_read();
+        d.headers_read(false);
         d.response_done();
         // The next request's bytes were already buffered: its headers are
         // read before the previous response is flushed.
         d.flushed();
-        d.headers_read();
+        d.headers_read(false);
         let deadline = d.read_deadline();
         // A later read must not restart the request with the header deadline.
         d.bytes_read();

@@ -149,7 +149,7 @@ async fn run_wrapper(mut opts: options::Options) -> ExitCode {
     if !opts.custom_resource_config_file.is_empty() {
         if let Err(e) = reload::read_yaml_file(&opts.custom_resource_config_file) {
             let file = &opts.custom_resource_config_file;
-            let err = format!("open {file}: {}", server::go_io_error(&e));
+            let err = server::read_file_error(file, &e);
             if e.kind() == std::io::ErrorKind::NotFound {
                 tracing::error!(err = %err, file = %file, "Custom resource configuration file not found at startup");
             } else {
@@ -190,7 +190,7 @@ async fn run_wrapper(mut opts: options::Options) -> ExitCode {
     };
     'main: loop {
         tokio::select! {
-            () = &mut shutdown => break,
+            _ = &mut shutdown => break,
             Some(r) = runs.join_next(), if !runs.is_empty() => {
                 if failed(r) {
                     return ExitCode::FAILURE;
@@ -210,7 +210,7 @@ async fn run_wrapper(mut opts: options::Options) -> ExitCode {
                 tokio::pin!(wait);
                 loop {
                     tokio::select! {
-                        () = &mut shutdown => break 'main,
+                        _ = &mut shutdown => break 'main,
                         () = &mut wait => break,
                         Some(r) = runs.join_next(), if !runs.is_empty() => {
                             if failed(r) {
@@ -226,6 +226,12 @@ async fn run_wrapper(mut opts: options::Options) -> ExitCode {
     }
     drop(config_watch);
     tracing::info!("Received termination signal, shutting down kube-state-metrics");
+    // Go restores the default signal action once the first signal arrived, so
+    // a second one ends the process at once, cutting the shutdown short.
+    tokio::spawn(async {
+        let status = shutdown_signal().await;
+        std::process::exit(status);
+    });
     current.0.cancel();
     while let Some(r) = runs.join_next().await {
         if failed(r) {
@@ -264,7 +270,9 @@ fn reloaded_options(base: &options::Options) -> Option<options::Options> {
     Some(opts)
 }
 
-async fn shutdown_signal() {
+/// Waits for SIGINT or SIGTERM; returns the exit status a process killed by
+/// that signal has (128 + the signal number).
+async fn shutdown_signal() -> i32 {
     let ctrl_c = tokio::signal::ctrl_c();
     #[cfg(unix)]
     {
@@ -273,16 +281,17 @@ async fn shutdown_signal() {
                 Ok(s) => s,
                 Err(_) => {
                     let _ = ctrl_c.await;
-                    return;
+                    return 130;
                 }
             };
         tokio::select! {
-            _ = ctrl_c => {}
-            _ = term.recv() => {}
+            _ = ctrl_c => 130,
+            _ = term.recv() => 143,
         }
     }
     #[cfg(not(unix))]
     {
         let _ = ctrl_c.await;
+        130
     }
 }

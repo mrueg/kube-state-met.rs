@@ -327,12 +327,9 @@ impl Family {
         Family { metrics, prefix }
     }
 
-    /// Appends every sample, each prefixed with `name`.
+    /// Appends every sample, each prefixed with `name`. The caller sizes
+    /// `buf` (`size_hint`), once for all of an object's families.
     pub fn append_bytes(&self, name: &str, buf: &mut Vec<u8>) {
-        if self.metrics.is_empty() {
-            return;
-        }
-        buf.reserve(self.size_hint(name));
         for m in &self.metrics {
             buf.extend_from_slice(name.as_bytes());
             m.write_prefixed(buf, &self.prefix);

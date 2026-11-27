@@ -15,7 +15,30 @@ fn read(path: &str) -> Option<String> {
 
 /// Clock ticks per second; Linux exposes USER_HZ = 100 to user space.
 const USER_HZ: f64 = 100.0;
-const PAGE_SIZE: f64 = 4096.0;
+
+/// The page size (`os.Getpagesize`), from the aux vector's `AT_PAGESZ`:
+/// 4 KiB on most machines, 16 or 64 KiB on some arm64 kernels. Read once.
+fn page_size() -> f64 {
+    static PAGE: std::sync::OnceLock<f64> = std::sync::OnceLock::new();
+    *PAGE.get_or_init(read_page_size)
+}
+
+fn read_page_size() -> f64 {
+    const AT_PAGESZ: usize = 6;
+    const W: usize = std::mem::size_of::<usize>();
+    let word = |b: &[u8]| usize::from_ne_bytes(b.try_into().unwrap_or([0; W]));
+    std::fs::read("/proc/self/auxv")
+        .ok()
+        .and_then(|auxv| {
+            auxv.as_chunks::<{ 2 * W }>()
+                .0
+                .iter()
+                .find(|e| word(&e[..W]) == AT_PAGESZ)
+                .map(|e| word(&e[W..]) as f64)
+        })
+        .filter(|p| *p > 0.0)
+        .unwrap_or(4096.0)
+}
 
 fn family(name: &str, help: &str, ty: &'static str, v: f64) -> ExtraFamily {
     (name.to_owned(), help.to_owned(), ty, vec![(Vec::new(), v)])
@@ -111,7 +134,7 @@ pub fn families() -> Vec<ExtraFamily> {
         "process_resident_memory_bytes",
         "Resident memory size in bytes.",
         "gauge",
-        rss * PAGE_SIZE,
+        rss * page_size(),
     ));
     if let Some(boot) = read("/proc/stat").and_then(|s| {
         s.lines().find_map(|l| {

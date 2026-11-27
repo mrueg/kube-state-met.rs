@@ -32,7 +32,7 @@ pub fn resolve_config(opts: &Options) -> Result<Option<String>, String> {
     match std::fs::read(&path) {
         Ok(b) => Ok(Some(String::from_utf8_lossy(&b).into_owned())),
         Err(e) => {
-            let msg = format!("open {path}: {}", crate::server::go_io_error(&e));
+            let msg = crate::server::read_file_error(&path, &e);
             if opts.continue_without_custom_resource_config_file
                 && e.kind() == std::io::ErrorKind::NotFound
             {
@@ -147,7 +147,9 @@ struct Reconciler {
     resources: Vec<ksm_crs::Resource>,
     discoverer: Arc<CrDiscoverer>,
     store: Arc<dyn StoreConfigurer>,
-    last_applied: Option<HashMap<String, Option<u64>>>,
+    /// Go's `lastApplied`: nil and empty compare equal (`maps.Equal`), so the
+    /// first reconcile that resolves nothing changes nothing.
+    last_applied: HashMap<String, Option<u64>>,
     failures: u32,
     failed_revision: u64,
     next_retry: Instant,
@@ -192,7 +194,7 @@ impl Reconciler {
             .iter()
             .map(|f| (f.gvr.clone(), stops.get(&f.gvk).map(|h| h.id)))
             .collect();
-        if self.last_applied.as_ref() == Some(&resolved) {
+        if self.last_applied == resolved {
             self.discoverer.applied(revision);
             tracing::debug!(
                 "discovery cache changed but enabled custom resources are unchanged; skipping store rebuild"
@@ -204,7 +206,7 @@ impl Reconciler {
             .map(|f| (f.gvr, Arc::new(f.store)))
             .collect();
         self.store.replace_custom_resources(stores);
-        self.last_applied = Some(resolved);
+        self.last_applied = resolved;
         self.discoverer.applied(revision);
         Ok(true)
     }
@@ -222,7 +224,7 @@ pub fn poll_for_cache_updates(
         resources,
         discoverer,
         store,
-        last_applied: None,
+        last_applied: HashMap::new(),
         failures: 0,
         failed_revision: 0,
         next_retry: Instant::now(),

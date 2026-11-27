@@ -32,7 +32,6 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio_util::sync::CancellationToken;
 
 use crate::handler::plain_error;
-use crate::server::go_io_error;
 
 /// Go's TLS version numbers.
 const TLS10: u16 = 0x0301;
@@ -322,7 +321,7 @@ fn join_dir(dir: &std::path::Path, p: &str) -> String {
 
 /// `getConfig`: reads and strictly decodes the file.
 pub fn get_config(path: &str) -> Result<WebConfig, String> {
-    let bytes = std::fs::read(path).map_err(|e| format!("open {path}: {}", go_io_error(&e)))?;
+    let bytes = std::fs::read(path).map_err(|e| crate::server::read_file_error(path, &e))?;
     let text = String::from_utf8_lossy(&bytes);
     let raw: RawConfig = if text.trim().is_empty() {
         RawConfig::default()
@@ -416,10 +415,9 @@ fn load_cert(c: &TlsConfig) -> Result<CertPair, String> {
     } else {
         std::fs::read(&c.cert_path).map_err(|e| {
             format!(
-                "failed to read cert_file ({}): open {}: {}",
+                "failed to read cert_file ({}): {}",
                 c.cert_path,
-                c.cert_path,
-                go_io_error(&e)
+                crate::server::read_file_error(&c.cert_path, &e)
             )
         })?
     };
@@ -428,17 +426,14 @@ fn load_cert(c: &TlsConfig) -> Result<CertPair, String> {
     } else {
         std::fs::read(&c.key_path).map_err(|e| {
             format!(
-                "failed to read key_file ({}): open {}: {}",
+                "failed to read key_file ({}): {}",
                 c.key_path,
-                c.key_path,
-                go_io_error(&e)
+                crate::server::read_file_error(&c.key_path, &e)
             )
         })?
     };
     let pair = |m: &str| format!("failed to load X509KeyPair: tls: {m}");
-    let certs: Vec<CertificateDer<'static>> = rustls_pemfile::certs(&mut cert_data.as_slice())
-        .filter_map(Result::ok)
-        .collect();
+    let certs = pem_certs(&cert_data);
     if certs.is_empty() {
         return Err(pair("failed to find any PEM data in certificate input"));
     }
@@ -471,7 +466,7 @@ pub fn check_tls(c: &TlsConfig) -> Result<Option<CertPair>, String> {
     let pair = load_cert(c)?;
     if !c.client_cas.is_empty() {
         std::fs::read(&c.client_cas)
-            .map_err(|e| format!("open {}: {}", c.client_cas, go_io_error(&e)))?;
+            .map_err(|e| crate::server::read_file_error(&c.client_cas, &e))?;
     }
     match c.client_auth.as_str() {
         "RequestClientCert"
@@ -636,7 +631,7 @@ fn cipher_id(name: &str) -> Option<rustls::CipherSuite> {
     })
 }
 
-fn pem_certs(pem: &[u8]) -> Vec<CertificateDer<'static>> {
+pub(crate) fn pem_certs(pem: &[u8]) -> Vec<CertificateDer<'static>> {
     rustls_pemfile::certs(&mut &pem[..])
         .filter_map(Result::ok)
         .collect()
@@ -702,8 +697,13 @@ pub fn rustls_config(c: &WebConfig) -> Result<Arc<ServerConfig>, String> {
             } else if !t.client_ca_text.is_empty() {
                 pem_certs(t.client_ca_text.as_bytes())
             } else {
-                // Go verifies against the system roots without client CAs.
-                rustls_native_certs::load_native_certs().certs
+                // Go verifies against the system roots without client CAs;
+                // like Go's system pool, they are loaded once.
+                static SYSTEM: std::sync::OnceLock<Vec<CertificateDer<'static>>> =
+                    std::sync::OnceLock::new();
+                SYSTEM
+                    .get_or_init(|| rustls_native_certs::load_native_certs().certs)
+                    .clone()
             }
         }
         _ => Vec::new(),
@@ -1099,7 +1099,7 @@ async fn serve_tls(
         }
     };
     if stream.get_ref().1.alpn_protocol() == Some(b"h2") {
-        deadlines.disable();
+        deadlines.http2();
     } else {
         deadlines.handshake_done();
     }
