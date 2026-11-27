@@ -4,10 +4,51 @@
 //! sync flush, so the pieces join into one ordinary deflate stream. The output
 //! is a single standard gzip member (RFC 1952): any client reads it, and the
 //! ratio is within a fraction of a percent of compressing the body in one pass.
+//!
+//! Compressing in parallel costs CPU: on a laptop with SMT, eight chunks at
+//! once took 1.7x the CPU time of one after another (shared cores, lower
+//! clocks). It pays only when cores are idle, so the width is shared out
+//! between the gzip responses in flight ([`Width`]): a lone scrape gets half
+//! the pool, concurrent scrapes compress serially on their own threads.
 
 use flate2::{Compress, Compression, FlushCompress};
 use rayon::prelude::*;
 use std::io;
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+/// zlib level 5. Go's `gzip.DefaultCompression` is level 6 of its own
+/// compress/flate, which spends 0.53s on a 10k-pod body (83 MB); zlib-rs at 6
+/// spends 0.65s and at 5 spends 0.47s, for output 0.4% larger than its 6 and
+/// 1.8% larger than Go's.
+pub const LEVEL: Compression = Compression::new(5);
+
+/// Most chunks compressed at once by one response.
+const MAX_WIDTH: usize = 8;
+
+static IN_FLIGHT: AtomicUsize = AtomicUsize::new(0);
+
+/// One gzip response's share of the compression threads, held while it runs.
+pub struct Width(usize);
+
+impl Width {
+    /// Half the rayon pool (the physical cores on an SMT machine), split
+    /// between this and the other gzip responses in flight.
+    pub fn take() -> Self {
+        let others = IN_FLIGHT.fetch_add(1, Ordering::Relaxed);
+        let cores = (rayon::current_num_threads() / 2).max(1);
+        Width((cores / (others + 1)).clamp(1, MAX_WIDTH))
+    }
+
+    pub fn get(&self) -> usize {
+        self.0
+    }
+}
+
+impl Drop for Width {
+    fn drop(&mut self) {
+        IN_FLIGHT.fetch_sub(1, Ordering::Relaxed);
+    }
+}
 
 /// Deflate's window: a chunk can refer back this far into the previous data.
 const WINDOW: usize = 32 * 1024;
@@ -64,15 +105,18 @@ impl<F: FnMut(Vec<u8>) -> io::Result<()>> ParallelGzip<F> {
             dicts.push(std::mem::replace(&mut self.dict, next));
         }
         let level = self.level;
-        let parts: Vec<io::Result<(Vec<u8>, crc32fast::Hasher)>> = chunks
-            .par_iter()
-            .zip(dicts.par_iter())
-            .map(|(c, d)| {
-                let mut h = crc32fast::Hasher::new();
-                h.update(c);
-                Ok((deflate_chunk(level, d, c, FlushCompress::Sync)?, h))
-            })
-            .collect();
+        let one = |(c, d): (&Vec<u8>, &Vec<u8>)| {
+            let mut h = crc32fast::Hasher::new();
+            h.update(c);
+            Ok((deflate_chunk(level, d, c, FlushCompress::Sync)?, h))
+        };
+        // A single chunk is compressed on this thread: handing it to the pool
+        // would only add a wakeup and a wait.
+        let parts: Vec<io::Result<(Vec<u8>, crc32fast::Hasher)>> = if chunks.len() == 1 {
+            chunks.iter().zip(&dicts).map(one).collect()
+        } else {
+            chunks.par_iter().zip(dicts.par_iter()).map(one).collect()
+        };
         self.send_header()?;
         for (part, c) in parts.into_iter().zip(&chunks) {
             let (data, h) = part?;
@@ -183,6 +227,20 @@ mod tests {
         }
         v.truncate(n);
         v
+    }
+
+    #[test]
+    fn width_is_shared_between_responses() {
+        let cores = (rayon::current_num_threads() / 2).max(1);
+        let a = Width::take();
+        assert!(a.get() >= 1 && a.get() <= cores.min(MAX_WIDTH));
+        let b = Width::take();
+        assert!(
+            b.get() <= (cores / 2).max(1),
+            "{} with two in flight",
+            b.get()
+        );
+        drop((a, b));
     }
 
     #[test]

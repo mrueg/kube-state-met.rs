@@ -873,7 +873,7 @@ fn telemetry_metrics(reg: &Registry, req: &Request) -> Response {
     let body = reg.render(&crate::process::families(), only.as_ref());
     let gzip = crate::handler::accepts_gzip_promhttp(req.headers());
     let mut resp = if gzip {
-        let mut enc = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
+        let mut enc = flate2::write::GzEncoder::new(Vec::new(), crate::pgzip::LEVEL);
         let gz = std::io::Write::write_all(&mut enc, &body).and_then(|()| enc.finish());
         match gz {
             Ok(b) => ([(header::CONTENT_ENCODING, "gzip")], b).into_response(),

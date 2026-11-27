@@ -448,10 +448,12 @@ impl MetricsHandler {
             // A failed send means the client went away: stop rendering and
             // compressing instead of finishing a body nobody reads.
             let gz_tx = tx.clone();
-            let mut gz = gzip.then(|| {
+            // Held until rendering ends, so later requests see this one.
+            let width = gzip.then(crate::pgzip::Width::take);
+            let mut gz = width.as_ref().map(|width| {
                 crate::pgzip::ParallelGzip::new(
-                    flate2::Compression::default(),
-                    rayon::current_num_threads(),
+                    crate::pgzip::LEVEL,
+                    width.get(),
                     move |data: Vec<u8>| {
                         gz_tx
                             .blocking_send(Ok(bytes::Bytes::from(data)))
