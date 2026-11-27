@@ -49,8 +49,9 @@ The upstream manifests and RBAC in `../kube-state-metrics/examples/standard` wor
 ## Benchmarks
 
 `bench/run.sh` builds both and writes [bench/RESULTS.md](bench/RESULTS.md): sync time, scrape latency,
-memory and CPU at 1k/10k/50k pods against the same fake API server, plus criterion micro-benchmarks
-(`cargo bench -p ksm-stores`).
+memory and CPU at 1k/10k/50k pods against the same fake API server, CPU under a steady load of pod watch
+events (`--churn`), plus criterion micro-benchmarks (`cargo bench -p ksm-stores`). At 10k pods: sync 3x, scrape
+3.5x and gzip scrape 3x faster than Go, 1.3x less memory, half the CPU under 1000 pod events per second.
 
 ## Known differences from the Go original
 

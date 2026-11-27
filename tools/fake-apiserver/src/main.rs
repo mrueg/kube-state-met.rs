@@ -11,7 +11,13 @@
 //! fake-apiserver --listen 127.0.0.1:6443 --fixtures testdata/fixtures [--generate pods=10000,nodes=100]
 //!                [--kubeconfig-out /tmp/kubeconfig]
 //!                [--auth-token TOKEN=USER[,GROUP...]]... [--auth-allow USER:VERB:PATH]...
+//!                [--churn EVENTS_PER_SEC]
 //! ```
+//!
+//! `--churn` modifies pods round robin (restart count of the first container,
+//! resourceVersion) and sends each change as a MODIFIED event to every open pod
+//! watch (namespace honored, selectors ignored): the event load of a busy
+//! cluster, for benchmarks.
 //!
 //! TokenReview and SubjectAccessReview (POST) answer from `--auth-token` and
 //! `--auth-allow` (`*` matches any verb or path): an unknown token is not
@@ -237,6 +243,8 @@ struct Cluster {
     tokens: BTreeMap<String, (String, Vec<String>)>,
     /// (user, verb, path) allowed.
     allow: Vec<(String, String, String)>,
+    /// `--churn`: pod MODIFIED events as `(namespace, event line)`.
+    churn: Option<tokio::sync::broadcast::Sender<(String, Arc<str>)>>,
 }
 
 type Shared = Arc<Cluster>;
@@ -264,6 +272,7 @@ impl Cluster {
             git_version,
             tokens: BTreeMap::new(),
             allow: Vec::new(),
+            churn: None,
         }
     }
 
@@ -517,6 +526,9 @@ async fn collection(
         let timeout = Duration::from_secs(p.timeout_seconds.unwrap_or(1800).min(3600));
         let api_version = t.api_version();
         let kind = t.kind.clone();
+        let mut churn = (t.group.is_empty() && t.plural == "pods")
+            .then(|| c.churn.as_ref().map(|tx| tx.subscribe()))
+            .flatten();
         let stream = async_stream::stream! {
             for o in objs {
                 yield Ok::<_, std::io::Error>(format!("{{\"type\":\"ADDED\",\"object\":{o}}}\n"));
@@ -526,7 +538,22 @@ async fn collection(
                     "metadata": {"resourceVersion": rv, "annotations": {"k8s.io/initial-events-end": "true"}}}});
                 yield Ok(format!("{bm}\n"));
             }
-            tokio::time::sleep(timeout).await;
+            let deadline = tokio::time::Instant::now() + timeout;
+            if let Some(rx) = churn.as_mut() {
+                use tokio::sync::broadcast::error::RecvError;
+                loop {
+                    match tokio::time::timeout_at(deadline, rx.recv()).await {
+                        Ok(Ok((obj_ns, line))) => {
+                            if ns.as_deref().is_none_or(|n| n == obj_ns) {
+                                yield Ok(line.to_string());
+                            }
+                        }
+                        Ok(Err(RecvError::Lagged(_))) => {}
+                        Ok(Err(RecvError::Closed)) | Err(_) => break,
+                    }
+                }
+            }
+            tokio::time::sleep_until(deadline).await;
         };
         return Response::builder()
             .header(header::CONTENT_TYPE, "application/json")
@@ -716,9 +743,43 @@ fn router(c: Shared) -> Router {
         .with_state(c)
 }
 
+/// Sends `rate` pod MODIFIED events per second, in 10 ms ticks.
+async fn churn(
+    mut pods: Vec<Value>,
+    mut rv: u64,
+    rate: u64,
+    tx: tokio::sync::broadcast::Sender<(String, Arc<str>)>,
+) {
+    if pods.is_empty() {
+        return;
+    }
+    let mut tick = tokio::time::interval(Duration::from_millis(10));
+    tick.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Delay);
+    let (mut sent, mut next, start) = (0u64, 0usize, tokio::time::Instant::now());
+    loop {
+        tick.tick().await;
+        let due = rate.saturating_mul(start.elapsed().as_millis() as u64) / 1000;
+        while sent < due {
+            let i = next;
+            next = (next + 1) % pods.len();
+            let pod = &mut pods[i];
+            sent += 1;
+            rv += 1;
+            pod["metadata"]["resourceVersion"] = json!(rv.to_string());
+            if let Some(n) = pod["status"]["containerStatuses"][0]["restartCount"].as_u64() {
+                pod["status"]["containerStatuses"][0]["restartCount"] = json!(n + 1);
+            }
+            let ns = field(pod, "metadata.namespace").to_owned();
+            let line: Arc<str> = Arc::from(format!("{{\"type\":\"MODIFIED\",\"object\":{pod}}}\n"));
+            // No receivers yet (nobody watching) is fine.
+            let _ = tx.send((ns, line));
+        }
+    }
+}
+
 fn usage() -> ! {
     eprintln!(
-        "usage: fake-apiserver [--listen ADDR] [--fixtures PATH]... [--generate kind=n,...] [--seed N] [--kubeconfig-out PATH] [--git-version V] [--auth-token TOKEN=USER[,GROUP...]]... [--auth-allow USER:VERB:PATH]..."
+        "usage: fake-apiserver [--listen ADDR] [--fixtures PATH]... [--generate kind=n,...] [--seed N] [--kubeconfig-out PATH] [--git-version V] [--auth-token TOKEN=USER[,GROUP...]]... [--auth-allow USER:VERB:PATH]... [--churn EVENTS_PER_SEC]"
     );
     std::process::exit(2)
 }
@@ -733,6 +794,7 @@ async fn main() {
     let mut git_version = "v1.37.0-fake".to_owned();
     let mut auth_tokens = BTreeMap::new();
     let mut auth_allow = Vec::new();
+    let mut churn_rate = 0u64;
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
         let mut val = || args.next().unwrap_or_else(|| usage());
@@ -743,6 +805,7 @@ async fn main() {
             "--seed" => seed = val().parse().unwrap_or_else(|_| usage()),
             "--kubeconfig-out" => kubeconfig_out = Some(val()),
             "--git-version" => git_version = val(),
+            "--churn" => churn_rate = val().parse().unwrap_or_else(|_| usage()),
             "--auth-token" => {
                 let v = val();
                 let (tok, rest) = v.split_once('=').unwrap_or_else(|| usage());
@@ -782,6 +845,21 @@ async fn main() {
         }
     }
     cluster.freeze();
+    if churn_rate > 0 {
+        let (tx, _) = tokio::sync::broadcast::channel(16384);
+        let pods = cluster
+            .objects
+            .get(&(String::new(), "pods".to_owned()))
+            .cloned()
+            .unwrap_or_default();
+        tokio::spawn(churn(
+            pods,
+            cluster.resource_version,
+            churn_rate,
+            tx.clone(),
+        ));
+        cluster.churn = Some(tx);
+    }
     let total: usize = cluster.objects.values().map(Vec::len).sum();
     let listener = tokio::net::TcpListener::bind(listen)
         .await

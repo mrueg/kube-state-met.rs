@@ -75,3 +75,9 @@ Status: accepted (2026-11-27)
 Context: exporter-toolkit runs on Go crypto/tls; the port uses rustls (ADR-006), which has no TLS 1.0/1.1, no CBC or RSA-key-exchange suites and no P-521.
 Decision: The `--tls-config` schema, startup validation and error texts follow exporter-toolkit v0.21.0 (Go `tls.CipherSuites()` names are accepted). Settings rustls cannot honor are accepted and narrowed: `min_version` TLS10/TLS11 means TLS 1.2, `max_version` below TLS12 fails every handshake, CBC suites in `cipher_suites` are dropped (TLS 1.3 suites stay, as in Go), and a `curve_preferences` list with only CurveP521 keeps the default groups. A client certificate that is itself one of the client CAs is accepted, as Go does. YAML type errors other than unknown fields and the custom value errors are mapped to yaml.v2 text on a best-effort basis.
 Consequences: Clients that only speak TLS 1.0/1.1, CBC suites or P-521 cannot connect to the Rust binary. All 49 exporter-toolkit test configs give the same startup errors and HTTP answers as Go (scratch harness against both binaries).
+
+## ADR-014: Parallel gzip on /metrics
+Status: accepted (2026-11-27)
+Context: With `--enable-gzip-encoding`, compressing a 400 MB body on one core took several seconds. flate2's default backend (miniz_oxide) was also 3–8x slower than Go's compress/flate.
+Decision: flate2 runs on the `zlib-rs` backend. The body is compressed pigz-style (`crates/ksm/src/pgzip.rs`). Each 1 MiB chunk is deflated on a rayon thread, using the previous 32 KiB as a preset dictionary, and ends with a sync flush. The chunks join into one standard gzip member, with the CRC32 values combined. The level is the default, as in Go.
+Consequences: A gzip scrape briefly uses every core, and its latency drops about 3x at 10k pods. The total CPU is about the same, and so is the compressed size. The bytes differ from Go's gzip output, but they decode to the same body; the tests check the result with a single-member decoder.
