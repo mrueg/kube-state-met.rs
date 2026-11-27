@@ -1370,7 +1370,7 @@ name = "ksm-core"
 version = "2.19.0"
 dependencies = [
  "fancy-regex",
- "parking_lot 0.12.5",
+ "parking_lot 0.13.0",
  "regex",
  "serde",
  "serde_json",
@@ -1525,7 +1525,7 @@ dependencies = [
  "kube",
  "md-5",
  "notify",
- "parking_lot 0.12.5",
+ "parking_lot 0.13.0",
  "rayon",
  "rcgen",
  "rustls",
