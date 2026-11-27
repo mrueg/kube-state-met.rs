@@ -1,5 +1,10 @@
 # kube-state-met.rs
 
+> [!WARNING]
+> This is a prototype. It is not an official Kubernetes project and is not supported for production
+> use. Behaviour is checked against upstream kube-state-metrics, but differences remain (see
+> [Known differences](#known-differences-from-the-go-original)).
+
 A Rust port of [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics): it watches the
 Kubernetes API server and serves Prometheus metrics about the state of the objects. It is a drop-in
 replacement: the same flags, config files, routes, metric names, labels and values (see
@@ -58,4 +63,6 @@ events (`--churn`), plus criterion micro-benchmarks (`cargo bench -p ksm-stores`
 See the ADRs in [docs/port/DECISIONS.md](docs/port/DECISIONS.md). In short: no `go_*` telemetry metrics and no
 pprof; `--auto-gomemlimit*` are accepted and ignored; JSON instead of protobuf to the API server; rustls has no
 TLS 1.0/1.1, CBC suites or P-521; log lines keep klog's layout but not its exact text; cobra's hidden
-`__complete` command (dynamic shell completion) is not implemented.
+`__complete` command (dynamic shell completion) is not implemented; no client-side API rate limit (client-go: QPS 5,
+burst 10); the telemetry port answers protobuf requests with text; label values with invalid UTF-8 arrive as U+FFFD
+through JSON, where Go's protobuf client keeps the raw bytes.

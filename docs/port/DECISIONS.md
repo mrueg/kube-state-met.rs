@@ -57,12 +57,13 @@ Decision: linux amd64 and arm64; distroless static container image; MSRV = curre
 Status: accepted (2026-11-26)
 Context: The Go telemetry registry includes `go_*` runtime metrics (GC, goroutines, memstats) that can't exist in Rust.
 Decision: Every `kube_state_metrics_*` and `http_request_duration_seconds` family matches. `process_*` metrics are kept (procfs). `go_*` metrics are dropped. `kube_state_metrics_build_info` keeps its labels (`client_go_version` reports the kube-rs version).
-Consequences: Dashboards that read `go_*` from kube-state-metrics lose those series.
+Consequences: Dashboards that read `go_*` from kube-state-metrics lose those series. The telemetry `/metrics` negotiates like `promhttp.HandlerFor` (text 0.0.4 or 1.0.0 with the requested escaping, gzip, `Vary`, `name[]`), but answers a protobuf request with text. `process_network_*_bytes_total` sum `/proc/self/net/dev`, where client_golang reads `IpExt` octets from `/proc/self/net/netstat`.
 
 ## ADR-011: Watch semantics on kube-rs
 Status: accepted (2026-11-26)
 Decision: One `kube::runtime::watcher` per store (per namespace, as in Go). `Init`/`InitApply`/`InitDone` map to `MetricsStore::replace` (applied once on `InitDone`, keeping the same "delete the missing, then upsert" order), `Apply` to `add`, and `Delete` to `delete`. Sharding filters objects before they reach the store. `--use-apiserver-cache` sets `resourceVersion=0` on lists. `--object-limit` sets the list page size and the store's object limit. Requests are JSON, not protobuf.
-Consequences: List and watch counters on the telemetry port count kube-rs list/watch calls; their numbers may differ from client-go's after errors (a log-level difference, not a metrics-port one).
+With `--object-limit`, kube-rs' watcher would follow every page, so `crate::limited` lists one page of at most the limit (dropping the continue token, with `resourceVersion=0` when asked, as Go does) and watches from its resourceVersion. Cluster-scoped built-in resources get no field selector (Go's `create*ListWatch` drop it). Failed lists and watches back off as client-go's reflector does (800ms doubling to 30s with jitter, reset after 2 minutes; `crate::backoff`), since kube-rs' own backoff resets on every event.
+Consequences: List and watch counters on the telemetry port count kube-rs list/watch calls; their numbers may differ from client-go's after errors, and without an object limit kube-rs' periodic re-watches are not counted (a telemetry-port difference, not a metrics-port one). There is no client-side rate limit (client-go: QPS 5, burst 10 for non-watch requests), and kube-rs retries 429/503/504 responses.
 
 ## ADR-012: No proxying front door
 Status: accepted (2026-11-26)
@@ -74,7 +75,7 @@ Consequences: No Go process runs beside the Rust binary, and `app front-door`/`a
 Status: accepted (2026-11-27)
 Context: exporter-toolkit runs on Go crypto/tls; the port uses rustls (ADR-006), which has no TLS 1.0/1.1, no CBC or RSA-key-exchange suites and no P-521.
 Decision: The `--tls-config` schema, startup validation and error texts follow exporter-toolkit v0.21.0 (Go `tls.CipherSuites()` names are accepted). Settings rustls cannot honor are accepted and narrowed: `min_version` TLS10/TLS11 means TLS 1.2, `max_version` below TLS12 fails every handshake, CBC suites in `cipher_suites` are dropped (TLS 1.3 suites stay, as in Go), and a `curve_preferences` list with only CurveP521 keeps the default groups. A client certificate that is itself one of the client CAs is accepted, as Go does. YAML type errors other than unknown fields and the custom value errors are mapped to yaml.v2 text on a best-effort basis.
-Consequences: Clients that only speak TLS 1.0/1.1, CBC suites or P-521 cannot connect to the Rust binary. All 49 exporter-toolkit test configs give the same startup errors and HTTP answers as Go (scratch harness against both binaries).
+Consequences: Clients that only speak TLS 1.0/1.1, CBC suites or P-521 cannot connect to the Rust binary. All 49 exporter-toolkit test configs give the same startup errors and HTTP answers as Go (scratch harness against both binaries). HTTP/2 connections close after the idle timeout (`IdleTimeout`, else `ReadTimeout`) without an open stream, as in Go; Go's per-stream read and write timeouts are not applied.
 
 ## ADR-014: Parallel gzip on /metrics
 Status: accepted (2026-11-27)
