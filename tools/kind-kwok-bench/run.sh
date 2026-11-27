@@ -60,11 +60,18 @@ nodes:
   - role: worker
 EOF
 kind create cluster --name "$CLUSTER" --config "$work/kind.yaml" --kubeconfig "$KUBECONFIG" --wait 5m
+# --wait covers the control plane only; the worker may still be joining.
+kubectl wait --for=condition=Ready nodes --all --timeout=5m
 
 echo "== kwok $KWOK_VERSION"
 kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/download/${KWOK_VERSION}/kwok.yaml"
 kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/download/${KWOK_VERSION}/stage-fast.yaml"
+# Let the controller run on any real node, the control plane included.
+kubectl -n kube-system patch deployment kwok-controller --type=json -p \
+  '[{"op":"add","path":"/spec/template/spec/tolerations","value":[{"key":"node-role.kubernetes.io/control-plane","operator":"Exists","effect":"NoSchedule"}]}]'
 if ! kubectl -n kube-system rollout status deployment/kwok-controller --timeout=5m; then
+  kubectl get nodes -o wide >&2 || true
+  kubectl describe nodes >&2 || true
   kubectl -n kube-system get pods -l app=kwok-controller -o wide >&2 || true
   kubectl -n kube-system describe pods -l app=kwok-controller >&2 || true
   kubectl -n kube-system logs -l app=kwok-controller --all-containers --tail=100 --previous >&2 || true
