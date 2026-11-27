@@ -10,7 +10,8 @@
 # afterwards (KEEP=1 keeps it); no other cluster is touched.
 #
 # Usage: tools/kind-kwok-bench/run.sh [--pods 5000] [bench.py options...]
-# Env:   CLUSTER (default ksm-bench), KWOK_VERSION (default v0.7.0), KEEP=1
+# Env:   CLUSTER (default ksm-bench), KWOK_VERSION (default v0.7.0), KEEP=1,
+#        KIND_LOGS (where `kind export logs` writes on failure)
 # Needs: kind, kubectl, docker, go, cargo, python3, curl.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -49,6 +50,23 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# On failure: cluster state on stderr, full node logs in $KIND_LOGS.
+diagnose() {
+  set +e
+  kubectl get nodes -o wide
+  kubectl describe nodes
+  kubectl get pods -A -o wide
+  kubectl get endpointslices -n default -o wide
+  kubectl -n kube-system describe pods -l app=kwok-controller
+  for sel in app=kwok-controller k8s-app=kube-proxy app=kindnet; do
+    kubectl -n kube-system logs -l "$sel" --all-containers --prefix --tail=50 --previous
+    kubectl -n kube-system logs -l "$sel" --all-containers --prefix --tail=50
+  done
+  docker ps -a
+  kind export logs "${KIND_LOGS:-$work/kind-logs}" --name "$CLUSTER"
+  set -e
+} >&2
+
 echo "== kind cluster $CLUSTER: 3 control-plane nodes, 1 worker"
 cat > "$work/kind.yaml" <<'EOF'
 kind: Cluster
@@ -62,6 +80,12 @@ EOF
 kind create cluster --name "$CLUSTER" --config "$work/kind.yaml" --kubeconfig "$KUBECONFIG" --wait 5m
 # --wait covers the control plane only; the worker may still be joining.
 kubectl wait --for=condition=Ready nodes --all --timeout=5m
+nodes=$(kubectl get nodes --no-headers | wc -l)
+if [[ $nodes -ne 4 ]]; then
+  echo "only $nodes of 4 kind nodes registered" >&2
+  diagnose
+  exit 1
+fi
 
 echo "== kwok $KWOK_VERSION"
 kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/download/${KWOK_VERSION}/kwok.yaml"
@@ -70,12 +94,7 @@ kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/download/${KW
 kubectl -n kube-system patch deployment kwok-controller --type=json -p \
   '[{"op":"add","path":"/spec/template/spec/tolerations","value":[{"key":"node-role.kubernetes.io/control-plane","operator":"Exists","effect":"NoSchedule"}]}]'
 if ! kubectl -n kube-system rollout status deployment/kwok-controller --timeout=5m; then
-  kubectl get nodes -o wide >&2 || true
-  kubectl describe nodes >&2 || true
-  kubectl -n kube-system get pods -l app=kwok-controller -o wide >&2 || true
-  kubectl -n kube-system describe pods -l app=kwok-controller >&2 || true
-  kubectl -n kube-system logs -l app=kwok-controller --all-containers --tail=100 --previous >&2 || true
-  kubectl -n kube-system logs -l app=kwok-controller --all-containers --tail=100 >&2 || true
+  diagnose
   exit 1
 fi
 
@@ -139,6 +158,7 @@ while :; do
   [[ $running -ge $PODS ]] && break
   if [[ $SECONDS -gt $deadline ]]; then
     echo "only $running of $PODS pods running after 20 minutes" >&2
+    diagnose
     exit 1
   fi
   sleep 5

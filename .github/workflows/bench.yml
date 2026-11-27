@@ -64,10 +64,17 @@ jobs:
       - run: tools/kind-kwok-bench/run.sh --pods 10000 --scrapes 30
         env:
           KSM_GO_SRC: kube-state-metrics-go
-      - run: cat bench/RESULTS-kind-kwok.md >> "$GITHUB_STEP_SUMMARY"
+          KIND_LOGS: kind-logs
+      - run: if [ -f bench/RESULTS-kind-kwok.md ]; then cat bench/RESULTS-kind-kwok.md >> "$GITHUB_STEP_SUMMARY"; fi
         if: always()
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: bench-kind-kwok-results
           path: bench/RESULTS-kind-kwok.md
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: kind-logs
+          path: kind-logs
+          if-no-files-found: ignore
