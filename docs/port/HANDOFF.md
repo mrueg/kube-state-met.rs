@@ -7,6 +7,9 @@ State (2026-11-27): every unit in [MAP.md](MAP.md) is done; the Rust binary is t
   `tools/app-cases/record.sh replay` (16/16 recorded HTTP cases, report in `rust/app-cases/replay-report.md`).
 - Benchmarks: `bench/run.sh` → [bench/RESULTS.md](../../bench/RESULTS.md).
 - Decisions: [DECISIONS.md](DECISIONS.md) ADR-001..013; rules for new work: `rust/RULES.md`.
+- Live smoke: `tools/smoke/compare-live.py --kubeconfig <file> [flags]` (read-only). For the full kind test with the
+  upstream manifests and the image in-cluster, a disposable cluster is needed (`kind create cluster --name ksm-rs-smoke`;
+  with other kind clusters running, raise `fs.inotify.max_user_instances` to 512 first).
 - Follow-ups: the two open questions in MAP.md; after pulling upstream, re-run `tools/golden-go/*/run.sh` and
   `tools/app-cases/record.sh`, then port what changed.
 - Upstream drift: `rust-anything app drift .` replays the original and the build against the recorded cases.
