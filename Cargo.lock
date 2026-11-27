@@ -1506,7 +1506,7 @@ name = "kube-state-metrics"
 version = "2.19.0"
 dependencies = [
  "axum",
- "base64 0.22.1",
+ "base64 0.23.1",
  "bcrypt",
  "bytes",
  "crc32fast",
