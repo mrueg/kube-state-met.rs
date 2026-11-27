@@ -71,6 +71,8 @@ struct State {
     request_start: Instant,
     /// The response body ended; the connection idles once it is flushed.
     response_ended: bool,
+    /// No deadlines apply any more (an HTTP/2 connection).
+    off: bool,
     /// Wakers of a pending read and write, woken when deadlines change.
     read_waker: Option<std::task::Waker>,
     write_waker: Option<std::task::Waker>,
@@ -106,19 +108,33 @@ impl Deadlines {
                 idle: false,
                 request_start: now,
                 response_ended: false,
+                off: false,
                 read_waker: None,
                 write_waker: None,
             })),
         }
     }
 
-    /// Sets the deadlines for a TLS handshake (Go's `tlsHandshakeTimeout`).
-    pub fn for_handshake(&self) {
+    /// Sets the deadlines for a TLS handshake (Go's `tlsHandshakeTimeout`)
+    /// and returns the deadline.
+    pub fn for_handshake(&self) -> Option<Instant> {
         let now = Instant::now();
         let mut s = self.state.lock();
         let d = self.timeouts.tls_handshake().map(|d| now + d);
         s.read_deadline = d;
         s.write_deadline = d;
+        s.wake();
+        d
+    }
+
+    /// HTTP/2 multiplexes requests on one connection, so per-request
+    /// connection deadlines do not apply (Go's http2 server handles them per
+    /// stream). Only the TLS handshake deadline is used.
+    pub fn disable(&self) {
+        let mut s = self.state.lock();
+        s.off = true;
+        s.read_deadline = None;
+        s.write_deadline = None;
         s.wake();
     }
 
@@ -137,9 +153,14 @@ impl Deadlines {
     fn headers_read(&self) {
         let now = Instant::now();
         let mut s = self.state.lock();
+        if s.off {
+            return;
+        }
         s.read_deadline = nonzero(self.timeouts.read).map(|d| s.request_start + d);
         s.write_deadline = nonzero(self.timeouts.write).map(|d| now + d);
         s.response_ended = false;
+        // A pipelined request read before the last response was flushed.
+        s.idle = false;
         s.wake();
     }
 
@@ -152,7 +173,7 @@ impl Deadlines {
     /// the next request.
     fn flushed(&self) {
         let mut s = self.state.lock();
-        if s.response_ended {
+        if s.response_ended && !s.off {
             let now = Instant::now();
             s.response_ended = false;
             s.idle = true;
@@ -173,7 +194,7 @@ impl Deadlines {
     /// Bytes arrived: if the connection was idle, a new request starts now.
     fn bytes_read(&self) {
         let mut s = self.state.lock();
-        if s.idle {
+        if s.idle && !s.off {
             let now = Instant::now();
             s.idle = false;
             s.request_start = now;
@@ -247,6 +268,14 @@ impl<T: AsyncRead + Unpin> AsyncRead for DeadlineIo<T> {
         buf: &mut ReadBuf<'_>,
     ) -> Poll<io::Result<()>> {
         let this = &mut *self;
+        // Past the deadline reads fail even with data ready, as in Go.
+        if this
+            .deadlines
+            .read_deadline()
+            .is_some_and(|d| Instant::now() >= d)
+        {
+            return Poll::Ready(Err(timed_out()));
+        }
         let before = buf.filled().len();
         match Pin::new(&mut this.inner).poll_read(cx, buf) {
             Poll::Ready(Ok(())) => {
@@ -390,6 +419,25 @@ pub fn with_deadlines(app: Router, deadlines: Deadlines) -> Router {
     ))
 }
 
+/// Accepts the next connection. After an accept error (such as running out
+/// of file descriptors) it waits before trying again, 5 ms doubling up to 1 s,
+/// as Go's `Server.Serve` does.
+pub async fn accept(
+    listener: &tokio::net::TcpListener,
+) -> (tokio::net::TcpStream, std::net::SocketAddr) {
+    let mut delay = Duration::from_millis(5);
+    loop {
+        match listener.accept().await {
+            Ok(c) => return c,
+            Err(e) => {
+                tracing::error!(error = %e, "accept; retrying in {delay:?}");
+                tokio::time::sleep(delay).await;
+                delay = (delay * 2).min(Duration::from_secs(1));
+            }
+        }
+    }
+}
+
 /// Serves `app` over plain HTTP/1.1 with Go's server timeouts until `stop`,
 /// then lets open connections finish (the caller bounds the wait).
 pub async fn serve_plain(
@@ -400,15 +448,9 @@ pub async fn serve_plain(
 ) {
     let graceful = hyper_util::server::graceful::GracefulShutdown::new();
     loop {
-        let tcp = tokio::select! {
+        let (tcp, _) = tokio::select! {
             () = stop.cancelled() => break,
-            r = listener.accept() => match r {
-                Ok((tcp, _)) => tcp,
-                Err(e) => {
-                    tracing::error!(error = %e, "accept");
-                    continue;
-                }
-            },
+            c = accept(&listener) => c,
         };
         let deadlines = Deadlines::new(timeouts);
         let app = with_deadlines(app.clone(), deadlines.clone());
@@ -540,5 +582,36 @@ mod tests {
             let n = s.read(&mut buf).await.unwrap();
             assert!(String::from_utf8_lossy(&buf[..n]).contains("200 OK"));
         }
+    }
+
+    #[tokio::test]
+    async fn pipelined_request_is_not_treated_as_idle() {
+        let t = Timeouts {
+            read_header: Duration::from_millis(100),
+            read: Duration::from_secs(10),
+            ..Default::default()
+        };
+        let d = Deadlines::new(t);
+        d.headers_read();
+        d.response_done();
+        // The next request's bytes were already buffered: its headers are
+        // read before the previous response is flushed.
+        d.flushed();
+        d.headers_read();
+        let deadline = d.read_deadline();
+        // A later read must not restart the request with the header deadline.
+        d.bytes_read();
+        assert!(!d.state.lock().idle);
+        assert_eq!(d.read_deadline(), deadline);
+    }
+
+    #[tokio::test]
+    async fn pipelined_requests_are_served() {
+        let (addr, _stop) = server(Timeouts::default()).await;
+        let mut s = tokio::net::TcpStream::connect(addr).await.unwrap();
+        s.write_all(b"GET / HTTP/1.1\r\nHost: x\r\n\r\nGET / HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n")
+            .await
+            .unwrap();
+        assert_eq!(read_all(&mut s).await.matches("200 OK").count(), 2);
     }
 }

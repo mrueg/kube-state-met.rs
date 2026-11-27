@@ -1027,13 +1027,7 @@ pub async fn serve(
     loop {
         let (tcp, addr) = tokio::select! {
             () = stop.cancelled() => break,
-            r = listener.accept() => match r {
-                Ok(c) => c,
-                Err(e) => {
-                    tracing::error!(error = %e, "accept");
-                    continue;
-                }
-            },
+            c = crate::conn::accept(&listener) => c,
         };
         let deadlines = crate::conn::Deadlines::new(timeouts);
         let app = crate::conn::with_deadlines(app.clone(), deadlines.clone());
@@ -1077,9 +1071,22 @@ async fn serve_tls<S>(
     S::Future: Send + 'static,
 {
     let mut tcp = tcp;
-    // Plain HTTP on the TLS port gets Go's canned answer.
+    // Go bounds the handshake with tlsHandshakeTimeout, then the request
+    // deadlines apply. The deadline also covers waiting for the first byte.
+    let deadline = deadlines.for_handshake();
     let mut first = [0u8; 1];
-    if matches!(tcp.peek(&mut first).await, Ok(1)) && first[0] != 0x16 {
+    let peeked = match deadline {
+        Some(d) => tokio::time::timeout_at(d, tcp.peek(&mut first))
+            .await
+            .unwrap_or_else(|_| Err(std::io::ErrorKind::TimedOut.into())),
+        None => tcp.peek(&mut first).await,
+    };
+    match peeked {
+        Ok(1) => {}
+        _ => return,
+    }
+    // Plain HTTP on the TLS port gets Go's canned answer.
+    if first[0] != 0x16 {
         let _ = tcp
             .write_all(b"HTTP/1.0 400 Bad Request\r\n\r\nClient sent an HTTP request to an HTTPS server.\n")
             .await;
@@ -1095,8 +1102,6 @@ async fn serve_tls<S>(
         let _ = tcp.shutdown().await;
         return;
     }
-    // Go bounds the handshake with tlsHandshakeTimeout, then the request deadlines apply.
-    deadlines.for_handshake();
     let tcp = crate::conn::DeadlineIo::new(tcp, deadlines.clone());
     let start = match tokio_rustls::LazyConfigAcceptor::new(Acceptor::default(), tcp).await {
         Ok(s) => s,
@@ -1120,7 +1125,11 @@ async fn serve_tls<S>(
             return;
         }
     };
-    deadlines.handshake_done();
+    if stream.get_ref().1.alpn_protocol() == Some(b"h2") {
+        deadlines.disable();
+    } else {
+        deadlines.handshake_done();
+    }
     let b = auto::Builder::new(TokioExecutor::new());
     let conn = b.serve_connection_with_upgrades(TokioIo::new(stream), svc);
     let _ = watcher.watch(conn.into_owned()).await;
@@ -1129,6 +1138,34 @@ async fn serve_tls<S>(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn silent_tls_clients_are_closed_after_the_handshake_timeout() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+        let stop = CancellationToken::new();
+        let timeouts = crate::conn::Timeouts {
+            read_header: std::time::Duration::from_millis(200),
+            ..Default::default()
+        };
+        tokio::spawn(serve(
+            listener,
+            Router::new(),
+            "/nonexistent/web-config.yml".to_owned(),
+            true,
+            timeouts,
+            stop.clone(),
+        ));
+        let mut s = tokio::net::TcpStream::connect(addr).await.unwrap();
+        let mut buf = [0u8; 16];
+        // The client sends nothing; the server must hang up on its own.
+        let n = tokio::time::timeout(std::time::Duration::from_secs(3), s.read(&mut buf))
+            .await
+            .expect("server kept a silent TLS connection open")
+            .unwrap_or(0);
+        assert_eq!(n, 0);
+        stop.cancel();
+    }
 
     fn write(dir: &std::path::Path, name: &str, text: &str) -> String {
         let p = dir.join(name);

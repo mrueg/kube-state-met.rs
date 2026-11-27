@@ -1,6 +1,7 @@
 //! The `/metrics` handler of the metrics port (Go: `pkg/metricshandler`).
 
 use std::collections::HashSet;
+use std::ops::ControlFlow;
 use std::sync::Arc;
 
 use axum::body::Body;
@@ -208,6 +209,8 @@ impl MetricsHandler {
                 })
                 .collect();
             let sanitized = sanitize_headers(format == Format::Text, &active);
+            // A closed channel means the client went away: stop rendering
+            // and compressing instead of finishing a body nobody reads.
             let gz_tx = tx.clone();
             let mut gz = gzip.then(|| {
                 crate::pgzip::ParallelGzip::new(
@@ -218,33 +221,43 @@ impl MetricsHandler {
                     },
                 )
             });
-            let mut failed = false;
             let mut send = |buf: &mut Vec<u8>| {
+                if tx.is_closed() {
+                    return ControlFlow::Break(());
+                }
                 let data = std::mem::replace(buf, Vec::with_capacity(CHUNK + CHUNK / 4));
                 match gz.as_mut() {
                     Some(enc) => {
-                        if !failed && enc.push(data).is_err() {
-                            failed = true;
+                        if let Err(e) = enc.push(data) {
+                            tracing::error!("gzip: {e}");
+                            return ControlFlow::Break(());
                         }
                     }
-                    // A closed channel means the client went away; stop quietly.
                     None => {
                         let _ = tx.blocking_send(bytes::Bytes::from(data));
                     }
                 }
+                ControlFlow::Continue(())
             };
             let mut out = Vec::with_capacity(CHUNK + CHUNK / 4);
+            let mut flow = ControlFlow::Continue(());
             for (w, h) in active.iter().zip(&sanitized) {
-                w.write_all_chunked(h, &mut out, CHUNK, &mut send);
+                flow = w.write_all_chunked(h, &mut out, CHUNK, &mut send);
+                if flow.is_break() {
+                    break;
+                }
             }
-            if matches!(format, Format::OpenMetrics(_)) {
-                out.extend_from_slice(b"# EOF\n");
+            if flow.is_continue() {
+                if matches!(format, Format::OpenMetrics(_)) {
+                    out.extend_from_slice(b"# EOF\n");
+                }
+                flow = send(&mut out);
             }
-            send(&mut out);
             drop(send);
-            // A failed compression leaves the stream unterminated, so the client sees an error.
+            // After a break the stream stays unterminated, so a client still
+            // reading sees an error rather than a truncated body.
             if let Some(enc) = gz
-                && !failed
+                && flow.is_continue()
                 && let Err(e) = enc.finish()
             {
                 tracing::error!("gzip: {e}");

@@ -17,7 +17,9 @@
 //! `--churn` modifies pods round robin (restart count of the first container,
 //! resourceVersion) and sends each change as a MODIFIED event to every open pod
 //! watch (namespace honored, selectors ignored): the event load of a busy
-//! cluster, for benchmarks.
+//! cluster, for benchmarks. Lists and new watches still serve the objects as
+//! loaded; a watch that falls more than 16384 events behind is ended and
+//! logged.
 //!
 //! TokenReview and SubjectAccessReview (POST) answer from `--auth-token` and
 //! `--auth-allow` (`*` matches any verb or path): an unknown token is not
@@ -548,7 +550,12 @@ async fn collection(
                                 yield Ok(line.to_string());
                             }
                         }
-                        Ok(Err(RecvError::Lagged(_))) => {}
+                        // A reader that fell behind would silently get less
+                        // work: end its watch and say so (bench.py fails the run).
+                        Ok(Err(RecvError::Lagged(n))) => {
+                            eprintln!("fake-apiserver: churn watch lagged, dropped {n} events");
+                            break;
+                        }
                         Ok(Err(RecvError::Closed)) | Err(_) => break,
                     }
                 }

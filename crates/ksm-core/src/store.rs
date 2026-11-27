@@ -3,6 +3,7 @@
 //! resource so that same-named samples stay grouped under one header.
 
 use std::collections::{HashMap, HashSet};
+use std::ops::ControlFlow;
 use std::sync::Arc;
 
 use parking_lot::{Mutex, RwLock};
@@ -275,27 +276,29 @@ impl MetricsWriter {
     /// Writes every family: its header (unless blanked), then every object's
     /// samples of it. Writes nothing when no store holds an object.
     pub fn write_all(&self, headers: &[&str], out: &mut Vec<u8>) {
-        self.write_all_chunked(headers, out, usize::MAX, &mut |_| {});
+        let _ =
+            self.write_all_chunked(headers, out, usize::MAX, &mut |_| ControlFlow::Continue(()));
     }
 
     /// [`write_all`](Self::write_all), calling `flush` whenever `out` holds
-    /// at least `chunk` bytes, so callers can stream large outputs.
+    /// at least `chunk` bytes, so callers can stream large outputs. `flush`
+    /// returns `Break` to stop early (the reader went away).
     pub fn write_all_chunked(
         &self,
         headers: &[&str],
         out: &mut Vec<u8>,
         chunk: usize,
-        flush: &mut dyn FnMut(&mut Vec<u8>),
-    ) {
+        flush: &mut dyn FnMut(&mut Vec<u8>) -> ControlFlow<()>,
+    ) -> ControlFlow<()> {
         if self.stores.is_empty() {
-            return;
+            return ControlFlow::Continue(());
         }
         let mut objects = Vec::new();
         for s in &self.stores {
             s.snapshot_into(&mut objects);
         }
         if objects.is_empty() {
-            return;
+            return ControlFlow::Continue(());
         }
         for (i, help) in headers.iter().enumerate() {
             if !help.is_empty() {
@@ -307,10 +310,11 @@ impl MetricsWriter {
             for o in &objects {
                 out.extend_from_slice(o.family(i));
                 if out.len() >= chunk {
-                    flush(out);
+                    flush(out)?;
                 }
             }
         }
+        ControlFlow::Continue(())
     }
 }
 

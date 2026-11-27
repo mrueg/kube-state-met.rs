@@ -56,13 +56,15 @@ def scrape(port, gzip=False, timeout=120, keep=False):
            "-w", "%{time_total} %{size_download}", f"http://127.0.0.1:{port}/metrics"]
     if gzip:
         cmd[1:1] = ["-H", "Accept-Encoding: gzip"]
-    r = subprocess.run(cmd, capture_output=True, text=True, check=True)
-    t, size = r.stdout.split()
-    if out:
-        body = open(out.name, "rb").read()
-        os.unlink(out.name)
-        return float(t), body
-    return float(t), int(size)
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        t, size = r.stdout.split()
+        if out:
+            return float(t), open(out.name, "rb").read()
+        return float(t), int(size)
+    finally:
+        if out:
+            os.unlink(out.name)
 
 
 def wait_port(port, deadline):
@@ -201,6 +203,9 @@ def main():
             try:
                 for name, binary in (("go", a.go), ("rust", a.rust)):
                     r = run_churn(binary, kc, pods, a.churn_seconds, log)
+                    log.flush()
+                    if "churn watch lagged" in open(log.name).read():
+                        raise RuntimeError(f"{name} fell behind the churn events (see {log.name})")
                     r.update(impl=name, pods=pods, rate=a.churn)
                     churn.append(r)
                     print(f"{pods:>6} pods {name:>4}: churn {a.churn}/s  cpu {r['cores']:.2f} cores  "
