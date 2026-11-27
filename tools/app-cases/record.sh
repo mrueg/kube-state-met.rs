@@ -9,7 +9,7 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 export PATH="$HOME/.cargo/bin:$HOME/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin:$PATH" TZ=UTC
 cargo build -q --release -p fake-apiserver -p kube-state-metrics
-kc="$PWD/target/app-cases-kubeconfig.yaml"
+kc=target/app-cases-kubeconfig.yaml # relative, as recorded in rust/app-cases
 target/release/fake-apiserver --listen 127.0.0.1:16444 --fixtures testdata/fixtures/basic --fixtures testdata/fixtures/golden --kubeconfig-out "$kc" &
 fake=$!
 trap 'kill $fake 2>/dev/null || true' EXIT
@@ -22,5 +22,5 @@ if [[ "${1:-}" == "replay" ]]; then
 else
   rust-anything app record . --http --pace 0 --ready-timeout 30 "${args[@]}" \
     --inputs tools/app-cases/http-inputs.jsonl --no-traps --normalize 'version=Version: \(version=[^)]*\)'  \
-    -- "$PWD/target/ksm-go/kube-state-metrics" --port '{port}'
+    -- target/ksm-go/kube-state-metrics --port '{port}'
 fi

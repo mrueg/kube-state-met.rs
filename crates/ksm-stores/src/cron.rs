@@ -254,9 +254,20 @@ fn load_location(name: &str) -> Option<Location> {
     lookup_zone(name).map(Location::Zone)
 }
 
-/// A zone from the tz database, by its exact (case-sensitive) name.
+/// A zone from the tz database, by its exact (case-sensitive) name. Like Go,
+/// which falls back to `$GOROOT/lib/time/zoneinfo.zip`, a name the system
+/// database lacks (Debian and Ubuntu ship `US/Pacific` and other links in
+/// `tzdata-legacy`) is looked up in the bundled copy.
 fn lookup_zone(name: &str) -> Option<TimeZone> {
-    let tz = jiff::tz::db().get(name).ok()?;
+    static BUNDLED: OnceLock<jiff::tz::TimeZoneDatabase> = OnceLock::new();
+    let tz = jiff::tz::db()
+        .get(name)
+        .or_else(|_| {
+            BUNDLED
+                .get_or_init(jiff::tz::TimeZoneDatabase::bundled)
+                .get(name)
+        })
+        .ok()?;
     (tz.iana_name() == Some(name)).then_some(tz)
 }
 
