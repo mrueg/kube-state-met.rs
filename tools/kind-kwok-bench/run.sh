@@ -64,7 +64,13 @@ kind create cluster --name "$CLUSTER" --config "$work/kind.yaml" --kubeconfig "$
 echo "== kwok $KWOK_VERSION"
 kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/download/${KWOK_VERSION}/kwok.yaml"
 kubectl apply -f "https://github.com/kubernetes-sigs/kwok/releases/download/${KWOK_VERSION}/stage-fast.yaml"
-kubectl -n kube-system rollout status deployment/kwok-controller --timeout=5m
+if ! kubectl -n kube-system rollout status deployment/kwok-controller --timeout=5m; then
+  kubectl -n kube-system get pods -l app=kwok-controller -o wide >&2 || true
+  kubectl -n kube-system describe pods -l app=kwok-controller >&2 || true
+  kubectl -n kube-system logs -l app=kwok-controller --all-containers --tail=100 --previous >&2 || true
+  kubectl -n kube-system logs -l app=kwok-controller --all-containers --tail=100 >&2 || true
+  exit 1
+fi
 
 echo "== $NODES fake nodes, $PODS pods in $DEPLOYMENTS deployments, $SERVICES services, $CONFIGMAPS configmaps, $SECRETS secrets"
 python3 - "$NODES" "$DEPLOYMENTS" "$SERVICES" "$CONFIGMAPS" "$SECRETS" "$NAMESPACES" "$PODS" > "$work/objects.yaml" <<'EOF'
