@@ -10,6 +10,7 @@ pub mod gostd;
 pub mod gostr;
 pub mod labels;
 pub mod metric;
+pub mod re2;
 pub mod sharding;
 pub mod store;
 

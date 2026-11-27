@@ -56,26 +56,6 @@ impl AllowDenyList {
         Ok(())
     }
 
-    pub fn include(&mut self, items: &[String]) {
-        for i in items {
-            if self.is_allow_list {
-                self.list.insert(i.clone());
-            } else {
-                self.list.remove(i);
-            }
-        }
-    }
-
-    pub fn exclude(&mut self, items: &[String]) {
-        for i in items {
-            if self.is_allow_list {
-                self.list.remove(i);
-            } else {
-                self.list.insert(i.clone());
-            }
-        }
-    }
-
     pub fn is_included(&self, item: &str) -> bool {
         // A regex that fails at match time (backtrack limit) counts as excluded,
         // as a regexp2 timeout does in Go.
@@ -122,7 +102,7 @@ impl FamilyFilter for AllowDenyList {
 
 /// Compiles a pattern the way `regexp2` in ECMAScript mode reads it, as far
 /// as `fancy-regex` allows (see docs/port/research/regex.md).
-pub fn compile_ecmascript(pattern: &str) -> Result<fancy_regex::Regex, FilterError> {
+fn compile_ecmascript(pattern: &str) -> Result<fancy_regex::Regex, FilterError> {
     let translated = crate::ecma::ecma_to_fancy(pattern)
         .map_err(|e| FilterError(format!("error parsing regexp: {e} in `{pattern}`")))?;
     fancy_regex::RegexBuilder::new(&translated)
@@ -132,17 +112,26 @@ pub fn compile_ecmascript(pattern: &str) -> Result<fancy_regex::Regex, FilterErr
 }
 
 /// `optin.MetricFamilyFilter`: opt-in families pass only when a regex of the
-/// opt-in list matches their name (unanchored, RE2 semantics).
+/// opt-in list matches their name (unanchored, Go RE2 semantics: the
+/// patterns go through `crate::re2`).
 #[derive(Default)]
 pub struct OptInFilter {
-    metrics: Vec<regex::Regex>,
+    /// The patterns as given, and their compiled translations.
+    metrics: Vec<(String, regex::Regex)>,
 }
 
 impl OptInFilter {
     pub fn new(metrics: &BTreeSet<String>) -> Result<Self, FilterError> {
         let metrics = metrics
             .iter()
-            .map(|m| regex::Regex::new(m).map_err(|e| FilterError(go_regexp_error(m, &e))))
+            .map(|m| {
+                let translated = crate::re2::re2_to_regex(m)
+                    .map_err(|e| FilterError(format!("error parsing regexp: {e}")))?;
+                let re = regex::Regex::new(&translated).map_err(|_| {
+                    FilterError(format!("error parsing regexp: invalid pattern: `{m}`"))
+                })?;
+                Ok((m.clone(), re))
+            })
             .collect::<Result<_, _>>()?;
         Ok(OptInFilter { metrics })
     }
@@ -152,7 +141,7 @@ impl OptInFilter {
     }
 
     pub fn status(&self) -> String {
-        let mut s: Vec<&str> = self.metrics.iter().map(regex::Regex::as_str).collect();
+        let mut s: Vec<&str> = self.metrics.iter().map(|(p, _)| p.as_str()).collect();
         s.sort_unstable();
         s.join(", ")
     }
@@ -160,14 +149,8 @@ impl OptInFilter {
 
 impl FamilyFilter for OptInFilter {
     fn test(&self, name: &str, opt_in: bool) -> bool {
-        !opt_in || self.metrics.iter().any(|r| r.is_match(name))
+        !opt_in || self.metrics.iter().any(|(_, r)| r.is_match(name))
     }
-}
-
-/// Error text in the shape of Go's `regexp.Compile` errors.
-fn go_regexp_error(pattern: &str, e: &regex::Error) -> String {
-    let _ = e;
-    format!("error parsing regexp: invalid pattern: `{pattern}`")
 }
 
 #[cfg(test)]
