@@ -7,6 +7,7 @@ version = "2.19.0"
 edition = "2024"
 rust-version = "1.100"
 license = "Apache-2.0"
+repository = "https://github.com/mrueg/kube-state-met.rs"
 
 [workspace.dependencies]
 ksm-core = { path = "crates/ksm-core" }

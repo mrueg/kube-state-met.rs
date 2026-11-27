@@ -20,6 +20,7 @@ RUN cargo zigbuild --release --locked -p kube-state-metrics --target "$(cat /tar
  && cp "target/$(cat /target)/release/kube-state-metrics" /kube-state-metrics
 
 FROM gcr.io/distroless/static-debian12:nonroot
+LABEL org.opencontainers.image.source="https://github.com/mrueg/kube-state-met.rs"
 COPY --from=build /kube-state-metrics /kube-state-metrics
 USER 65534
 ENTRYPOINT ["/kube-state-metrics", "--port=8080", "--telemetry-port=8081"]

@@ -1,5 +1,8 @@
 # kube-state-met.rs
 
+[![ci](https://github.com/mrueg/kube-state-met.rs/actions/workflows/ci.yml/badge.svg)](https://github.com/mrueg/kube-state-met.rs/actions/workflows/ci.yml)
+[![bench](https://github.com/mrueg/kube-state-met.rs/actions/workflows/bench.yml/badge.svg)](https://github.com/mrueg/kube-state-met.rs/actions/workflows/bench.yml)
+
 > [!WARNING]
 > This is a prototype. It is not an official Kubernetes project and is not supported for production
 > use. Behaviour is checked against upstream kube-state-metrics, but differences remain (see
