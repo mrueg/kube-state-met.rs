@@ -61,6 +61,9 @@ jobs:
         with:
           go-version-file: kube-state-metrics-go/go.mod
           cache-dependency-path: kube-state-metrics-go/go.sum
+      # Four kind nodes exhaust the runner's default inotify limits, and the
+      # last kubelet fails to start (kind's known issue "too many open files").
+      - run: sudo sysctl -w fs.inotify.max_user_watches=524288 fs.inotify.max_user_instances=512
       - run: tools/kind-kwok-bench/run.sh --pods 10000 --scrapes 30
         env:
           KSM_GO_SRC: kube-state-metrics-go
