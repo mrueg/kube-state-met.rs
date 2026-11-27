@@ -22,12 +22,17 @@ use crate::telemetry::ListWatchMetrics;
 /// Picks the API endpoint for a resource scope: namespaced resources in one
 /// namespace use the namespaced path, everything else the cluster-wide one.
 pub trait ScopeApi {
+    /// Cluster-scoped: one store for all namespaces.
+    const CLUSTER: bool;
+
     fn api<K>(client: kube::Client, ns: &str) -> Api<K>
     where
         K: Resource<Scope = Self, DynamicType = ()>;
 }
 
 impl ScopeApi for NamespaceResourceScope {
+    const CLUSTER: bool = false;
+
     fn api<K>(client: kube::Client, ns: &str) -> Api<K>
     where
         K: Resource<Scope = Self, DynamicType = ()>,
@@ -41,6 +46,8 @@ impl ScopeApi for NamespaceResourceScope {
 }
 
 impl ScopeApi for ClusterResourceScope {
+    const CLUSTER: bool = true;
+
     fn api<K>(client: kube::Client, _ns: &str) -> Api<K>
     where
         K: Resource<Scope = Self, DynamicType = ()>,

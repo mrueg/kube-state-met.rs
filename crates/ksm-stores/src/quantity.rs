@@ -6,10 +6,10 @@
 
 use num_bigint::{BigInt, Sign};
 use num_integer::Integer;
-use num_traits::{One, Signed, ToPrimitive, Zero};
+use num_traits::{Signed, ToPrimitive, Zero};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub enum Format {
+enum Format {
     DecimalExponent,
     BinarySI,
     DecimalSI,
@@ -26,8 +26,6 @@ enum Amount {
 #[derive(Clone, Debug)]
 pub struct Quantity {
     amount: Amount,
-    format: Format,
-    s: Option<String>,
 }
 
 #[derive(Debug, PartialEq)]
@@ -212,19 +210,16 @@ fn round_up_to_scale(u: &BigInt, scale: i32, s: i32) -> BigInt {
     }
 }
 
-pub fn parse_quantity(s: &str) -> Result<Quantity, QuantityError> {
+/// `resource.ParseQuantity`.
+pub fn parse(s: &str) -> Result<Quantity, QuantityError> {
     if s.is_empty() {
         return Err(QuantityError::FormatWrong);
     }
     if s == "0" {
-        return Ok(Quantity {
-            amount: Amount::Int { value: 0, scale: 0 },
-            format: Format::DecimalSI,
-            s: Some("0".into()),
-        });
+        return Ok(zero());
     }
     let (positive, value, num, denom, suf) = parse_quantity_string(s)?;
-    let (base, exponent, mut format) = interpret(suf).ok_or(QuantityError::Suffix)?;
+    let (base, exponent, format) = interpret(suf).ok_or(QuantityError::Suffix)?;
     let precision: i32;
     let mut scale: i32 = 0;
     let mut mantissa: i64 = 1;
@@ -251,17 +246,11 @@ pub fn parse_quantity(s: &str) -> Result<Quantity, QuantityError> {
                 if !positive {
                     result = -result;
                 }
-                let canonical = match format {
-                    Format::BinarySI => exponent % 10 == 0 && (v & 7) != 0,
-                    _ => scale % 3 == 0 && !shifted.ends_with("000") && !shifted.starts_with('0'),
-                };
                 return Ok(Quantity {
                     amount: Amount::Int {
                         value: result,
                         scale,
                     },
-                    format,
-                    s: canonical.then(|| s.to_string()),
                 });
             }
         }
@@ -286,12 +275,6 @@ pub fn parse_quantity(s: &str) -> Result<Quantity, QuantityError> {
             dscale = 0;
         }
     }
-    if format == Format::BinarySI
-        && !mag.is_zero()
-        && cmp_dec(&mag, dscale, &BigInt::one(), 0).is_lt()
-    {
-        format = Format::DecimalSI;
-    }
     if negative {
         mag = -mag;
     }
@@ -300,8 +283,6 @@ pub fn parse_quantity(s: &str) -> Result<Quantity, QuantityError> {
             unscaled: mag,
             scale: dscale,
         },
-        format,
-        s: None,
     })
 }
 
@@ -440,178 +421,6 @@ impl Quantity {
         }
         base * go_pow10(exponent)
     }
-
-    fn as_dec(&self) -> (BigInt, i32) {
-        match &self.amount {
-            Amount::Int { value, scale } => (BigInt::from(*value), scale.wrapping_neg()),
-            Amount::Dec { unscaled, scale } => (unscaled.clone(), *scale),
-        }
-    }
-
-    /// quantity.go:425 CanonicalizeBytes + :680 String
-    pub fn to_string_go(&self) -> String {
-        if let Some(s) = &self.s {
-            return s.clone();
-        }
-        if self.is_zero() {
-            return "0".into();
-        }
-        let mut format = self.format;
-        let mut rounded: Option<Amount> = None;
-        if format == Format::BinarySI {
-            let (u, s) = self.as_dec();
-            let gt = cmp_dec(&u, s, &BigInt::from(-1024), 0).is_gt();
-            let lt = cmp_dec(&u, s, &BigInt::from(1024), 0).is_lt();
-            if gt && lt {
-                format = Format::DecimalSI;
-            } else {
-                let (r, exact) = self.as_scale0();
-                if !exact {
-                    format = Format::DecimalSI
-                } else {
-                    rounded = Some(r)
-                }
-            }
-        }
-        match format {
-            Format::DecimalExponent | Format::DecimalSI => {
-                let (num, exp) = canonical_bytes(&self.amount);
-                let suffix = if format == Format::DecimalSI {
-                    match exp {
-                        -9 => "n",
-                        -6 => "u",
-                        -3 => "m",
-                        3 => "k",
-                        6 => "M",
-                        9 => "G",
-                        12 => "T",
-                        15 => "P",
-                        18 => "E",
-                        _ => "",
-                    }
-                    .to_string()
-                } else if exp == 0 {
-                    String::new()
-                } else {
-                    format!("e{exp}")
-                };
-                num + &suffix
-            }
-            Format::BinarySI => {
-                let (num, exp) = canonical_base1024(rounded.as_ref().unwrap_or(&self.amount));
-                let suffix = match exp.wrapping_mul(10) {
-                    10 => "Ki",
-                    20 => "Mi",
-                    30 => "Gi",
-                    40 => "Ti",
-                    50 => "Pi",
-                    60 => "Ei",
-                    _ => "",
-                };
-                num + suffix
-            }
-        }
-    }
-
-    fn as_scale0(&self) -> (Amount, bool) {
-        match &self.amount {
-            Amount::Int { value, scale } => {
-                if *scale >= 0 {
-                    return (self.amount.clone(), true);
-                }
-                let (r, exact) = negative_scale_i64(*value, -scale);
-                (Amount::Int { value: r, scale: 0 }, exact)
-            }
-            Amount::Dec { unscaled, scale } => {
-                let neg = unscaled.is_negative();
-                let r = round_up_to_scale(&unscaled.abs(), *scale, 0);
-                let r = if neg { -r } else { r };
-                let exact = cmp_dec(&r, 0, unscaled, *scale).is_eq();
-                (
-                    Amount::Dec {
-                        unscaled: r,
-                        scale: 0,
-                    },
-                    exact,
-                )
-            }
-        }
-    }
-}
-
-fn canonical_bytes(a: &Amount) -> (String, i32) {
-    match a {
-        Amount::Int { value, scale } => {
-            let mut amount = *value;
-            let mut exponent = *scale;
-            let neg = amount < 0;
-            let mut m = amount.unsigned_abs() as i64;
-            while m >= 10 && m % 10 == 0 {
-                m /= 10;
-                exponent = exponent.wrapping_add(1);
-            }
-            amount = if neg { -m } else { m };
-            let r = exponent % 3;
-            let fixed = match r {
-                1 | -2 => amount.checked_mul(10).map(|x| (x, exponent - 1)),
-                2 | -1 => amount.checked_mul(100).map(|x| (x, exponent - 2)),
-                _ => Some((amount, exponent)),
-            };
-            match fixed {
-                Some((x, e)) => (x.to_string(), e),
-                None => canonical_bytes(&Amount::Dec {
-                    unscaled: BigInt::from(*value),
-                    scale: scale.wrapping_neg(),
-                }),
-            }
-        }
-        Amount::Dec { unscaled, scale } => {
-            let mut amount = unscaled.clone();
-            let mut exponent = scale.wrapping_neg();
-            let ten = BigInt::from(10);
-            while !amount.is_zero() {
-                let (q, r) = amount.div_mod_floor(&ten);
-                if !r.is_zero() {
-                    break;
-                }
-                amount = q;
-                exponent += 1;
-            }
-            while exponent % 3 != 0 {
-                amount *= 10;
-                exponent -= 1;
-            }
-            (amount.to_string(), exponent)
-        }
-    }
-}
-
-fn canonical_base1024(a: &Amount) -> (String, i32) {
-    let v: BigInt = match a {
-        Amount::Int { value, scale } => match positive_scale_i64(*value, *scale) {
-            Some(v) => BigInt::from(v),
-            None => {
-                let (u, s) = (BigInt::from(*value), scale.wrapping_neg());
-                round_up_signed(&u, s)
-            }
-        },
-        Amount::Dec { unscaled, scale } => round_up_signed(unscaled, *scale),
-    };
-    let k = BigInt::from(1024);
-    let (mut amount, mut times) = (v, 0);
-    while !amount.is_zero() {
-        let (q, r) = amount.div_mod_floor(&k);
-        if !r.is_zero() {
-            break;
-        }
-        amount = q;
-        times += 1;
-    }
-    (amount.to_string(), times)
-}
-fn round_up_signed(u: &BigInt, s: i32) -> BigInt {
-    let r = round_up_to_scale(&u.abs(), s, 0);
-    if u.is_negative() { -r } else { r }
 }
 
 /// math.Pow10 (math/pow10.go:31) with Go's tables.
@@ -658,7 +467,8 @@ fn big_to_f64(x: &BigInt) -> f64 {
     if neg { -f } else { f }
 }
 
-fn convert_value_to_f64(q: &Quantity) -> f64 {
+/// `convertValueToFloat64` of `internal/store/utils.go`.
+pub fn ksm_float(q: &Quantity) -> f64 {
     if q.value() > MAX_MILLI_VALUE {
         q.value() as f64
     } else {
@@ -678,21 +488,6 @@ impl std::fmt::Display for QuantityError {
 
 impl std::error::Error for QuantityError {}
 
-/// `resource.ParseQuantity`.
-pub fn parse(s: &str) -> Result<Quantity, QuantityError> {
-    parse_quantity(s)
-}
-
-/// `convertValueToFloat64` of `internal/store/utils.go`.
-pub fn ksm_float(q: &Quantity) -> f64 {
-    convert_value_to_f64(q)
-}
-
-/// `convertValueToFloat64` of a quantity string; `None` when it does not parse.
-pub fn parse_ksm_float(s: &str) -> Option<f64> {
-    parse(s).ok().map(|q| ksm_float(&q))
-}
-
 /// The quantity a k8s-openapi `Quantity` holds. The API server only sends
 /// valid quantities (Go fails to decode the whole object otherwise), so an
 /// unparseable one is treated as zero.
@@ -704,8 +499,6 @@ pub fn from_k8s(q: &k8s_openapi::apimachinery::pkg::api::resource::Quantity) -> 
 pub fn zero() -> Quantity {
     Quantity {
         amount: Amount::Int { value: 0, scale: 0 },
-        format: Format::DecimalSI,
-        s: None,
     }
 }
 

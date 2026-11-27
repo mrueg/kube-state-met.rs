@@ -7,9 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "certificatesigningrequests";
 pub const GO_TYPE: &str = "*v1.CertificateSigningRequest";
-pub const CLUSTER_SCOPED: bool = true;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 pub fn families(
     allow_annotations: &[String],
@@ -63,15 +60,6 @@ pub fn families(
         },
     );
     f.build()
-}
-
-/// `float64(n)` of a length or count.
-#[expect(
-    clippy::cast_precision_loss,
-    reason = "Go converts int to float64 the same way"
-)]
-fn usize_f64(n: usize) -> f64 {
-    n as f64
 }
 
 /// `addCSRConditionMetrics`: the number of Approved, Denied and Failed

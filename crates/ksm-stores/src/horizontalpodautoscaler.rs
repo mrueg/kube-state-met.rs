@@ -12,9 +12,6 @@ use crate::util::*;
 
 pub const NAME: &str = "horizontalpodautoscalers";
 pub const GO_TYPE: &str = "*v2.HorizontalPodAutoscaler";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// `targetMetricLabels`.
 const TARGET_METRIC_LABELS: &[&str] = &["metric_name", "metric_target_type", "container"];
@@ -115,14 +112,7 @@ pub fn families(
         Gauge,
         Stable,
         "",
-        |a| {
-            #[expect(
-                clippy::cast_precision_loss,
-                reason = "Go converts int64 to float64 the same way"
-            )]
-            let g = a.metadata.generation.unwrap_or(0) as f64;
-            vec![Metric::value(g)]
-        },
+        |a| generation_metric(&a.metadata),
     )
     .add(
         "kube_horizontalpodautoscaler_spec_max_replicas",

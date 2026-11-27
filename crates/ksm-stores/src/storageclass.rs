@@ -7,9 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "storageclasses";
 pub const GO_TYPE: &str = "*v1.StorageClass";
-pub const CLUSTER_SCOPED: bool = true;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// `v1.PersistentVolumeReclaimDelete`, used when the reclaim policy is unset.
 const DEFAULT_RECLAIM_POLICY: &str = "Delete";

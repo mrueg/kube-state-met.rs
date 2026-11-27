@@ -7,9 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "mutatingadmissionpolicies";
 pub const GO_TYPE: &str = "*v1.MutatingAdmissionPolicy";
-pub const CLUSTER_SCOPED: bool = true;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 pub fn families(
     _allow_annotations: &[String],

@@ -7,9 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "deployments";
 pub const GO_TYPE: &str = "*v1.Deployment";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// `allowedDeploymentReasons`; any other reason is reported as `unknown`.
 const ALLOWED_DEPLOYMENT_REASONS: [&str; 11] = [
@@ -201,7 +198,7 @@ pub fn families(
         Gauge,
         Stable,
         "",
-        |d| vec![Metric::value(i64_f64(d.metadata.generation.unwrap_or(0)))],
+        |d| generation_metric(&d.metadata),
     )
     .add(
         "kube_deployment_deletion_timestamp",

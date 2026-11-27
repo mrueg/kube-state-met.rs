@@ -7,17 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "networkpolicies";
 pub const GO_TYPE: &str = "*v1.NetworkPolicy";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
-
-#[expect(
-    clippy::cast_precision_loss,
-    reason = "Go converts the slice length to float64 the same way"
-)]
-fn len_f64(n: usize) -> f64 {
-    n as f64
-}
 
 pub fn families(
     allow_annotations: &[String],
@@ -60,7 +49,7 @@ pub fn families(
                 .as_ref()
                 .and_then(|sp| sp.ingress.as_ref())
                 .map_or(0, Vec::len);
-            vec![Metric::value(len_f64(n))]
+            vec![Metric::value(usize_f64(n))]
         },
     )
     .add(
@@ -75,7 +64,7 @@ pub fn families(
                 .as_ref()
                 .and_then(|sp| sp.egress.as_ref())
                 .map_or(0, Vec::len);
-            vec![Metric::value(len_f64(n))]
+            vec![Metric::value(usize_f64(n))]
         },
     );
     f.build()

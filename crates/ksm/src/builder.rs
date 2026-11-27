@@ -94,7 +94,6 @@ impl Builder {
         settings: &WatchSettings,
         name: &'static str,
         go_type: &'static str,
-        cluster_scoped: bool,
         families: fn(&[String], &[String]) -> Vec<FamilyGenerator<K>>,
     ) -> MetricsWriter
     where
@@ -108,7 +107,7 @@ impl Builder {
         let headers = Arc::new(Headers::new(extract_headers(&fams)));
         let fams = Arc::new(fams);
         let all = [String::new()];
-        let namespaces: &[String] = if cluster_scoped {
+        let namespaces: &[String] = if <K::Scope as ScopeApi>::CLUSTER {
             &all
         } else {
             &self.namespaces
@@ -206,7 +205,6 @@ impl Builder {
                             settings,
                             ksm_stores::$module::NAME,
                             ksm_stores::$module::GO_TYPE,
-                            ksm_stores::$module::CLUSTER_SCOPED,
                             ksm_stores::$module::families,
                         )),)*
                         _ => None,

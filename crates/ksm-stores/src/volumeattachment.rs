@@ -7,9 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "volumeattachments";
 pub const GO_TYPE: &str = "*v1.VolumeAttachment";
-pub const CLUSTER_SCOPED: bool = true;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// Go's `volumeAttachmentMetricFamilies` takes no allow lists: the labels
 /// family always exposes every label.

@@ -8,9 +8,6 @@ use crate::util::*;
 
 pub const NAME: &str = "cronjobs";
 pub const GO_TYPE: &str = "*v1.CronJob";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 fn spec(j: &CronJob) -> &CronJobSpec {
     &j.spec
@@ -49,14 +46,6 @@ fn next_scheduled_time(j: &CronJob) -> Result<i64, String> {
         return Ok(sched.next_unix(t.0.as_nanosecond()));
     }
     Err("createdTime and lastScheduleTime are both zero".into())
-}
-
-#[expect(
-    clippy::cast_precision_loss,
-    reason = "Go converts the length to float64 the same way"
-)]
-fn len_f64(n: usize) -> f64 {
-    n as f64
 }
 
 pub fn families(
@@ -107,7 +96,7 @@ pub fn families(
         "",
         |j| {
             let n = status(j).and_then(|s| s.active.as_ref()).map_or(0, Vec::len);
-            vec![Metric::value(len_f64(n))]
+            vec![Metric::value(usize_f64(n))]
         },
     )
     .add(

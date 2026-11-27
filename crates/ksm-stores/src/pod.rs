@@ -14,9 +14,6 @@ use crate::util::*;
 
 pub const NAME: &str = "pods";
 pub const GO_TYPE: &str = "*v1.Pod";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// `podStatusReasons`.
 const POD_STATUS_REASONS: &[&str] = &[

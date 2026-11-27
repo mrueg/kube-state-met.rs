@@ -7,9 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "daemonsets";
 pub const GO_TYPE: &str = "*v1.DaemonSet";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// A status count, 0 when unset (a plain `int32` in Go).
 fn count(d: &DaemonSet, f: fn(&DaemonSetStatus) -> Option<i32>) -> Vec<Metric> {
@@ -106,7 +103,7 @@ pub fn families(
         Gauge,
         Stable,
         "",
-        |d| vec![Metric::value(i64_f64(d.metadata.generation.unwrap_or(0)))],
+        |d| generation_metric(&d.metadata),
     )
     .add(
         "kube_daemonset_deletion_timestamp",

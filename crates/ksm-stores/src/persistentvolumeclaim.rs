@@ -10,9 +10,6 @@ use crate::util::*;
 
 pub const NAME: &str = "persistentvolumeclaims";
 pub const GO_TYPE: &str = "*v1.PersistentVolumeClaim";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// `v1.BetaStorageClassAnnotation`.
 const BETA_STORAGE_CLASS_ANNOTATION: &str = "volume.beta.kubernetes.io/storage-class";

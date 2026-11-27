@@ -7,9 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "replicationcontrollers";
 pub const GO_TYPE: &str = "*v1.ReplicationController";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 fn status(r: &ReplicationController) -> Option<&ReplicationControllerStatus> {
     r.status.as_ref()
@@ -98,7 +95,7 @@ pub fn families(
         Gauge,
         Stable,
         "",
-        |r| vec![Metric::value(i64_f64(r.metadata.generation.unwrap_or(0)))],
+        |r| generation_metric(&r.metadata),
     )
     .add(
         "kube_replicationcontroller_owner",

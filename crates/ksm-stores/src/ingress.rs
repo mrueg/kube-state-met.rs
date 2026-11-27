@@ -7,9 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "ingresses";
 pub const GO_TYPE: &str = "*v1.Ingress";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 pub fn families(
     allow_annotations: &[String],

@@ -74,13 +74,10 @@ fn check<K: DeserializeOwned + 'static>(
 
 macro_rules! dispatch {
     ($($module:ident, $ty:ty, $gofn:literal;)*) => {
-        fn run(rec: &Record) -> Option<Result<(), String>> {
+        fn run(rec: &Record) -> Result<(), String> {
             match rec.families_fn.as_str() {
-                $($gofn => {
-                    if !$module::PORTED { return None; }
-                    Some(check::<$ty>(rec, $module::families))
-                })*
-                other => Some(Err(format!("no store for {other}"))),
+                $($gofn => check::<$ty>(rec, $module::families),)*
+                other => Err(format!("no store for {other}")),
             }
         }
     };
@@ -95,16 +92,15 @@ fn stores_match_go() {
     );
     let data = std::fs::read_to_string(path).expect("golden file");
     let only = std::env::var("GOLDEN_ONLY").ok();
-    let (mut ok, mut skipped, mut failed) = (0, 0, Vec::new());
+    let (mut ok, mut failed) = (0, Vec::new());
     for (i, line) in data.lines().enumerate() {
         let rec: Record = serde_json::from_str(line).expect("valid record");
         if only.as_deref().is_some_and(|o| o != rec.families_fn) {
             continue;
         }
         match run(&rec) {
-            None => skipped += 1,
-            Some(Ok(())) => ok += 1,
-            Some(Err(e)) => failed.push(format!(
+            Ok(()) => ok += 1,
+            Err(e) => failed.push(format!(
                 "line {} {} ({}):\n{e}",
                 i + 1,
                 rec.families_fn,
@@ -112,12 +108,6 @@ fn stores_match_go() {
             )),
         }
     }
-    eprintln!(
-        "golden stores: {ok} match, {} differ, {skipped} not ported",
-        failed.len()
-    );
+    eprintln!("golden stores: {ok} match, {} differ", failed.len());
     assert!(failed.is_empty(), "{}", failed.join("\n\n"));
-    if std::env::var_os("GOLDEN_REQUIRE_ALL").is_some() {
-        assert_eq!(skipped, 0, "stores not ported yet");
-    }
 }

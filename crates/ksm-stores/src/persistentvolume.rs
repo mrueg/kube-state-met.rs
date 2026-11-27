@@ -8,9 +8,6 @@ use crate::util::*;
 
 pub const NAME: &str = "persistentvolumes";
 pub const GO_TYPE: &str = "*v1.PersistentVolume";
-pub const CLUSTER_SCOPED: bool = true;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 fn spec(p: &PersistentVolume) -> Option<&PersistentVolumeSpec> {
     p.spec.as_ref()

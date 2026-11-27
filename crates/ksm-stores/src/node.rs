@@ -8,16 +8,10 @@ use ksm_core::labels::sanitize_label_name;
 use ksm_core::{FamilyGenerator, Metric};
 
 use crate::quantity;
-use crate::resource_names::{
-    is_attachable_volume_resource_name, is_extended_resource_name, is_huge_page_resource_name,
-};
 use crate::util::*;
 
 pub const NAME: &str = "nodes";
 pub const GO_TYPE: &str = "*v1.Node";
-pub const CLUSTER_SCOPED: bool = true;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// `constant.UnitCore`.
 const UNIT_CORE: &str = "core";

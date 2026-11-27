@@ -7,21 +7,14 @@ use crate::util::*;
 
 pub const NAME: &str = "poddisruptionbudgets";
 pub const GO_TYPE: &str = "*v1.PodDisruptionBudget";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// A status field as one sample; Go reads the zero value of a missing status.
 fn status_metric(p: &PodDisruptionBudget, f: fn(&PodDisruptionBudgetStatus) -> f64) -> Vec<Metric> {
     vec![Metric::value(p.status.as_ref().map_or(0.0, f))]
 }
 
-#[expect(
-    clippy::cast_precision_loss,
-    reason = "Go converts int64 to float64 the same way"
-)]
 fn observed_generation(st: &PodDisruptionBudgetStatus) -> f64 {
-    st.observed_generation.unwrap_or(0) as f64
+    i64_f64(st.observed_generation.unwrap_or(0))
 }
 
 pub fn families(

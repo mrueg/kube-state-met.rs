@@ -1,12 +1,10 @@
 //! Metric families of every Kubernetes resource kube-state-metrics exposes
 //! (Go: `internal/store`). One module per resource; each exports `NAME`
 //! (the `--resources` name), `GO_TYPE` (the `resource` label of the list and
-//! watch counters), `CLUSTER_SCOPED`, `PORTED` and
-//! `families(allow_annotations, allow_labels)`.
+//! watch counters) and `families(allow_annotations, allow_labels)`.
 
 pub mod cron;
 pub mod quantity;
-mod resource_names;
 pub mod util;
 
 pub mod certificatesigningrequest;

@@ -7,9 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "services";
 pub const GO_TYPE: &str = "*v1.Service";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// A spec string field, `""` when the spec or the field is unset.
 fn spec_str(sv: &Service, f: fn(&ServiceSpec) -> &Option<String>) -> String {

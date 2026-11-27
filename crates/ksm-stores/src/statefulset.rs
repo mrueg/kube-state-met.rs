@@ -7,9 +7,6 @@ use crate::util::*;
 
 pub const NAME: &str = "statefulsets";
 pub const GO_TYPE: &str = "*v1.StatefulSet";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 fn status(s: &StatefulSet) -> Option<&StatefulSetStatus> {
     s.status.as_ref()
@@ -120,7 +117,7 @@ pub fn families(
         Gauge,
         Stable,
         "",
-        |s| vec![Metric::value(i64_f64(s.metadata.generation.unwrap_or(0)))],
+        |s| generation_metric(&s.metadata),
     )
     .add(
         "kube_statefulset_persistentvolumeclaim_retention_policy",

@@ -8,9 +8,6 @@ use crate::util::*;
 
 pub const NAME: &str = "limitranges";
 pub const GO_TYPE: &str = "*v1.LimitRange";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// Go's `limitRangeMetricFamilies` is a fixed list: it has no annotation or
 /// label families, so the allow lists are unused.

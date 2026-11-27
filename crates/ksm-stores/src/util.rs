@@ -437,3 +437,45 @@ pub fn opt_time_metric(t: Option<&Time>) -> Vec<Metric> {
 pub fn i64_f64(v: i64) -> f64 {
     v as f64
 }
+
+/// `float64` of a length or count (Go's `float64(len(x))`).
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "Go converts int to float64 the same way"
+)]
+pub fn usize_f64(n: usize) -> f64 {
+    n as f64
+}
+
+/// The `*_metadata_generation` sample: `metadata.generation`, 0 when unset.
+pub fn generation_metric(m: &ObjectMeta) -> Vec<Metric> {
+    vec![Metric::value(i64_f64(m.generation.unwrap_or(0)))]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn extended_resource_names() {
+        assert!(is_extended_resource_name("nvidia.com/gpu"));
+        assert!(is_extended_resource_name("example.com/a_b.c"));
+        assert!(!is_extended_resource_name("cpu"));
+        assert!(!is_extended_resource_name("kubernetes.io/foo"));
+        assert!(!is_extended_resource_name("requests.foo/bar"));
+        assert!(!is_extended_resource_name("Example.com/gpu"));
+        assert!(!is_extended_resource_name("a/b/c"));
+        assert!(!is_extended_resource_name("example.com/-gpu"));
+        assert!(!is_extended_resource_name("example..com/gpu"));
+        assert!(!is_extended_resource_name("example.com/"));
+    }
+
+    #[test]
+    fn resource_name_prefixes() {
+        assert!(is_huge_page_resource_name("hugepages-2Mi"));
+        assert!(is_attachable_volume_resource_name(
+            "attachable-volumes-aws-ebs"
+        ));
+        assert!(!is_huge_page_resource_name("memory"));
+    }
+}

@@ -8,9 +8,6 @@ use crate::util::*;
 
 pub const NAME: &str = "jobs";
 pub const GO_TYPE: &str = "*v1.Job";
-pub const CLUSTER_SCOPED: bool = false;
-/// Whether this module is ported (the front door falls back to Go otherwise).
-pub const PORTED: bool = true;
 
 /// `jobFailureReasons`: the reasons of the stable `kube_job_status_failed`.
 const JOB_FAILURE_REASONS: [&str; 3] = ["BackoffLimitExceeded", "DeadlineExceeded", "Evicted"];
