@@ -17,7 +17,7 @@ num-bigint = "0.5"
 num-integer = "0.1"
 num-traits = "0.2"
 # Time zones for CronJob schedules (Go embeds time/tzdata the same way).
-jiff = { version = "0.2.46", features = ["tzdb-bundle-always"] }
+jiff = { version = "1.0.3", features = ["tzdb-bundle-always"] }
 
 
 [dev-dependencies]
