@@ -97,10 +97,6 @@ impl AllowDenyList {
         }
     }
 
-    pub fn is_excluded(&self, item: &str) -> bool {
-        !self.is_included(item)
-    }
-
     /// Text for the startup log line.
     pub fn status(&self) -> String {
         let items: Vec<&str> = self.list.iter().map(String::as_str).collect();

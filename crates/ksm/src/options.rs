@@ -118,9 +118,9 @@ impl Default for KlogFlags {
 ///
 /// Go durations can be negative; [`Duration`] cannot. A negative value parsed
 /// for a server timeout or the shutdown delay is stored as zero, which Go
-/// treats the same way. A negative `--auto-gomemlimit-refresh-interval` is
-/// remembered in `auto_go_memlimit_refresh_interval_negative`, so
-/// [`Options::validate`] rejects it as Go does.
+/// treats the same way. `--auto-gomemlimit-refresh-interval` keeps Go's
+/// signed nanoseconds, so [`Options::validate`] rejects a negative one as Go
+/// does.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Options {
     pub annotations_allow_list: BTreeMap<String, Vec<String>>,
@@ -161,10 +161,8 @@ pub struct Options {
     pub server_read_header_timeout: Duration,
     pub shutdown_delay: Duration,
 
-    pub auto_go_memlimit_refresh_interval: Duration,
-    /// Whether the refresh interval was given as a negative duration; its
-    /// magnitude is in `auto_go_memlimit_refresh_interval`.
-    pub auto_go_memlimit_refresh_interval_negative: bool,
+    /// `--auto-gomemlimit-refresh-interval` in nanoseconds (a Go duration).
+    pub auto_go_memlimit_refresh_interval_nanos: i64,
 
     pub shard: i32,
     pub auto_go_memlimit: bool,
@@ -217,8 +215,7 @@ impl Default for Options {
             server_idle_timeout: Duration::from_secs(300),
             server_read_header_timeout: Duration::from_secs(5),
             shutdown_delay: Duration::ZERO,
-            auto_go_memlimit_refresh_interval: Duration::ZERO,
-            auto_go_memlimit_refresh_interval_negative: false,
+            auto_go_memlimit_refresh_interval_nanos: 0,
             shard: 0,
             auto_go_memlimit: false,
             custom_resources_only: false,
@@ -547,11 +544,6 @@ fn klog_trace_location(value: &str) -> Result<(), String> {
     Ok(())
 }
 
-/// Splits a duration in Go nanoseconds into a [`Duration`] and its sign.
-fn split_nanos(nanos: i64) -> (Duration, bool) {
-    (Duration::from_nanos(nanos.unsigned_abs()), nanos < 0)
-}
-
 /// A Go duration flag/field whose negative values behave like zero.
 fn non_negative(nanos: i64) -> Duration {
     if nanos < 0 {
@@ -561,29 +553,14 @@ fn non_negative(nanos: i64) -> Duration {
     }
 }
 
-/// `MetricSet.Set` / `ResourceSet.Set`: adds comma-separated entries.
-fn add_to_set(set: &mut BTreeSet<String>, value: &str) {
-    for item in value.split(',') {
-        let item = item.trim();
-        if !item.is_empty() {
-            set.insert(item.to_owned());
-        }
-    }
-}
-
-/// `NamespaceList.Set`: appends comma-separated entries.
-fn append_to_list(list: &mut Vec<String>, value: &str) {
-    for item in value.split(',') {
-        let item = item.trim();
-        if !item.is_empty() {
-            list.push(item.to_owned());
-        }
-    }
-}
-
-/// Go's `strings.TrimSpace`, which trims Unicode white space.
-fn trim_space(s: &str) -> &str {
-    s.trim()
+/// The comma-separated entries of a `MetricSet`, `ResourceSet` or
+/// `NamespaceList` flag value (trimmed, empty ones skipped).
+fn csv_items(value: &str) -> impl Iterator<Item = String> + '_ {
+    value
+        .split(',')
+        .map(str::trim)
+        .filter(|i| !i.is_empty())
+        .map(str::to_owned)
 }
 
 fn too_many_wildcards(map: &BTreeMap<String, Vec<String>>) -> bool {
@@ -601,15 +578,15 @@ pub fn parse_labels_allow_list(value: &str) -> Result<BTreeMap<String, Vec<Strin
     while !rest.is_empty() {
         let (name, after) = rest.split_once("=[").ok_or(ERR_LABELS_ALLOW_LIST_FORMAT)?;
         let (labels, after) = after.split_once(']').ok_or(ERR_LABELS_ALLOW_LIST_FORMAT)?;
-        let name = trim_space(name);
+        let name = name.trim();
         if name.is_empty() || name.contains(['[', ']', ',', '=']) || labels.contains(['[', '=']) {
             return Err(ERR_LABELS_ALLOW_LIST_FORMAT.to_owned());
         }
         let entry = m.entry(name.to_owned()).or_default();
         entry.clear();
-        if !trim_space(labels).is_empty() {
+        if !labels.trim().is_empty() {
             for label in labels.split(',') {
-                let label = trim_space(label);
+                let label = label.trim();
                 if label.is_empty() {
                     return Err(ERR_LABELS_ALLOW_LIST_FORMAT.to_owned());
                 }
@@ -671,11 +648,7 @@ impl Options {
                     goparse::parse_float(value).map_err(|e| num_error("ParseFloat", value, e))?;
             }
             "auto-gomemlimit-refresh-interval" => {
-                let nanos = goparse::parse_duration(value)?;
-                (
-                    self.auto_go_memlimit_refresh_interval,
-                    self.auto_go_memlimit_refresh_interval_negative,
-                ) = split_nanos(nanos);
+                self.auto_go_memlimit_refresh_interval_nanos = goparse::parse_duration(value)?;
             }
             "config" => self.config = value.to_owned(),
             "continue-without-config" => self.continue_without_config = pflag_bool(value)?,
@@ -691,21 +664,21 @@ impl Options {
             "help" => self.help = pflag_bool(value)?,
             "host" => self.host = value.to_owned(),
             "kubeconfig" => self.kubeconfig = value.to_owned(),
-            "metric-allowlist" => add_to_set(&mut self.metric_allowlist, value),
+            "metric-allowlist" => self.metric_allowlist.extend(csv_items(value)),
             "metric-annotations-allowlist" => {
                 self.annotations_allow_list = parse_labels_allow_list(value)?;
             }
-            "metric-denylist" => add_to_set(&mut self.metric_denylist, value),
+            "metric-denylist" => self.metric_denylist.extend(csv_items(value)),
             "metric-labels-allowlist" => self.labels_allow_list = parse_labels_allow_list(value)?,
-            "metric-opt-in-list" => add_to_set(&mut self.metric_opt_in_list, value),
-            "namespaces" => append_to_list(&mut self.namespaces, value),
-            "namespaces-denylist" => append_to_list(&mut self.namespaces_denylist, value),
+            "metric-opt-in-list" => self.metric_opt_in_list.extend(csv_items(value)),
+            "namespaces" => self.namespaces.extend(csv_items(value)),
+            "namespaces-denylist" => self.namespaces_denylist.extend(csv_items(value)),
             "node" => self.node = value.to_owned(),
             "object-limit" => self.object_limit = pflag_int(value, 64)?,
             "pod" => self.pod = value.to_owned(),
             "pod-namespace" => self.namespace = value.to_owned(),
             "port" => self.port = pflag_int(value, 64)?,
-            "resources" => add_to_set(&mut self.resources, value),
+            "resources" => self.resources.extend(csv_items(value)),
             "server-idle-timeout" => {
                 self.server_idle_timeout = non_negative(goparse::parse_duration(value)?);
             }
@@ -751,14 +724,10 @@ impl Options {
                 goparse::format_f(ratio)
             ));
         }
-        if self.auto_go_memlimit_refresh_interval_negative
-            && !self.auto_go_memlimit_refresh_interval.is_zero()
-        {
-            let nanos = i64::try_from(self.auto_go_memlimit_refresh_interval.as_nanos())
-                .unwrap_or(i64::MAX);
+        if self.auto_go_memlimit_refresh_interval_nanos < 0 {
             return Err(format!(
                 "value for --auto-gomemlimit-refresh-interval={} must be equal or greater than 0",
-                goparse::format_duration(-nanos)
+                goparse::format_duration(self.auto_go_memlimit_refresh_interval_nanos)
             ));
         }
         if self.object_limit < 0 {
@@ -885,39 +854,30 @@ impl Options {
             "port" => set(&mut self.port, d.int(value, 64, "int")),
             "telemetry_port" => set(&mut self.telemetry_port, d.int(value, 64, "int")),
             "total_shards" => set(&mut self.total_shards, d.int(value, 64, "int")),
-            "server_read_timeout" => {
-                if let Decoded::Set(n) = d.duration(value) {
-                    self.server_read_timeout = non_negative(n);
-                }
-            }
-            "server_write_timeout" => {
-                if let Decoded::Set(n) = d.duration(value) {
-                    self.server_write_timeout = non_negative(n);
-                }
-            }
-            "server_idle_timeout" => {
-                if let Decoded::Set(n) = d.duration(value) {
-                    self.server_idle_timeout = non_negative(n);
-                }
-            }
-            "server_read_header_timeout" => {
-                if let Decoded::Set(n) = d.duration(value) {
-                    self.server_read_header_timeout = non_negative(n);
-                }
-            }
-            "shutdown_delay" => {
-                if let Decoded::Set(n) = d.duration(value) {
-                    self.shutdown_delay = non_negative(n);
-                }
-            }
-            "auto-gomemlimit-refresh-interval" => {
-                if let Decoded::Set(n) = d.duration(value) {
-                    (
-                        self.auto_go_memlimit_refresh_interval,
-                        self.auto_go_memlimit_refresh_interval_negative,
-                    ) = split_nanos(n);
-                }
-            }
+            "server_read_timeout" => set(
+                &mut self.server_read_timeout,
+                d.duration(value).map(non_negative),
+            ),
+            "server_write_timeout" => set(
+                &mut self.server_write_timeout,
+                d.duration(value).map(non_negative),
+            ),
+            "server_idle_timeout" => set(
+                &mut self.server_idle_timeout,
+                d.duration(value).map(non_negative),
+            ),
+            "server_read_header_timeout" => set(
+                &mut self.server_read_header_timeout,
+                d.duration(value).map(non_negative),
+            ),
+            "shutdown_delay" => set(
+                &mut self.shutdown_delay,
+                d.duration(value).map(non_negative),
+            ),
+            "auto-gomemlimit-refresh-interval" => set(
+                &mut self.auto_go_memlimit_refresh_interval_nanos,
+                d.duration(value),
+            ),
             "shard" => {
                 if let Decoded::Set(v) = d.int(value, 32, "int32") {
                     self.shard = i32::try_from(v).unwrap_or_default();
@@ -964,10 +924,15 @@ impl Options {
                 self.annotations_allow_list = config.annotations_allow_list;
             }
         }
-        if self.custom_resource_config_file.is_empty()
-            && !self.custom_resource_config_file_deprecated.is_empty()
-        {
-            self.custom_resource_config_file = self.custom_resource_config_file_deprecated.clone();
+        self.apply_deprecated_crs_file_alias();
+    }
+
+    /// The deprecated `custom_resource_config_file` key fills in
+    /// `custom_resource_state_config_file` when that is unset.
+    pub fn apply_deprecated_crs_file_alias(&mut self) {
+        if self.custom_resource_config_file.is_empty() {
+            self.custom_resource_config_file
+                .clone_from(&self.custom_resource_config_file_deprecated);
         }
     }
 

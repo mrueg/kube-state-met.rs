@@ -60,18 +60,6 @@ fn sorted_lines(s: &str) -> Vec<&str> {
     v
 }
 
-fn go_format_float(f: f64) -> String {
-    if f.is_nan() {
-        "NaN".to_owned()
-    } else if f == f64::INFINITY {
-        "+Inf".to_owned()
-    } else if f == f64::NEG_INFINITY {
-        "-Inf".to_owned()
-    } else {
-        go_float_string(f)
-    }
-}
-
 /// Checks one metrics record; returns the number of compared families.
 fn check_metrics(
     r: &Record,
@@ -199,7 +187,7 @@ fn crs_matches_go() {
                 tofloat += 1;
                 let got = ksm_crs::to_float64(Some(&r.input), r.nil_is_zero);
                 match (&got, &r.value, &r.error) {
-                    (Ok(v), Some(want), None) if go_format_float(*v) == *want => {}
+                    (Ok(v), Some(want), None) if go_float_string(*v) == *want => {}
                     (Err(e), None, Some(want)) if e == want => {}
                     _ => failures.push(format!(
                         "toFloat64({}, {}) = {got:?}, want value {:?} error {:?}",

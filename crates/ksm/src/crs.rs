@@ -93,14 +93,14 @@ pub fn factories(
         }
     }
     let mut out: Vec<Factory> = Vec::new();
-    let mut seen: BTreeMap<String, ()> = BTreeMap::new();
+    let mut seen = std::collections::BTreeSet::new();
     for r in resolved {
         let gvk = r.gvk().clone();
         r.family_names()
             .map_err(|e| format!("failed to create metrics factory for {gvk}: {e}"))?;
         let plural = r.get_resource_name();
         let gvr = gvr_string(&gvk.group, &gvk.version, &plural);
-        if seen.insert(gvr.clone(), ()).is_some() {
+        if !seen.insert(gvr.clone()) {
             tracing::info!(GVR = %gvr, "reloaded factory");
         }
         let api_version = if gvk.group.is_empty() {

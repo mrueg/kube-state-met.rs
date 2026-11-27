@@ -128,10 +128,7 @@ async fn run_wrapper(mut opts: options::Options) -> ExitCode {
                             tracing::warn!(
                                 "The 'custom_resource_config_file' config key is deprecated and will be removed in a future release; use 'custom_resource_state_config_file' instead"
                             );
-                            if merged.custom_resource_config_file.is_empty() {
-                                merged.custom_resource_config_file =
-                                    merged.custom_resource_config_file_deprecated.clone();
-                            }
+                            merged.apply_deprecated_crs_file_alias();
                         }
                         opts = merged;
                     }
@@ -178,18 +175,22 @@ async fn run_wrapper(mut opts: options::Options) -> ExitCode {
     let mut current = start_run(&mut runs, &base);
     let shutdown = shutdown_signal();
     tokio::pin!(shutdown);
-    let failed = |r: Result<(bool, Result<(), String>), tokio::task::JoinError>| match r {
-        // `KSMRunOrDie`: a run stopped by its context ends without an error.
-        Ok((true, _) | (false, Ok(()))) => None,
-        Ok((false, Err(e))) => Some(e),
-        Err(e) => Some(e.to_string()),
+    // `KSMRunOrDie`: a failed run is logged and ends the process; a run
+    // stopped by its context ends without an error.
+    let failed = |r: Result<(bool, Result<(), String>), tokio::task::JoinError>| {
+        let e = match r {
+            Ok((true, _) | (false, Ok(()))) => return false,
+            Ok((false, Err(e))) => e,
+            Err(e) => e.to_string(),
+        };
+        logging::error_go("wrapper.go:48", "Failed to run kube-state-metrics", &e);
+        true
     };
     'main: loop {
         tokio::select! {
             () = &mut shutdown => break,
             Some(r) = runs.join_next(), if !runs.is_empty() => {
-                if let Some(e) = failed(r) {
-                    logging::error_go("wrapper.go:48", "Failed to run kube-state-metrics", &e);
+                if failed(r) {
                     return ExitCode::FAILURE;
                 }
             }
@@ -210,8 +211,7 @@ async fn run_wrapper(mut opts: options::Options) -> ExitCode {
                         () = &mut shutdown => break 'main,
                         () = &mut wait => break,
                         Some(r) = runs.join_next(), if !runs.is_empty() => {
-                            if let Some(e) = failed(r) {
-                                logging::error_go("wrapper.go:48", "Failed to run kube-state-metrics", &e);
+                            if failed(r) {
                                 return ExitCode::FAILURE;
                             }
                         }
@@ -226,8 +226,7 @@ async fn run_wrapper(mut opts: options::Options) -> ExitCode {
     tracing::info!("Received termination signal, shutting down kube-state-metrics");
     current.0.cancel();
     while let Some(r) = runs.join_next().await {
-        if let Some(e) = failed(r) {
-            logging::error_go("wrapper.go:48", "Failed to run kube-state-metrics", &e);
+        if failed(r) {
             return ExitCode::FAILURE;
         }
     }
@@ -259,9 +258,7 @@ fn reloaded_options(base: &options::Options) -> Option<options::Options> {
         let text = std::fs::read_to_string(server::clean_path(&opts.config)).ok()?;
         opts.merge_config_yaml(&text).ok()?;
     }
-    if opts.custom_resource_config_file.is_empty() {
-        opts.custom_resource_config_file = opts.custom_resource_config_file_deprecated.clone();
-    }
+    opts.apply_deprecated_crs_file_alias();
     Some(opts)
 }
 

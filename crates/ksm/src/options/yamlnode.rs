@@ -217,6 +217,16 @@ pub(crate) enum Decoded<T> {
     Failed,
 }
 
+impl<T> Decoded<T> {
+    pub(crate) fn map<U>(self, f: impl FnOnce(T) -> U) -> Decoded<U> {
+        match self {
+            Decoded::Set(v) => Decoded::Set(f(v)),
+            Decoded::Keep => Decoded::Keep,
+            Decoded::Failed => Decoded::Failed,
+        }
+    }
+}
+
 /// yaml.v3's decoder state: the type errors collected so far.
 #[derive(Default)]
 pub(crate) struct Decoder {

@@ -91,7 +91,6 @@ fn canonical(o: &Options) -> Value {
     } else {
         json!("-Inf")
     };
-    let refresh = nanos(o.auto_go_memlimit_refresh_interval);
     json!({
         "annotations_allow_list": o.annotations_allow_list,
         "labels_allow_list": o.labels_allow_list,
@@ -124,8 +123,7 @@ fn canonical(o: &Options) -> Value {
         "server_idle_timeout": nanos(o.server_idle_timeout),
         "server_read_header_timeout": nanos(o.server_read_header_timeout),
         "shutdown_delay": nanos(o.shutdown_delay),
-        "auto_go_memlimit_refresh_interval":
-            if o.auto_go_memlimit_refresh_interval_negative { -refresh } else { refresh },
+        "auto_go_memlimit_refresh_interval": o.auto_go_memlimit_refresh_interval_nanos,
         "shard": o.shard,
         "auto_go_memlimit": o.auto_go_memlimit,
         "custom_resources_only": o.custom_resources_only,

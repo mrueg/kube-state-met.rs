@@ -25,7 +25,7 @@ use std::collections::BTreeMap;
 use axum::routing::MethodRouter;
 
 use crate::auth::{AuthFilter, auth_middleware};
-use crate::builder::{Builder, CustomResourceStore, GvkStop};
+use crate::builder::{Builder, CustomResourceStore};
 use crate::client::{VERSION, create_client, go_arch};
 use crate::crs::StoreConfigurer;
 use crate::discovery::{CrDiscoverer, CrdCounters};
@@ -72,6 +72,16 @@ struct ConfigMetrics {
     success_time: Vector,
 }
 
+impl ConfigMetrics {
+    /// A config file of `kind` loaded: success, its time and its hash.
+    fn loaded(&self, kind: &str, file: &str, bytes: &[u8]) {
+        self.success.set(&[kind, file], 1.0);
+        self.success_time.set(&[kind, file], unix_now());
+        self.hash
+            .set(&[kind, file], md5_hash_as_metric_value(bytes));
+    }
+}
+
 /// Self-metrics registered at the start of every run.
 pub struct SelfMetrics {
     pub registry: Registry,
@@ -79,10 +89,7 @@ pub struct SelfMetrics {
     config: ConfigMetrics,
     pub list_watch: ListWatchMetrics,
     pub sharding: ShardingMetrics,
-    pub crd_add: Vector,
-    pub crd_update: Vector,
-    pub crd_delete: Vector,
-    pub crd_cache: Vector,
+    pub crd: CrdCounters,
 }
 
 impl SelfMetrics {
@@ -127,22 +134,24 @@ impl SelfMetrics {
                 &["type", "filename"],
             ),
         };
-        let crd_add = r.counter(
-            "kube_state_metrics_custom_resource_state_add_events_total",
-            "Number of times that the CRD informer triggered the add event.",
-        );
-        let crd_update = r.counter(
-            "kube_state_metrics_custom_resource_state_update_events_total",
-            "Number of times that the CRD informer triggered the update event.",
-        );
-        let crd_delete = r.counter(
-            "kube_state_metrics_custom_resource_state_delete_events_total",
-            "Number of times that the CRD informer triggered the remove event.",
-        );
-        let crd_cache = r.gauge(
-            "kube_state_metrics_custom_resource_state_cache",
-            "Net amount of CRDs affecting the cache currently.",
-        );
+        let crd = CrdCounters {
+            add: r.counter(
+                "kube_state_metrics_custom_resource_state_add_events_total",
+                "Number of times that the CRD informer triggered the add event.",
+            ),
+            update: r.counter(
+                "kube_state_metrics_custom_resource_state_update_events_total",
+                "Number of times that the CRD informer triggered the update event.",
+            ),
+            delete: r.counter(
+                "kube_state_metrics_custom_resource_state_delete_events_total",
+                "Number of times that the CRD informer triggered the remove event.",
+            ),
+            cache: r.gauge(
+                "kube_state_metrics_custom_resource_state_cache",
+                "Net amount of CRDs affecting the cache currently.",
+            ),
+        };
         let list_watch = ListWatchMetrics::new(&r);
         let sharding = ShardingMetrics::new(&r);
         SelfMetrics {
@@ -151,10 +160,7 @@ impl SelfMetrics {
             config,
             list_watch,
             sharding,
-            crd_add,
-            crd_update,
-            crd_delete,
-            crd_cache,
+            crd,
         }
     }
 }
@@ -229,11 +235,7 @@ pub async fn run(
                     cancel.cancelled().await;
                     return Ok(());
                 }
-                m.config.success.set(&["config", &file], 1.0);
-                m.config.success_time.set(&["config", &file], unix_now());
-                m.config
-                    .hash
-                    .set(&["config", &file], md5_hash_as_metric_value(&bytes));
+                m.config.loaded("config", &file, &bytes);
                 opts.configure_resources_and_metrics(&text);
                 tracing::info!(file = %opts.config, "Using config file");
             }
@@ -254,31 +256,13 @@ pub async fn run(
             Err(e) => {
                 tracing::error!(error = %e, file = %opts.custom_resource_config_file, "encountered error while processing the file")
             }
-            Ok(bytes) => {
-                let t = "customresourceconfig";
-                m.config.success.set(&[t, &file], 1.0);
-                m.config.success_time.set(&[t, &file], unix_now());
-                m.config
-                    .hash
-                    .set(&[t, &file], md5_hash_as_metric_value(&bytes));
-            }
+            Ok(bytes) => m.config.loaded("customresourceconfig", &file, &bytes),
         }
     }
 
-    let discoverer = crs_config.as_ref().map(|_| {
-        Arc::new(CrDiscoverer::new(CrdCounters {
-            add: m.crd_add.clone(),
-            update: m.crd_update.clone(),
-            delete: m.crd_delete.clone(),
-            cache: m.crd_cache.clone(),
-        }))
-    });
-    let gvk_stop: Option<GvkStop> = discoverer.as_ref().map(|d| {
-        let d = Arc::clone(d);
-        let f: GvkStop = Arc::new(move |gvk: &str| d.stop_for(gvk).map(|h| h.token));
-        f
-    });
-
+    let discoverer = crs_config
+        .as_ref()
+        .map(|_| Arc::new(CrDiscoverer::new(m.crd.clone())));
     let mut builder = Builder {
         enabled: Vec::new(),
         namespaces: Vec::new(),
@@ -286,7 +270,7 @@ pub async fn run(
         allow_annotations: Default::default(),
         allow_labels: Default::default(),
         custom: Default::default(),
-        gvk_stop,
+        discoverer: discoverer.clone(),
     };
     let resources: Vec<String> = if opts.resources.is_empty() && !opts.custom_resources_only {
         tracing::info!("Used default resources");
@@ -394,22 +378,16 @@ pub async fn run(
     let telemetry_app = telemetry_router(m.registry.clone(), auth());
     let metrics_addr = listen_addr(&opts.host, opts.port)?;
     let telemetry_addr = listen_addr(&opts.telemetry_host, opts.telemetry_port)?;
-    let metrics_listener = tokio::net::TcpListener::bind(metrics_addr)
-        .await
-        .map_err(|e| {
+    let bind = |addr| async move {
+        tokio::net::TcpListener::bind(addr).await.map_err(|e| {
             format!(
-                "run server group error: listen tcp {metrics_addr}: bind: {}",
+                "run server group error: listen tcp {addr}: bind: {}",
                 go_io_error(&e)
             )
-        })?;
-    let telemetry_listener = tokio::net::TcpListener::bind(telemetry_addr)
-        .await
-        .map_err(|e| {
-            format!(
-                "run server group error: listen tcp {telemetry_addr}: bind: {}",
-                go_io_error(&e)
-            )
-        })?;
+        })
+    };
+    let metrics_listener = bind(metrics_addr).await?;
+    let telemetry_listener = bind(telemetry_addr).await?;
 
     // `web.ListenAndServe`'s configureServer: a bad --tls-config ends the run.
     let tls = if opts.tls_config.is_empty() {

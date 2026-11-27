@@ -414,31 +414,30 @@ fn field<'a>(obj: &'a Value, path: &str) -> &'a str {
     v.as_str().unwrap_or("")
 }
 
-/// Field selector terms `a=b`, `a==b`, `a!=b`, joined by commas.
-fn matches_fields(obj: &Value, selector: &str) -> bool {
+/// Equality selector terms (`a=b`, `a==b`, `a!=b`, `a`: exists), joined
+/// by commas, over the values `get` looks up.
+fn matches_selector<'a>(selector: &str, get: impl Fn(&str) -> Option<&'a str>) -> bool {
     selector.split(',').filter(|t| !t.is_empty()).all(|term| {
         if let Some((k, v)) = term.split_once("!=") {
-            field(obj, k) != v
+            get(k) != Some(v)
         } else if let Some((k, v)) = term.split_once("==").or_else(|| term.split_once('=')) {
-            field(obj, k) == v
+            get(k) == Some(v)
         } else {
-            true
+            get(term).is_some()
         }
     })
 }
 
-/// Equality label selector terms (`a=b`, `a!=b`, `a`).
-fn matches_labels(obj: &Value, selector: &str) -> bool {
-    let labels = &obj["metadata"]["labels"];
-    selector.split(',').filter(|t| !t.is_empty()).all(|term| {
-        if let Some((k, v)) = term.split_once("!=") {
-            labels[k].as_str() != Some(v)
-        } else if let Some((k, v)) = term.split_once("==").or_else(|| term.split_once('=')) {
-            labels[k].as_str() == Some(v)
-        } else {
-            labels.get(term).is_some()
-        }
-    })
+/// Whether `obj` matches the namespace and selectors of a request. A
+/// missing field reads as `""`, as the API server's field selectors do.
+fn matches(obj: &Value, ns: Option<&str>, p: &ListParams) -> bool {
+    ns.is_none_or(|ns| field(obj, "metadata.namespace") == ns)
+        && p.field_selector
+            .as_deref()
+            .is_none_or(|s| matches_selector(s, |k| Some(field(obj, k))))
+        && p.label_selector
+            .as_deref()
+            .is_none_or(|s| matches_selector(s, |k| obj["metadata"]["labels"][k].as_str()))
 }
 
 fn status(code: StatusCode, reason: &str, message: &str) -> Response {
@@ -472,29 +471,31 @@ impl Cluster {
     }
 }
 
-/// The serialized objects matching a request.
-fn selected(c: &Cluster, t: &ResourceType, ns: Option<&str>, p: &ListParams) -> Vec<Arc<str>> {
+/// The serialized objects matching a request, from the `start`-th object
+/// of the type on, at most `limit` of them. Also returns the index to
+/// continue from when more objects remain.
+fn selected(
+    c: &Cluster,
+    t: &ResourceType,
+    ns: Option<&str>,
+    p: &ListParams,
+    start: usize,
+    limit: usize,
+) -> (Vec<Arc<str>>, Option<usize>) {
     let key = (t.group.clone(), t.plural.clone());
-    let json = c.json.get(&key).map(|v| v.as_slice()).unwrap_or_default();
-    c.objects
-        .get(&key)
-        .map(|v| v.as_slice())
-        .unwrap_or_default()
-        .iter()
-        .zip(json)
-        .filter(|(o, _)| ns.is_none_or(|ns| field(o, "metadata.namespace") == ns))
-        .filter(|(o, _)| {
-            p.field_selector
-                .as_deref()
-                .is_none_or(|s| matches_fields(o, s))
-        })
-        .filter(|(o, _)| {
-            p.label_selector
-                .as_deref()
-                .is_none_or(|s| matches_labels(o, s))
-        })
-        .map(|(_, j)| Arc::clone(j))
-        .collect()
+    let objects = c.objects.get(&key).map(Vec::as_slice).unwrap_or_default();
+    let json = c.json.get(&key).map(Vec::as_slice).unwrap_or_default();
+    let mut out = Vec::new();
+    for (i, (o, j)) in objects.iter().zip(json).enumerate().skip(start) {
+        if !matches(o, ns, p) {
+            continue;
+        }
+        if out.len() == limit {
+            return (out, Some(i));
+        }
+        out.push(Arc::clone(j));
+    }
+    (out, None)
 }
 
 async fn collection(
@@ -521,7 +522,7 @@ async fn collection(
     if p.watch.as_deref() == Some("true") || p.watch.as_deref() == Some("1") {
         let initial = p.send_initial_events.as_deref() == Some("true");
         let objs: Vec<Arc<str>> = if initial {
-            selected(&c, &t, ns.as_deref(), &p)
+            selected(&c, &t, ns.as_deref(), &p, 0, usize::MAX).0
         } else {
             Vec::new()
         };
@@ -567,15 +568,14 @@ async fn collection(
             .body(Body::from_stream(stream))
             .unwrap_or_else(|_| StatusCode::INTERNAL_SERVER_ERROR.into_response());
     }
-    let all = selected(&c, &t, ns.as_deref(), &p);
+    // The continue token is the index of the next object to look at, so a
+    // page costs its own objects, not a filter of the whole list.
     let start: usize = p.cont.as_deref().and_then(|s| s.parse().ok()).unwrap_or(0);
     let limit = p.limit.filter(|l| *l > 0).unwrap_or(usize::MAX);
-    let end = start.saturating_add(limit).min(all.len());
-    let items = all.get(start..end).unwrap_or_default();
+    let (items, next) = selected(&c, &t, ns.as_deref(), &p, start, limit);
     let mut meta = json!({"resourceVersion": rv});
-    if end < all.len() {
-        meta["continue"] = json!(end.to_string());
-        meta["remainingItemCount"] = json!(all.len() - end);
+    if let Some(next) = next {
+        meta["continue"] = json!(next.to_string());
     }
     let mut body = String::with_capacity(items.iter().map(|i| i.len() + 1).sum::<usize>() + 256);
     body.push_str(&format!(

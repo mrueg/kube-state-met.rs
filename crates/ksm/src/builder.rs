@@ -22,9 +22,6 @@ pub struct CustomResourceStore {
     pub resource: ksm_crs::Resource,
 }
 
-/// Returns the current stop token of a GVK (`GetGVKStopChan`).
-pub type GvkStop = Arc<dyn Fn(&str) -> Option<tokio_util::sync::CancellationToken> + Send + Sync>;
-
 /// What every build of the stores needs.
 pub struct Builder {
     /// Enabled built-in resources, sorted and unique.
@@ -36,8 +33,30 @@ pub struct Builder {
     pub allow_labels: BTreeMap<String, Vec<String>>,
     /// Enabled custom resources by GVR string (`ReplaceEnabledCustomResources`).
     pub custom: parking_lot::RwLock<BTreeMap<String, Arc<CustomResourceStore>>>,
-    /// Stop tokens of the discovered GVKs.
-    pub gvk_stop: Option<GvkStop>,
+    /// The CRD discoverer, for the stop tokens of the discovered GVKs.
+    pub discoverer: Option<Arc<crate::discovery::CrDiscoverer>>,
+}
+
+/// One store per namespace, each fed by the watcher `spawn` starts; a full
+/// store counts its drops under `go_type`.
+fn stores(
+    settings: &WatchSettings,
+    namespaces: &[String],
+    go_type: &'static str,
+    spawn: impl Fn(&str, Arc<MetricsStore>),
+) -> Vec<Arc<MetricsStore>> {
+    namespaces
+        .iter()
+        .map(|ns| {
+            let dropped = settings.metrics.objects_dropped.clone();
+            let store = Arc::new(MetricsStore::new(
+                settings.object_limit,
+                Some(Box::new(move || dropped.inc(&[go_type]))),
+            ));
+            spawn(ns, Arc::clone(&store));
+            store
+        })
+        .collect()
 }
 
 /// Error text of an unknown resource (Go lists the available ones in map order;
@@ -112,18 +131,9 @@ impl Builder {
         } else {
             &self.namespaces
         };
-        let stores = namespaces
-            .iter()
-            .map(|ns| {
-                let dropped = settings.metrics.objects_dropped.clone();
-                let store = Arc::new(MetricsStore::new(
-                    settings.object_limit,
-                    Some(Box::new(move || dropped.inc(&[go_type]))),
-                ));
-                spawn::<K>(settings, ns, go_type, Arc::clone(&fams), Arc::clone(&store));
-                store
-            })
-            .collect();
+        let stores = stores(settings, namespaces, go_type, |ns, store| {
+            spawn::<K>(settings, ns, go_type, Arc::clone(&fams), store);
+        });
         MetricsWriter::new(name, headers, stores)
     }
 
@@ -152,30 +162,21 @@ impl Builder {
         );
         // No token (the GVK left discovery): Go's nil channel never closes.
         let stop = self
-            .gvk_stop
+            .discoverer
             .as_ref()
-            .and_then(|f| f(&gvk))
+            .and_then(|d| d.stop_for(&gvk))
+            .map(|h| h.token)
             .unwrap_or_default();
-        let stores = self
-            .namespaces
-            .iter()
-            .map(|ns| {
-                let dropped = settings.metrics.objects_dropped.clone();
-                let store = Arc::new(MetricsStore::new(
-                    settings.object_limit,
-                    Some(Box::new(move || dropped.inc(&[CR_GO_TYPE]))),
-                ));
-                spawn_dynamic(
-                    settings,
-                    &cr.api_resource,
-                    ns,
-                    Arc::clone(&fams),
-                    Arc::clone(&store),
-                    stop.clone(),
-                );
-                store
-            })
-            .collect();
+        let stores = stores(settings, &self.namespaces, CR_GO_TYPE, |ns, store| {
+            spawn_dynamic(
+                settings,
+                &cr.api_resource,
+                ns,
+                Arc::clone(&fams),
+                store,
+                stop.clone(),
+            );
+        });
         Some(MetricsWriter::new(name, headers, stores))
     }
 
