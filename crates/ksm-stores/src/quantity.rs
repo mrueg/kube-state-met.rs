@@ -309,12 +309,13 @@ fn big_int64(x: &BigInt) -> i64 {
     }
 }
 
-/// Go int64(math.Pow10(n)) on amd64: out-of-range float->int conversion yields i64::MIN.
+/// Go `int64(math.Pow10(n))` on amd64: a fraction (n < 0) truncates to 0, and an
+/// out-of-range float (n > 18, including +Inf) converts to i64::MIN.
 fn go_int64_pow10(n: i64) -> i64 {
-    if (0..=18).contains(&n) {
-        10i64.pow(n as u32)
-    } else {
-        i64::MIN
+    match n {
+        ..0 => 0,
+        0..=18 => 10i64.pow(n as u32),
+        _ => i64::MIN,
     }
 }
 
@@ -514,4 +515,31 @@ pub fn value_f64(q: &k8s_openapi::apimachinery::pkg::api::resource::Quantity) ->
 /// `convertValueToFloat64(&q)` of a k8s-openapi quantity.
 pub fn ksm_f64(q: &k8s_openapi::apimachinery::pkg::api::resource::Quantity) -> f64 {
     ksm_float(&from_k8s(q))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::go_int64_pow10;
+
+    /// Go's `int64(math.Pow10(n))` on amd64, as printed by Go 1.27.
+    #[test]
+    fn int64_pow10_matches_go() {
+        for (n, want) in [
+            (-400, 0),
+            (-324, 0),
+            (-323, 0),
+            (-19, 0),
+            (-1, 0),
+            (0, 1),
+            (1, 10),
+            (18, 1_000_000_000_000_000_000),
+            (19, i64::MIN),
+            (20, i64::MIN),
+            (308, i64::MIN),
+            (309, i64::MIN),
+            (1000, i64::MIN),
+        ] {
+            assert_eq!(go_int64_pow10(n), want, "n = {n}");
+        }
+    }
 }
