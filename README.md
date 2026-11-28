@@ -66,21 +66,21 @@ fake API server:
 - criterion micro-benchmarks (`cargo bench -p ksm-stores`).
 
 At 10k pods on a 4-CPU GitHub Actions runner, compared with Go:
-- sync is 3.7x faster;
-- scrapes are 6x faster (p50 33 ms against 198 ms);
-- gzip scrapes are 2x faster, for about the same CPU;
-- plain-text throughput is 3.3x higher;
-- peak memory is 1.4x lower;
+- sync is 2.6x faster;
+- scrapes are 6.2x faster (p50 36 ms against 224 ms);
+- gzip scrapes are 2.2x faster, for slightly less CPU;
+- plain-text throughput is 3.2x higher;
+- peak memory is 1.55x lower;
 - CPU under 1000 pod events per second is about a third.
 
 `tools/kind-kwok-bench/run.sh` runs the same comparison against a real HA API server: a kind cluster with three
 control-plane nodes, with kwok simulating the nodes and pods. It writes
 [bench/RESULTS-kind-kwok.md](bench/RESULTS-kind-kwok.md). With 10k pods there, compared with Go:
 - sync takes the same time (the API server's list time dominates; Go lists in protobuf, Rust in JSON);
-- scrapes are 4.8x faster (p50 23 ms against 109 ms);
+- scrapes are 7.6x faster (p50 32 ms against 245 ms);
 - gzip scrapes are 1.9x faster;
-- plain-text throughput is 2.5x higher;
-- peak memory is about the same (1.07x lower).
+- plain-text throughput is 3.4x higher;
+- peak memory is about the same (within 5%).
 
 Both benchmarks run in the [bench workflow](.github/workflows/bench.yml).
 
