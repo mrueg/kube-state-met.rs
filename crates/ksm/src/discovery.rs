@@ -233,11 +233,11 @@ impl CrDiscoverer {
         changed
     }
 
-    fn on_add(&self, obj: &Value) {
-        let gvkps = extract_gvkps(obj).unwrap_or_default();
+    fn on_add(&self, gvkps: Option<&[Gvkp]>) {
+        let gvkps = gvkps.unwrap_or_default();
         {
             let mut c = self.cache.lock();
-            if self.append(&mut c, &gvkps) {
+            if self.append(&mut c, gvkps) {
                 c.was_updated = true;
             }
         }
@@ -246,9 +246,8 @@ impl CrDiscoverer {
     }
 
     /// `applyCRDUpdate`: only the GVKPs that changed.
-    fn on_update(&self, old: &Value, new: &Value) {
-        let old = extract_gvkps(old).unwrap_or_default();
-        let new = extract_gvkps(new);
+    fn on_update(&self, old: Option<&[Gvkp]>, new: Option<&[Gvkp]>) {
+        let old = old.unwrap_or_default();
         {
             let mut c = self.cache.lock();
             if let Some(new) = new {
@@ -270,11 +269,11 @@ impl CrDiscoverer {
         self.counters.update.inc(&[]);
     }
 
-    fn on_delete(&self, obj: &Value) {
-        let gvkps = extract_gvkps(obj).unwrap_or_default();
+    fn on_delete(&self, gvkps: Option<&[Gvkp]>) {
+        let gvkps = gvkps.unwrap_or_default();
         {
             let mut c = self.cache.lock();
-            if Self::remove(&mut c, &gvkps) {
+            if Self::remove(&mut c, gvkps) {
                 c.was_updated = true;
             }
         }
@@ -374,8 +373,10 @@ impl CrDiscoverer {
         tokio::spawn(async move {
             let stream = watcher(api, watcher::Config::default());
             futures::pin_mut!(stream);
-            // The informer's store: name → last object seen.
-            let mut known: HashMap<String, Value> = HashMap::new();
+            // The informer's store, reduced to what the handlers read: name →
+            // the GVKPs of the last object seen (`None`: it could not be read).
+            // Keeping whole CRDs would hold every OpenAPI schema in memory.
+            let mut known: HashMap<String, Option<Vec<Gvkp>>> = HashMap::new();
             let mut relisted: HashSet<String> = HashSet::new();
             let mut backoff = crate::backoff::Backoff::default();
             loop {
@@ -401,15 +402,17 @@ impl CrDiscoverer {
                             .collect();
                         for k in gone {
                             if let Some(old) = known.remove(&k) {
-                                this.on_delete(&old);
+                                this.on_delete(old.as_deref());
                             }
                         }
                         relisted.clear();
                     }
                     Ok(watcher::Event::Apply(o)) => this.upsert(&mut known, o),
                     Ok(watcher::Event::Delete(o)) => {
-                        let old = known.remove(o.name()).unwrap_or(o.raw);
-                        this.on_delete(&old);
+                        let old = known
+                            .remove(o.name())
+                            .unwrap_or_else(|| extract_gvkps(&o.raw));
+                        this.on_delete(old.as_deref());
                     }
                     Err(e) => {
                         tracing::error!(error = %e, "Failed to watch CustomResourceDefinitions");
@@ -422,11 +425,17 @@ impl CrDiscoverer {
         });
     }
 
-    fn upsert(&self, known: &mut HashMap<String, Value>, o: Unstructured) {
-        let name = o.name().to_owned();
-        match known.insert(name, o.raw.clone()) {
-            Some(old) => self.on_update(&old, &o.raw),
-            None => self.on_add(&o.raw),
+    fn upsert(&self, known: &mut HashMap<String, Option<Vec<Gvkp>>>, o: Unstructured) {
+        let new = extract_gvkps(&o.raw);
+        match known.get_mut(o.name()) {
+            Some(old) => {
+                self.on_update(old.as_deref(), new.as_deref());
+                *old = new;
+            }
+            None => {
+                self.on_add(new.as_deref());
+                known.insert(o.name().to_owned(), new);
+            }
         }
     }
 }
@@ -469,8 +478,8 @@ mod tests {
     #[test]
     fn resolve_wildcards_and_updates() {
         let d = disc();
-        d.on_add(&crd("g", "Foo", "foos", &[("v1", true), ("v2", true)]));
-        d.on_add(&crd("g", "Bar", "bars", &[("v1", true)]));
+        d.on_add(extract_gvkps(&crd("g", "Foo", "foos", &[("v1", true), ("v2", true)])).as_deref());
+        d.on_add(extract_gvkps(&crd("g", "Bar", "bars", &[("v1", true)])).as_deref());
         assert_eq!(d.resolve("g", "*", "*").unwrap().len(), 3);
         assert_eq!(d.resolve("g", "v1", "").unwrap().len(), 2);
         assert_eq!(d.resolve("g", "*", "Foo").unwrap().len(), 2);
@@ -481,14 +490,14 @@ mod tests {
         d.applied(rev);
         assert!(d.observe().is_none());
         // A status-only update changes nothing.
-        let foo = crd("g", "Foo", "foos", &[("v1", true), ("v2", true)]);
-        d.on_update(&foo, &foo);
+        let foo = extract_gvkps(&crd("g", "Foo", "foos", &[("v1", true), ("v2", true)]));
+        d.on_update(foo.as_deref(), foo.as_deref());
         assert!(d.observe().is_none());
         // Unserving v2 stops its watchers.
         let tok = stops["g/v2, Kind=Foo"].token.clone();
         d.on_update(
-            &foo,
-            &crd("g", "Foo", "foos", &[("v1", true), ("v2", false)]),
+            foo.as_deref(),
+            extract_gvkps(&crd("g", "Foo", "foos", &[("v1", true), ("v2", false)])).as_deref(),
         );
         assert!(tok.is_cancelled());
         assert!(d.observe().is_some());
@@ -496,13 +505,13 @@ mod tests {
         // A plural change replaces the token.
         let before = d.stop_for("g/v1, Kind=Bar").unwrap();
         d.on_update(
-            &crd("g", "Bar", "bars", &[("v1", true)]),
-            &crd("g", "Bar", "barz", &[("v1", true)]),
+            extract_gvkps(&crd("g", "Bar", "bars", &[("v1", true)])).as_deref(),
+            extract_gvkps(&crd("g", "Bar", "barz", &[("v1", true)])).as_deref(),
         );
         let after = d.stop_for("g/v1, Kind=Bar").unwrap();
         assert!(before.token.is_cancelled());
         assert_ne!(before.id, after.id);
-        d.on_delete(&crd("g", "Bar", "barz", &[("v1", true)]));
+        d.on_delete(extract_gvkps(&crd("g", "Bar", "barz", &[("v1", true)])).as_deref());
         assert!(after.token.is_cancelled());
         assert!(d.resolve("g", "v1", "Bar").unwrap().is_empty());
     }
