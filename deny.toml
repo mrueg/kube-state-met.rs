@@ -1,0 +1,44 @@
+# cargo-deny (https://embarkstudios.github.io/cargo-deny/), run by ci.yml:
+#   cargo deny check
+[graph]
+all-features = true
+
+[advisories]
+# RustSec advisories: vulnerabilities, and unmaintained or yanked crates.
+yanked = "deny"
+
+[licenses]
+# Every licence in the dependency graph is permissive; anything new needs a
+# look before it is added here.
+allow = [
+  "0BSD",
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "BSL-1.0",
+  "CC0-1.0",
+  "CDLA-Permissive-2.0",
+  "ISC",
+  "MIT",
+  "Unicode-3.0",
+  "Unlicense",
+  "Zlib",
+]
+confidence-threshold = 0.9
+
+[licenses.private]
+# The workspace's own crates are not published (publish = false).
+ignore = true
+
+[bans]
+# Several versions of a crate are common in a graph this size (kube, rustls,
+# windows-sys); report them without failing.
+multiple-versions = "warn"
+# The workspace's own crates depend on each other by path; they are private.
+wildcards = "deny"
+allow-wildcard-paths = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

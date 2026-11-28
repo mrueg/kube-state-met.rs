@@ -14,6 +14,12 @@ jobs:
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       # Includes the Go goldens: stores, labels, floats, quantities, CRS, flect, CLI.
       - run: cargo test --workspace --locked
+  deny:
+    # Advisories, licences, banned and duplicate crates, sources (deny.toml).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: EmbarkStudios/cargo-deny-action@v2
   app-cases:
     # Replays the recorded whole-app HTTP cases against the Rust binary.
     runs-on: ubuntu-latest
