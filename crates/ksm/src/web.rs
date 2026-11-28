@@ -23,6 +23,7 @@ use hyper_util::server::conn::auto;
 use parking_lot::Mutex;
 use rustls::client::danger::HandshakeSignatureValid;
 use rustls::crypto::CryptoProvider;
+use rustls::pki_types::pem::PemObject;
 use rustls::pki_types::{CertificateDer, PrivateKeyDer, UnixTime};
 use rustls::server::danger::{ClientCertVerified, ClientCertVerifier};
 use rustls::server::{Acceptor, WebPkiClientVerifier};
@@ -437,10 +438,8 @@ fn load_cert(c: &TlsConfig) -> Result<CertPair, String> {
     if certs.is_empty() {
         return Err(pair("failed to find any PEM data in certificate input"));
     }
-    let key = rustls_pemfile::private_key(&mut key_data.as_slice())
-        .ok()
-        .flatten()
-        .ok_or_else(|| pair("failed to find any PEM data in key input"))?;
+    let key = PrivateKeyDer::from_pem_slice(&key_data)
+        .map_err(|_| pair("failed to find any PEM data in key input"))?;
     let provider = rustls::crypto::ring::default_provider();
     rustls::sign::CertifiedKey::from_der(certs.clone(), key.clone_key(), &provider).map_err(
         |e| match e {
@@ -632,7 +631,7 @@ fn cipher_id(name: &str) -> Option<rustls::CipherSuite> {
 }
 
 pub(crate) fn pem_certs(pem: &[u8]) -> Vec<CertificateDer<'static>> {
-    rustls_pemfile::certs(&mut &pem[..])
+    CertificateDer::pem_slice_iter(pem)
         .filter_map(Result::ok)
         .collect()
 }

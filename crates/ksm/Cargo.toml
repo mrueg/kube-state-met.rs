@@ -38,7 +38,6 @@ md5 = { package = "md-5", version = "0.10" }
 x509-parser = "0.18.1"
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12", "logging"] }
 tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12", "logging"] }
-rustls-pemfile = "2"
 bcrypt = "0.19"
 hyper = { version = "1", features = ["server", "http1", "http2"] }
 tower = { version = "0.5", features = ["util"] }
