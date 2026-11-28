@@ -1,0 +1,9 @@
+kube-state-met.rs
+Copyright 2026 The kube-state-met.rs Authors
+
+This product is a Rust port of kube-state-metrics
+(https://github.com/kubernetes/kube-state-metrics), Copyright The Kubernetes
+Authors, licensed under the Apache License, Version 2.0. It was ported from
+upstream commit 46cd52ff39af128e15e64ffd8ba8c75eb6f5a213. Metric names,
+help texts, flags, configuration formats and test data are taken from that
+project.

@@ -92,3 +92,9 @@ TLS 1.0/1.1, CBC suites or P-521; log lines keep klog's layout but not its exact
 `__complete` command (dynamic shell completion) is not implemented; no client-side API rate limit (client-go: QPS 5,
 burst 10); the telemetry port answers protobuf requests with text; label values with invalid UTF-8 arrive as U+FFFD
 through JSON, where Go's protobuf client keeps the raw bytes.
+
+## License
+
+Apache License 2.0, see [LICENSE](LICENSE). This is a port of
+[kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) by the Kubernetes Authors, also Apache 2.0;
+see [NOTICE](NOTICE).
