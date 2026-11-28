@@ -57,7 +57,7 @@ pub fn families(
                     };
                     mk(
                         &["webhook_name", "service_name", "service_namespace"],
-                        vec![wh.name.clone(), svc_name, svc_ns],
+                        values![wh.name.as_str(), svc_name, svc_ns],
                         1.0,
                     )
                 })

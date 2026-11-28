@@ -27,10 +27,10 @@ pub fn families(
             let param_kind = spec.and_then(|s| s.param_kind.as_ref());
             vec![mk(
                 &["param_api_version", "param_kind", "failure_policy"],
-                vec![
-                    param_kind.map_or("", |k| s(&k.api_version)).to_owned(),
-                    param_kind.map_or("", |k| s(&k.kind)).to_owned(),
-                    spec.map_or("", |sp| s(&sp.failure_policy)).to_owned(),
+                values![
+                    param_kind.map_or("", |k| s(&k.api_version)),
+                    param_kind.map_or("", |k| s(&k.kind)),
+                    spec.map_or("", |sp| s(&sp.failure_policy)),
                 ],
                 1.0,
             )]

@@ -79,13 +79,7 @@ pub fn families(
                         let port = svc.port.as_ref().and_then(|p| p.number).unwrap_or(0);
                         ms.push(mk(
                             &["host", "path", "path_type", "service_name", "service_port"],
-                            vec![
-                                host.to_owned(),
-                                p.to_owned(),
-                                path_type.to_owned(),
-                                svc.name.clone(),
-                                port.to_string(),
-                            ],
+                            values![host, p, path_type, svc.name.as_str(), port.to_string(),],
                             1.0,
                         ));
                     } else {
@@ -101,13 +95,13 @@ pub fn families(
                                 "resource_kind",
                                 "resource_name",
                             ],
-                            vec![
-                                host.to_owned(),
-                                p.to_owned(),
-                                path_type.to_owned(),
-                                res.map(|r| s(&r.api_group).to_owned()).unwrap_or_default(),
-                                res.map(|r| r.kind.clone()).unwrap_or_default(),
-                                res.map(|r| r.name.clone()).unwrap_or_default(),
+                            values![
+                                host,
+                                p,
+                                path_type,
+                                res.map(|r| s(&r.api_group)).unwrap_or_default(),
+                                res.map(|r| r.kind.as_str()).unwrap_or_default(),
+                                res.map(|r| r.name.as_str()).unwrap_or_default(),
                             ],
                             1.0,
                         ));
@@ -130,7 +124,7 @@ pub fn families(
                 for host in t.hosts.iter().flatten() {
                     ms.push(mk(
                         &["tls_host", "secret"],
-                        vec![host.clone(), s(&t.secret_name).to_owned()],
+                        values![host.as_str(), s(&t.secret_name)],
                         1.0,
                     ));
                 }

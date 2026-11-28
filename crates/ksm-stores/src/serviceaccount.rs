@@ -24,8 +24,8 @@ pub fn families(
         |o| {
             vec![mk(
                 &["uid", "automount_token"],
-                vec![
-                    s(&o.metadata.uid).to_owned(),
+                values![
+                    s(&o.metadata.uid),
                     opt_bool_string(o.automount_service_account_token),
                 ],
                 1.0,

@@ -28,27 +28,13 @@ pub fn families(
                 .unwrap_or("");
             let namespace = ns(&l.metadata);
             match l.metadata.owner_references.as_deref() {
-                None | Some([]) => vec![mk(
-                    KEYS,
-                    vec![
-                        String::new(),
-                        String::new(),
-                        namespace.into(),
-                        holder.into(),
-                    ],
-                    1.0,
-                )],
+                None | Some([]) => vec![mk(KEYS, ["", "", namespace, holder], 1.0)],
                 Some(owners) => owners
                     .iter()
                     .map(|o| {
                         mk(
                             KEYS,
-                            vec![
-                                o.kind.clone(),
-                                o.name.clone(),
-                                namespace.into(),
-                                holder.into(),
-                            ],
+                            [o.kind.as_str(), o.name.as_str(), namespace, holder],
                             1.0,
                         )
                     })

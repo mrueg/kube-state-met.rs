@@ -32,13 +32,11 @@ pub fn families(
                     "param_namespace",
                     "param_not_found_action",
                 ],
-                vec![
-                    spec.map_or("", |sp| s(&sp.policy_name)).to_owned(),
-                    param_ref.map_or("", |r| s(&r.name)).to_owned(),
-                    param_ref.map_or("", |r| s(&r.namespace)).to_owned(),
-                    param_ref
-                        .map_or("", |r| s(&r.parameter_not_found_action))
-                        .to_owned(),
+                values![
+                    spec.map_or("", |sp| s(&sp.policy_name)),
+                    param_ref.map_or("", |r| s(&r.name)),
+                    param_ref.map_or("", |r| s(&r.namespace)),
+                    param_ref.map_or("", |r| s(&r.parameter_not_found_action)),
                 ],
                 1.0,
             )]

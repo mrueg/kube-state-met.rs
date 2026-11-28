@@ -5,7 +5,7 @@
 use std::borrow::Cow;
 use std::collections::{BTreeMap, HashMap, HashSet};
 
-use crate::metric::{LabelKey, Metric};
+use crate::metric::{LabelKey, LabelValue, Metric};
 
 /// Wildcard in label and annotation allow lists.
 pub const LABEL_WILDCARD: &str = "*";
@@ -25,11 +25,11 @@ pub fn bool_f64(b: bool) -> f64 {
 
 /// `addConditionMetrics`: one sample per status (`true`, `false`, `unknown`),
 /// 1 for the one `cs` equals. The status label is the only label added.
-pub fn condition_metrics(cs: &str) -> Vec<Metric> {
+pub fn condition_metrics(cs: &str) -> Vec<Metric<'static>> {
     CONDITION_STATUSES
         .iter()
         .zip(CONDITION_STATUS_LABELS)
-        .map(|(s, l)| Metric::new(Vec::new(), vec![l.to_owned()], bool_f64(cs == *s)))
+        .map(|(s, l)| Metric::new(Vec::new(), vec![Cow::Borrowed(l)], bool_f64(cs == *s)))
         .collect()
 }
 
@@ -37,17 +37,17 @@ pub fn condition_metrics(cs: &str) -> Vec<Metric> {
 const CONDITION_STATUS_LABELS: [&str; 3] = ["true", "false", "unknown"];
 
 /// Like [`condition_metrics`], with the label key set.
-pub fn condition_metrics_keyed(key: &'static str, cs: &str) -> Vec<Metric> {
+pub fn condition_metrics_keyed(key: &'static str, cs: &str) -> Vec<Metric<'static>> {
     CONDITION_STATUSES
         .iter()
         .zip(CONDITION_STATUS_LABELS)
-        .map(|(s, l)| Metric::with(&[key], vec![l.to_owned()], bool_f64(cs == *s)))
+        .map(|(s, l)| Metric::with(&[key], [l], bool_f64(cs == *s)))
         .collect()
 }
 
 /// `resourceVersionMetric`: one sample with the version as value, none when
 /// it is not a float by Go's `strconv.ParseFloat`.
-pub fn resource_version_metric(rv: Option<&str>) -> Vec<Metric> {
+pub fn resource_version_metric(rv: Option<&str>) -> Vec<Metric<'static>> {
     match go_parse_float(rv.unwrap_or("")) {
         Some(v) => vec![Metric::value(v)],
         None => Vec::new(),
@@ -131,11 +131,14 @@ fn next_free_label_name(base: &str, count: &mut usize, used: &HashMap<String, us
 
 /// `mapToPrometheusLabels`: keys in sorted order, colliding names renamed to
 /// `_conflict1`, `_conflict2`, ...
-pub fn map_to_prometheus_labels<'a, I>(labels: I, prefix: &str) -> (Vec<LabelKey>, Vec<String>)
+pub fn map_to_prometheus_labels<'a, I>(
+    labels: I,
+    prefix: &str,
+) -> (Vec<LabelKey>, Vec<LabelValue<'a>>)
 where
     I: IntoIterator<Item = (&'a String, &'a String)>,
 {
-    let mut sorted: Vec<(&String, &String)> = labels.into_iter().collect();
+    let mut sorted: Vec<(&String, &'a String)> = labels.into_iter().collect();
     // Labels and annotations come from BTreeMaps: usually sorted already.
     if !sorted.is_sorted_by(|a, b| a.0 <= b.0) {
         sorted.sort_unstable_by(|a, b| a.0.cmp(b.0));
@@ -147,12 +150,15 @@ where
         drop(seen);
         return (
             names.into_iter().map(Cow::Owned).collect(),
-            sorted.into_iter().map(|(_, v)| v.clone()).collect(),
+            sorted
+                .into_iter()
+                .map(|(_, v)| Cow::Borrowed(v.as_str()))
+                .collect(),
         );
     }
     drop(seen);
     let mut keys: Vec<String> = Vec::with_capacity(sorted.len());
-    let mut values: Vec<String> = Vec::with_capacity(sorted.len());
+    let mut values: Vec<LabelValue<'a>> = Vec::with_capacity(sorted.len());
     let mut used: HashMap<String, usize> = HashMap::with_capacity(sorted.len());
     let mut conflicts: HashMap<String, usize> = HashMap::new();
     for (k, v) in sorted {
@@ -173,7 +179,7 @@ where
         }
         used.insert(name.clone(), keys.len());
         keys.push(name);
-        values.push(v.clone());
+        values.push(Cow::Borrowed(v.as_str()));
     }
     (keys.into_iter().map(Cow::Owned).collect(), values)
 }
@@ -192,14 +198,14 @@ fn wildcard_match(pattern: &str, key: &str) -> bool {
 
 /// `createPrometheusLabelKeysValues`: the allowed labels/annotations of an
 /// object as Prometheus labels named `prefix_<key>`.
-pub fn create_prometheus_label_keys_values(
+pub fn create_prometheus_label_keys_values<'a>(
     prefix: &str,
-    all: Option<&BTreeMap<String, String>>,
+    all: Option<&'a BTreeMap<String, String>>,
     allow_list: &[String],
-) -> (Vec<LabelKey>, Vec<String>) {
-    let empty = BTreeMap::new();
-    let all = all.unwrap_or(&empty);
-    let mut allowed: BTreeMap<&String, &String> = BTreeMap::new();
+) -> (Vec<LabelKey>, Vec<LabelValue<'a>>) {
+    static EMPTY: BTreeMap<String, String> = BTreeMap::new();
+    let all = all.unwrap_or(&EMPTY);
+    let mut allowed: BTreeMap<&'a String, &'a String> = BTreeMap::new();
     for (i, l) in allow_list.iter().enumerate() {
         if l == LABEL_WILDCARD {
             if i == 0 {
@@ -251,11 +257,11 @@ fn tracing_warn_pattern(pattern: &str) {
 
 /// The `kube_<resource>_labels`/`_annotations` sample for an allow list:
 /// `None` (no samples) when the list is empty.
-pub fn allowed_labels_metric(
+pub fn allowed_labels_metric<'a>(
     prefix: &str,
-    all: Option<&BTreeMap<String, String>>,
+    all: Option<&'a BTreeMap<String, String>>,
     allow_list: Option<&[String]>,
-) -> Vec<Metric> {
+) -> Vec<Metric<'a>> {
     match allow_list {
         Some(list) if !list.is_empty() => {
             let (k, v) = create_prometheus_label_keys_values(prefix, all, list);

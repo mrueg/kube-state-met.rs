@@ -68,10 +68,10 @@ pub fn families(
         |p| {
             vec![mk(
                 &["storageclass", "volumename", "volumemode"],
-                vec![
+                values![
                     claim_class(p),
-                    spec(p).map(|sp| s(&sp.volume_name)).unwrap_or("").to_owned(),
-                    spec(p).map(|sp| s(&sp.volume_mode)).unwrap_or("").to_owned(),
+                    spec(p).map(|sp| s(&sp.volume_name)).unwrap_or(""),
+                    spec(p).map(|sp| s(&sp.volume_mode)).unwrap_or(""),
                 ],
                 1.0,
             )]
@@ -121,7 +121,7 @@ pub fn families(
                 .map(|st| {
                     mk(
                         &["status", "target_volume_attributes_class"],
-                        vec![(*st).to_owned(), target.to_owned()],
+                        values![*st, target],
                         bool_f64(mvs.status == *st),
                     )
                 })
@@ -209,7 +209,7 @@ pub fn families(
                     }
                     Some(mk(
                         &["condition", "status"],
-                        vec![c.type_.clone(), ksm_core::gostr::to_lower(&c.status)],
+                        values![c.type_.as_str(), ksm_core::gostr::to_lower(&c.status)],
                         time_f64(t),
                     ))
                 })

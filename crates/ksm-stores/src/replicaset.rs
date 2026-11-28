@@ -13,7 +13,7 @@ fn status(r: &ReplicaSet) -> Option<&ReplicaSetStatus> {
 }
 
 /// A status count, 0 when unset (a plain `int32` in Go).
-fn count(r: &ReplicaSet, f: fn(&ReplicaSetStatus) -> Option<i32>) -> Vec<Metric> {
+fn count(r: &ReplicaSet, f: fn(&ReplicaSetStatus) -> Option<i32>) -> Vec<Metric<'_>> {
     vec![Metric::value(f64::from(status(r).and_then(f).unwrap_or(0)))]
 }
 

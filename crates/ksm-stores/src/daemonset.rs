@@ -9,7 +9,7 @@ pub const NAME: &str = "daemonsets";
 pub const GO_TYPE: &str = "*v1.DaemonSet";
 
 /// A status count, 0 when unset (a plain `int32` in Go).
-fn count(d: &DaemonSet, f: fn(&DaemonSetStatus) -> Option<i32>) -> Vec<Metric> {
+fn count(d: &DaemonSet, f: fn(&DaemonSetStatus) -> Option<i32>) -> Vec<Metric<'_>> {
     vec![Metric::value(f64::from(
         d.status.as_ref().and_then(f).unwrap_or(0),
     ))]

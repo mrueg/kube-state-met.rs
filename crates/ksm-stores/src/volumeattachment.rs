@@ -37,7 +37,7 @@ pub fn families(
         |va| {
             vec![mk(
                 &["attacher", "node"],
-                vec![va.spec.attacher.clone(), va.spec.node_name.clone()],
+                values![va.spec.attacher.as_str(), va.spec.node_name.as_str()],
                 1.0,
             )]
         },
@@ -57,7 +57,7 @@ pub fn families(
         Alpha,
         "",
         |va| match &va.spec.source.persistent_volume_name {
-            Some(pv) => vec![m1("volumename", pv.clone(), 1.0)],
+            Some(pv) => vec![m1("volumename", pv.as_str(), 1.0)],
             None => Vec::new(),
         },
     )

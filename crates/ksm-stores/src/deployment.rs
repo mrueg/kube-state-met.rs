@@ -28,7 +28,7 @@ fn status(d: &Deployment) -> Option<&DeploymentStatus> {
 }
 
 /// A status count, 0 when unset (a plain `int32` in Go).
-fn count(d: &Deployment, f: fn(&DeploymentStatus) -> Option<i32>) -> Vec<Metric> {
+fn count(d: &Deployment, f: fn(&DeploymentStatus) -> Option<i32>) -> Vec<Metric<'_>> {
     vec![Metric::value(f64::from(status(d).and_then(f).unwrap_or(0)))]
 }
 
@@ -41,7 +41,7 @@ fn rolling_update(d: &Deployment) -> Option<&RollingUpdateDeployment> {
 
 /// The rolling update's max surge or max unavailable, scaled by the desired
 /// replicas; none without a rolling update or replicas, or on a bad value.
-fn rolling_update_metric(d: &Deployment, surge: bool) -> Vec<Metric> {
+fn rolling_update_metric(d: &Deployment, surge: bool) -> Vec<Metric<'_>> {
     let (Some(ru), Some(replicas)) = (rolling_update(d), d.spec.replicas) else {
         return Vec::new();
     };

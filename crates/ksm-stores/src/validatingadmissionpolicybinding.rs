@@ -31,13 +31,11 @@ pub fn families(
                     "param_namespace",
                     "param_not_found_action",
                 ],
-                vec![
-                    b.spec.policy_name.clone(),
-                    param_ref.map_or("", |r| s(&r.name)).to_owned(),
-                    param_ref.map_or("", |r| s(&r.namespace)).to_owned(),
-                    param_ref
-                        .map_or("", |r| s(&r.parameter_not_found_action))
-                        .to_owned(),
+                values![
+                    b.spec.policy_name.as_str(),
+                    param_ref.map_or("", |r| s(&r.name)),
+                    param_ref.map_or("", |r| s(&r.namespace)),
+                    param_ref.map_or("", |r| s(&r.parameter_not_found_action)),
                 ],
                 1.0,
             )]
@@ -61,7 +59,7 @@ pub fn families(
             b.spec
                 .validation_actions
                 .iter()
-                .map(|a| m1("action", a.clone(), 1.0))
+                .map(|a| m1("action", a.as_str(), 1.0))
                 .collect()
         },
     );

@@ -41,7 +41,7 @@ fn count(j: &Job, f: fn(&JobStatus) -> Option<i32>) -> f64 {
 }
 
 /// The `condition` samples of every condition of one type.
-fn condition_family(j: &Job, type_: &str) -> Vec<Metric> {
+fn condition_family(j: &Job, type_: &str) -> Vec<Metric<'static>> {
     conditions(j)
         .iter()
         .filter(|c| c.type_ == type_)

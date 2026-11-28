@@ -21,7 +21,7 @@ pub fn families(
         Gauge,
         Alpha,
         "",
-        |v| vec![m1("driver_name", v.driver_name.clone(), 1.0)],
+        |v| vec![m1("driver_name", v.driver_name.as_str(), 1.0)],
     )
     .add(
         "kube_volumeattributesclass_created",

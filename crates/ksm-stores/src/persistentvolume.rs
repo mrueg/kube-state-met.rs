@@ -27,7 +27,7 @@ fn go_join(items: Option<&Vec<String>>) -> String {
 }
 
 /// The label values of `kube_persistentvolume_info`.
-fn info_metric(p: &PersistentVolume) -> Metric {
+fn info_metric(p: &PersistentVolume) -> Metric<'_> {
     let mut gce_pd_disk_name = String::new();
     let mut ebs_volume_id = String::new();
     let mut azure_disk_name = String::new();
@@ -112,7 +112,7 @@ fn info_metric(p: &PersistentVolume) -> Metric {
             "host_path_type",
             "reclaim_policy",
         ],
-        vec![
+        values![
             spec_str(|sp| &sp.storage_class_name),
             gce_pd_disk_name,
             ebs_volume_id,
@@ -155,7 +155,7 @@ pub fn families(
             None => Vec::new(),
             Some(cr) => vec![mk(
                 &["name", "claim_namespace"],
-                vec![s(&cr.name).to_owned(), s(&cr.namespace).to_owned()],
+                values![s(&cr.name), s(&cr.namespace)],
                 1.0,
             )],
         },
@@ -246,7 +246,7 @@ pub fn families(
             }
             vec![mk(
                 &["csi_mounter", "csi_map_options"],
-                vec![csi_mounter, csi_map_options],
+                values![csi_mounter, csi_map_options],
                 1.0,
             )]
         },

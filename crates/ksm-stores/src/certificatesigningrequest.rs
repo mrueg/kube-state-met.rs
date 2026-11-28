@@ -64,7 +64,7 @@ pub fn families(
 
 /// `addCSRConditionMetrics`: the number of Approved, Denied and Failed
 /// conditions.
-fn condition_counts(c: &CertificateSigningRequest) -> Vec<Metric> {
+fn condition_counts(c: &CertificateSigningRequest) -> Vec<Metric<'_>> {
     let (mut approved, mut denied, mut failed) = (0usize, 0usize, 0usize);
     for cond in c
         .status

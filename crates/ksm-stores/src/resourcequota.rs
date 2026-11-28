@@ -40,7 +40,7 @@ pub fn families(
                     list.iter().flatten().map(move |(res, q)| {
                         mk(
                             &["resource", "type"],
-                            vec![res.clone(), ty.to_owned()],
+                            values![res.as_str(), ty],
                             quantity::ksm_f64(q),
                         )
                     })

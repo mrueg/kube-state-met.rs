@@ -16,7 +16,7 @@ fn status(r: &ReplicationController) -> Option<&ReplicationControllerStatus> {
 fn count(
     r: &ReplicationController,
     f: fn(&ReplicationControllerStatus) -> Option<i32>,
-) -> Vec<Metric> {
+) -> Vec<Metric<'_>> {
     vec![Metric::value(f64::from(status(r).and_then(f).unwrap_or(0)))]
 }
 

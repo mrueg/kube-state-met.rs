@@ -38,16 +38,21 @@ impl MetricType {
 /// (`label_app`, `annotation_team`, CRS labels).
 pub type LabelKey = Cow<'static, str>;
 
+/// A label value: borrowed from the object being rendered where it can be,
+/// owned when computed.
+pub type LabelValue<'a> = Cow<'a, str>;
+
 /// One sample: label keys, label values and a value (`pkg/metric.Metric`).
+/// Samples live only while their object is rendered, so values borrow from it.
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct Metric {
+pub struct Metric<'a> {
     pub label_keys: Vec<LabelKey>,
-    pub label_values: Vec<String>,
+    pub label_values: Vec<LabelValue<'a>>,
     pub value: f64,
 }
 
-impl Metric {
-    pub fn new(label_keys: Vec<LabelKey>, label_values: Vec<String>, value: f64) -> Self {
+impl<'a> Metric<'a> {
+    pub fn new(label_keys: Vec<LabelKey>, label_values: Vec<LabelValue<'a>>, value: f64) -> Self {
         Metric {
             label_keys,
             label_values,
@@ -64,10 +69,14 @@ impl Metric {
     }
 
     /// A sample with static label keys.
-    pub fn with(keys: &[&'static str], values: Vec<String>, value: f64) -> Self {
+    pub fn with<V: Into<LabelValue<'a>>>(
+        keys: &[&'static str],
+        values: impl IntoIterator<Item = V>,
+        value: f64,
+    ) -> Self {
         Metric {
             label_keys: keys.iter().map(|k| Cow::Borrowed(*k)).collect(),
-            label_values: values,
+            label_values: values.into_iter().map(Into::into).collect(),
             value,
         }
     }
@@ -290,8 +299,8 @@ pub fn go_float_string(f: f64) -> String {
 
 /// A family's samples (`pkg/metric.Family`); name and type come from its generator.
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct Family {
-    pub metrics: Vec<Metric>,
+pub struct Family<'a> {
+    pub metrics: Vec<Metric<'a>>,
     /// Labels every sample starts with, rendered once (`k="v",k2="v2"`).
     prefix: Vec<u8>,
 }
@@ -299,8 +308,8 @@ pub struct Family {
 /// Assumed rendered length of a value plus the space before it and the newline.
 const VALUE_SIZE_HINT: usize = 16;
 
-impl Family {
-    pub fn new(metrics: Vec<Metric>) -> Self {
+impl<'a> Family<'a> {
+    pub fn new(metrics: Vec<Metric<'a>>) -> Self {
         Family {
             metrics,
             prefix: Vec::new(),
@@ -312,7 +321,7 @@ impl Family {
     /// are escaped and rendered once, not per sample.
     ///
     /// Panics when keys and values differ in length, as the Go original does.
-    pub fn with_default_labels(metrics: Vec<Metric>, keys: &[&str], values: &[&str]) -> Self {
+    pub fn with_default_labels(metrics: Vec<Metric<'a>>, keys: &[&str], values: &[&str]) -> Self {
         assert!(
             keys.len() == values.len(),
             "expected labelKeys {keys:?} to be of same length as labelValues {values:?}"
@@ -400,7 +409,7 @@ mod tests {
     fn default_labels_come_first() {
         let f = Family::with_default_labels(
             vec![
-                Metric::with(&["phase"], vec!["Running".into()], 1.0),
+                Metric::with(&["phase"], ["Running"], 1.0),
                 Metric::value(0.0),
             ],
             &["namespace", "pod"],
@@ -418,11 +427,7 @@ mod tests {
     #[test]
     fn family_rendering_and_escaping() {
         let f = Family::new(vec![
-            Metric::with(
-                &["namespace", "pod"],
-                vec!["ns".into(), "a\"b\\c\nd".into()],
-                1.0,
-            ),
+            Metric::with(&["namespace", "pod"], ["ns", "a\"b\\c\nd"], 1.0),
             Metric::value(3.5),
         ]);
         let mut b = Vec::new();

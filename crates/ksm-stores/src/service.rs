@@ -37,7 +37,7 @@ pub fn families(
                     "load_balancer_ip",
                     "external_traffic_policy",
                 ],
-                vec![
+                values![
                     spec_str(sv, |sp| &sp.cluster_ip),
                     spec_str(sv, |sp| &sp.external_name),
                     spec_str(sv, |sp| &sp.load_balancer_ip),
@@ -96,13 +96,7 @@ pub fn families(
                 .and_then(|lb| lb.ingress.as_ref())
                 .into_iter()
                 .flatten()
-                .map(|i| {
-                    mk(
-                        &["ip", "hostname"],
-                        vec![s(&i.ip).to_owned(), s(&i.hostname).to_owned()],
-                        1.0,
-                    )
-                })
+                .map(|i| mk(&["ip", "hostname"], values![s(&i.ip), s(&i.hostname)], 1.0))
                 .collect()
         },
     )

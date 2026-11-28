@@ -54,26 +54,14 @@ pub fn families(
                     for a in sub.addresses.iter().flatten() {
                         ms.push(mk(
                             KEYS,
-                            vec![
-                                protocol.to_owned(),
-                                number.clone(),
-                                pname.to_owned(),
-                                a.ip.clone(),
-                                "true".to_owned(),
-                            ],
+                            values![protocol, number.clone(), pname, a.ip.as_str(), "true",],
                             1.0,
                         ));
                     }
                     for a in sub.not_ready_addresses.iter().flatten() {
                         ms.push(mk(
                             KEYS,
-                            vec![
-                                protocol.to_owned(),
-                                number.clone(),
-                                pname.to_owned(),
-                                a.ip.clone(),
-                                "false".to_owned(),
-                            ],
+                            values![protocol, number.clone(), pname, a.ip.as_str(), "false",],
                             1.0,
                         ));
                     }
@@ -96,11 +84,7 @@ pub fn families(
                 .map(|port| {
                     mk(
                         &["port_name", "port_protocol", "port_number"],
-                        vec![
-                            s(&port.name).to_owned(),
-                            s(&port.protocol).to_owned(),
-                            port.port.to_string(),
-                        ],
+                        values![s(&port.name), s(&port.protocol), port.port.to_string(),],
                         1.0,
                     )
                 })

@@ -13,12 +13,12 @@ fn status(s: &StatefulSet) -> Option<&StatefulSetStatus> {
 }
 
 /// A status count, 0 when unset (a plain `int32` in Go).
-fn count(s: &StatefulSet, f: fn(&StatefulSetStatus) -> Option<i32>) -> Vec<Metric> {
+fn count(s: &StatefulSet, f: fn(&StatefulSetStatus) -> Option<i32>) -> Vec<Metric<'_>> {
     vec![Metric::value(f64::from(status(s).and_then(f).unwrap_or(0)))]
 }
 
 /// A status revision as the `revision` label.
-fn revision(s: &StatefulSet, f: fn(&StatefulSetStatus) -> &Option<String>) -> Vec<Metric> {
+fn revision(s: &StatefulSet, f: fn(&StatefulSetStatus) -> &Option<String>) -> Vec<Metric<'_>> {
     let rev = status(s).map_or("", |st| self::s(f(st)));
     vec![m1("revision", rev, 1.0)]
 }
@@ -134,7 +134,7 @@ pub fn families(
             }
             vec![mk(
                 &["when_deleted", "when_scaled"],
-                vec![deleted.to_owned(), scaled.to_owned()],
+                values![deleted, scaled],
                 1.0,
             )]
         },

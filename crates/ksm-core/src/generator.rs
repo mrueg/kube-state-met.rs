@@ -15,7 +15,7 @@ pub enum Stability {
 }
 
 /// Builds the samples of one family from an object of type `T`.
-pub type GenerateFn<T> = Arc<dyn Fn(&T) -> Family + Send + Sync>;
+pub type GenerateFn<T> = Arc<dyn Fn(&T) -> Family<'_> + Send + Sync>;
 
 /// One metric family of a resource (`generator.FamilyGenerator`).
 pub struct FamilyGenerator<T> {
@@ -50,7 +50,7 @@ impl<T> FamilyGenerator<T> {
         metric_type: MetricType,
         stability: Stability,
         deprecated_version: &str,
-        generate: impl Fn(&T) -> Family + Send + Sync + 'static,
+        generate: impl Fn(&T) -> Family<'_> + Send + Sync + 'static,
     ) -> Self {
         let help = if deprecated_version.is_empty() {
             help.to_owned()
@@ -75,7 +75,7 @@ impl<T> FamilyGenerator<T> {
         metric_type: MetricType,
         stability: Stability,
         deprecated_version: &str,
-        generate: impl Fn(&T) -> Family + Send + Sync + 'static,
+        generate: impl Fn(&T) -> Family<'_> + Send + Sync + 'static,
     ) -> Self {
         let mut g = Self::new(
             name,

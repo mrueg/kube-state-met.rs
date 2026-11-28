@@ -50,7 +50,7 @@ pub fn families(
                 for zone in zones {
                     ms.push(mk(
                         &["address", "for_zone"],
-                        vec![address.clone(), zone.name.clone()],
+                        values![address.as_str(), zone.name.as_str()],
                         1.0,
                     ));
                 }
@@ -84,17 +84,17 @@ pub fn families(
                 let base = [
                     opt_bool_string(cond.and_then(|c| c.ready)),
                     opt_bool_string(cond.and_then(|c| c.serving)),
-                    s(&ep.hostname).to_owned(),
+                    s(&ep.hostname),
                     opt_bool_string(cond.and_then(|c| c.terminating)),
-                    tr.map(|t| s(&t.kind).to_owned()).unwrap_or_default(),
-                    tr.map(|t| s(&t.name).to_owned()).unwrap_or_default(),
-                    tr.map(|t| s(&t.namespace).to_owned()).unwrap_or_default(),
-                    s(&ep.node_name).to_owned(),
-                    s(&ep.zone).to_owned(),
+                    tr.map(|t| s(&t.kind)).unwrap_or_default(),
+                    tr.map(|t| s(&t.name)).unwrap_or_default(),
+                    tr.map(|t| s(&t.namespace)).unwrap_or_default(),
+                    s(&ep.node_name),
+                    s(&ep.zone),
                 ];
                 for address in &ep.addresses {
                     let mut v = base.to_vec();
-                    v.push(address.clone());
+                    v.push(address.as_str());
                     ms.push(mk(KEYS, v, 1.0));
                 }
             }
@@ -114,9 +114,9 @@ pub fn families(
                 .map(|p| {
                     mk(
                         &["port_name", "port_protocol", "port_number"],
-                        vec![
-                            s(&p.name).to_owned(),
-                            s(&p.protocol).to_owned(),
+                        values![
+                            s(&p.name),
+                            s(&p.protocol),
                             p.port.map(|n| n.to_string()).unwrap_or_default(),
                         ],
                         1.0,

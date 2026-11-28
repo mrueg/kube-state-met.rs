@@ -33,7 +33,7 @@ pub fn families(
         |r| {
             vec![mk(
                 &["roleref_kind", "roleref_name"],
-                vec![r.role_ref.kind.clone(), r.role_ref.name.clone()],
+                values![r.role_ref.kind.as_str(), r.role_ref.name.as_str()],
                 1.0,
             )]
         },

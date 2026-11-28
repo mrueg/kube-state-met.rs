@@ -89,7 +89,7 @@ fn conditions(p: &Pod) -> &[PodCondition] {
 type Statuses = fn(&Pod) -> &[ContainerStatus];
 
 /// `float64(t.Unix())` of the conditions of `type_` with status `True`.
-fn condition_times(p: &Pod, type_: &str, status: &str) -> Vec<Metric> {
+fn condition_times(p: &Pod, type_: &str, status: &str) -> Vec<Metric<'static>> {
     conditions(p)
         .iter()
         .filter(|c| c.type_ == type_ && c.status == status)
@@ -98,7 +98,7 @@ fn condition_times(p: &Pod, type_: &str, status: &str) -> Vec<Metric> {
 }
 
 /// The `condition` samples of the conditions of `type_`.
-fn condition_status(p: &Pod, type_: &str) -> Vec<Metric> {
+fn condition_status(p: &Pod, type_: &str) -> Vec<Metric<'static>> {
     conditions(p)
         .iter()
         .filter(|c| c.type_ == type_)
@@ -107,7 +107,7 @@ fn condition_status(p: &Pod, type_: &str) -> Vec<Metric> {
 }
 
 /// One `container` sample per status.
-fn per_status(p: &Pod, statuses: Statuses, v: fn(&ContainerStatus) -> f64) -> Vec<Metric> {
+fn per_status(p: &Pod, statuses: Statuses, v: fn(&ContainerStatus) -> f64) -> Vec<Metric<'_>> {
     statuses(p)
         .iter()
         .map(|cs| m1("container", cs.name.as_str(), v(cs)))
@@ -115,7 +115,7 @@ fn per_status(p: &Pod, statuses: Statuses, v: fn(&ContainerStatus) -> f64) -> Ve
 }
 
 /// `kube_pod_[init_]container_state_started`.
-fn state_started(p: &Pod, statuses: Statuses) -> Vec<Metric> {
+fn state_started(p: &Pod, statuses: Statuses) -> Vec<Metric<'_>> {
     let mut ms = Vec::new();
     for cs in statuses(p) {
         let st = state(cs);
@@ -139,14 +139,14 @@ fn state_started(p: &Pod, statuses: Statuses) -> Vec<Metric> {
 }
 
 /// `..._status_last_terminated_reason`.
-fn last_terminated_reason(p: &Pod, statuses: Statuses) -> Vec<Metric> {
+fn last_terminated_reason(p: &Pod, statuses: Statuses) -> Vec<Metric<'_>> {
     statuses(p)
         .iter()
         .filter_map(|cs| {
             last_state(cs).terminated.as_ref().map(|t| {
                 mk(
                     &["container", "reason"],
-                    vec![cs.name.clone(), s(&t.reason).to_owned()],
+                    values![cs.name.as_str(), s(&t.reason)],
                     1.0,
                 )
             })
@@ -155,7 +155,7 @@ fn last_terminated_reason(p: &Pod, statuses: Statuses) -> Vec<Metric> {
 }
 
 /// `..._status_last_terminated_exitcode`.
-fn last_terminated_exit_code(p: &Pod, statuses: Statuses) -> Vec<Metric> {
+fn last_terminated_exit_code(p: &Pod, statuses: Statuses) -> Vec<Metric<'_>> {
     statuses(p)
         .iter()
         .filter_map(|cs| {
@@ -168,7 +168,7 @@ fn last_terminated_exit_code(p: &Pod, statuses: Statuses) -> Vec<Metric> {
 }
 
 /// `..._status_last_terminated_timestamp`.
-fn last_terminated_timestamp(p: &Pod, statuses: Statuses) -> Vec<Metric> {
+fn last_terminated_timestamp(p: &Pod, statuses: Statuses) -> Vec<Metric<'_>> {
     statuses(p)
         .iter()
         .filter_map(|cs| {
@@ -188,14 +188,14 @@ fn last_terminated_timestamp(p: &Pod, statuses: Statuses) -> Vec<Metric> {
 }
 
 /// `..._status_terminated_reason`.
-fn terminated_reason(p: &Pod, statuses: Statuses) -> Vec<Metric> {
+fn terminated_reason(p: &Pod, statuses: Statuses) -> Vec<Metric<'_>> {
     statuses(p)
         .iter()
         .filter_map(|cs| {
             state(cs).terminated.as_ref().map(|t| {
                 mk(
                     &["container", "reason"],
-                    vec![cs.name.clone(), s(&t.reason).to_owned()],
+                    values![cs.name.as_str(), s(&t.reason)],
                     1.0,
                 )
             })
@@ -204,14 +204,14 @@ fn terminated_reason(p: &Pod, statuses: Statuses) -> Vec<Metric> {
 }
 
 /// `..._status_waiting_reason`.
-fn waiting_reason(p: &Pod, statuses: Statuses) -> Vec<Metric> {
+fn waiting_reason(p: &Pod, statuses: Statuses) -> Vec<Metric<'_>> {
     statuses(p)
         .iter()
         .filter_map(|cs| {
             state(cs).waiting.as_ref().map(|w| {
                 mk(
                     &["container", "reason"],
-                    vec![cs.name.clone(), s(&w.reason).to_owned()],
+                    values![cs.name.as_str(), s(&w.reason)],
                     1.0,
                 )
             })
@@ -221,10 +221,10 @@ fn waiting_reason(p: &Pod, statuses: Statuses) -> Vec<Metric> {
 
 /// The `(resource, unit, value)` samples of one container's resource list,
 /// as the `switch resourceName` of the resource families.
-fn resource_samples(list: &BTreeMap<String, Quantity>) -> Vec<(String, &'static str, f64)> {
+fn resource_samples(list: &BTreeMap<String, Quantity>) -> Vec<(LabelValue<'_>, &'static str, f64)> {
     let mut out = Vec::new();
     for (name, val) in list {
-        let res = || sanitize_label_name(name).into_owned();
+        let res = || sanitize_label_name(name);
         match name.as_str() {
             "cpu" => out.push((res(), UNIT_CORE, ksm_f64(val))),
             "storage" | "ephemeral-storage" | "memory" => {
@@ -258,7 +258,7 @@ fn requests(c: &Container) -> Option<&BTreeMap<String, Quantity>> {
 }
 
 /// `kube_pod_container_resource_{limits,requests}`.
-fn container_resources(p: &Pod, list: ResourceList) -> Vec<Metric> {
+fn container_resources(p: &Pod, list: ResourceList) -> Vec<Metric<'_>> {
     let node = s(&spec(p).node_name);
     let mut ms = Vec::new();
     for c in &spec(p).containers {
@@ -266,7 +266,7 @@ fn container_resources(p: &Pod, list: ResourceList) -> Vec<Metric> {
             for (res, unit, v) in resource_samples(l) {
                 ms.push(mk(
                     &["container", "node", "resource", "unit"],
-                    vec![c.name.clone(), node.to_owned(), res, unit.to_owned()],
+                    values![c.name.as_str(), node, res, unit],
                     v,
                 ));
             }
@@ -276,14 +276,14 @@ fn container_resources(p: &Pod, list: ResourceList) -> Vec<Metric> {
 }
 
 /// `kube_pod_init_container_resource_{limits,requests}`.
-fn init_container_resources(p: &Pod, list: ResourceList) -> Vec<Metric> {
+fn init_container_resources(p: &Pod, list: ResourceList) -> Vec<Metric<'_>> {
     let mut ms = Vec::new();
     for c in init_containers(p) {
         if let Some(l) = list(c) {
             for (res, unit, v) in resource_samples(l) {
                 ms.push(mk(
                     &["container", "resource", "unit"],
-                    vec![c.name.clone(), res, unit.to_owned()],
+                    values![c.name.as_str(), res, unit],
                     v,
                 ));
             }
@@ -309,7 +309,7 @@ fn has_pod_status_reason(p: &Pod, reason: &str) -> bool {
 }
 
 /// The overhead samples of one resource, converted with `conv`.
-fn overhead(p: &Pod, resource: &str, conv: fn(&Quantity) -> f64) -> Vec<Metric> {
+fn overhead(p: &Pod, resource: &str, conv: fn(&Quantity) -> f64) -> Vec<Metric<'static>> {
     spec(p)
         .overhead
         .iter()
@@ -321,7 +321,7 @@ fn overhead(p: &Pod, resource: &str, conv: fn(&Quantity) -> f64) -> Vec<Metric> 
 
 /// The `volume`, `persistentvolumeclaim`, `ephemeral` samples; `readonly`
 /// picks the value of the `_readonly` family instead of 1.
-fn pvc_volumes(p: &Pod, readonly: bool) -> Vec<Metric> {
+fn pvc_volumes(p: &Pod, readonly: bool) -> Vec<Metric<'_>> {
     const KEYS: &[&str] = &["volume", "persistentvolumeclaim", "ephemeral"];
     let mut ms = Vec::new();
     for v in spec(p).volumes.iter().flatten() {
@@ -333,7 +333,7 @@ fn pvc_volumes(p: &Pod, readonly: bool) -> Vec<Metric> {
             };
             ms.push(mk(
                 KEYS,
-                vec![v.name.clone(), pvc.claim_name.clone(), "false".to_owned()],
+                values![v.name.as_str(), pvc.claim_name.as_str(), "false"],
                 value,
             ));
         } else if v.ephemeral.is_some() {
@@ -341,7 +341,7 @@ fn pvc_volumes(p: &Pod, readonly: bool) -> Vec<Metric> {
             let claim = format!("{}-{}", name(&p.metadata), v.name);
             ms.push(mk(
                 KEYS,
-                vec![v.name.clone(), claim, "true".to_owned()],
+                values![v.name.as_str(), claim, "true"],
                 if readonly { 0.0 } else { 1.0 },
             ));
         }
@@ -351,7 +351,7 @@ fn pvc_volumes(p: &Pod, readonly: bool) -> Vec<Metric> {
 
 /// One sample per value of `values`, 1 for the one equal to `current`; none
 /// when `current` is empty.
-fn one_of(key: &'static str, values: &[&str], current: &str) -> Vec<Metric> {
+fn one_of<'a>(key: &'static str, values: &[&'a str], current: &str) -> Vec<Metric<'a>> {
     if current.is_empty() {
         return Vec::new();
     }
@@ -403,12 +403,12 @@ pub fn families(
                 for cs in container_statuses(p).iter().filter(|cs| cs.name == c.name) {
                     ms.push(mk(
                         &["container", "image_spec", "image", "image_id", "container_id"],
-                        vec![
-                            cs.name.clone(),
-                            s(&c.image).to_owned(),
-                            cs.image.clone(),
-                            cs.image_id.clone(),
-                            s(&cs.container_id).to_owned(),
+                        values![
+                            cs.name.as_str(),
+                            s(&c.image),
+                            cs.image.as_str(),
+                            cs.image_id.as_str(),
+                            s(&cs.container_id),
                         ],
                         1.0,
                     ));
@@ -556,7 +556,7 @@ pub fn families(
                 .flatten()
                 .find(|o| o.controller == Some(true));
             let (kind, cname) = created_by
-                .map(|o| (o.kind.clone(), o.name.clone()))
+                .map(|o| (o.kind.as_str(), o.name.as_str()))
                 .unwrap_or_default();
             let sp = spec(p);
             let st = status(p);
@@ -570,14 +570,14 @@ pub fn families(
                     "priority_class",
                     "host_network",
                 ],
-                vec![
-                    s(&st.host_ip).to_owned(),
-                    s(&st.pod_ip).to_owned(),
-                    s(&sp.node_name).to_owned(),
+                values![
+                    s(&st.host_ip),
+                    s(&st.pod_ip),
+                    s(&sp.node_name),
                     kind,
                     cname,
-                    s(&sp.priority_class_name).to_owned(),
-                    sp.host_network.unwrap_or(false).to_string(),
+                    s(&sp.priority_class_name),
+                    bool_str(sp.host_network.unwrap_or(false)),
                 ],
                 1.0,
             )]
@@ -596,7 +596,7 @@ pub fn families(
                 .flatten()
                 .filter_map(|ip| {
                     go_ip_family(&ip.ip)
-                        .map(|fam| mk(&["ip", "ip_family"], vec![ip.ip.clone(), fam.to_owned()], 1.0))
+                        .map(|fam| mk(&["ip", "ip_family"], values![ip.ip.as_str(), fam], 1.0))
                 })
                 .collect()
         },
@@ -624,13 +624,13 @@ pub fn families(
                             "container_id",
                             "restart_policy",
                         ],
-                        vec![
-                            cs.name.clone(),
-                            s(&c.image).to_owned(),
-                            cs.image.clone(),
-                            cs.image_id.clone(),
-                            s(&cs.container_id).to_owned(),
-                            restart_policy.to_owned(),
+                        values![
+                            cs.name.as_str(),
+                            s(&c.image),
+                            cs.image.as_str(),
+                            cs.image_id.as_str(),
+                            s(&cs.container_id),
+                            restart_policy,
                         ],
                         1.0,
                     ));
@@ -811,11 +811,8 @@ pub fn families(
                 })
                 .map(|rc| {
                     let claim_name = match &rc.resource_claim_name {
-                        Some(n) => n.clone(),
-                        None => resolved
-                            .get(rc.name.as_str())
-                            .map(|n| (*n).to_owned())
-                            .unwrap_or_default(),
+                        Some(n) => n.as_str(),
+                        None => resolved.get(rc.name.as_str()).copied().unwrap_or_default(),
                     };
                     mk(
                         &[
@@ -823,10 +820,10 @@ pub fn families(
                             "resourceclaim_name",
                             "resourceclaim_template_name",
                         ],
-                        vec![
-                            rc.name.clone(),
+                        values![
+                            rc.name.as_str(),
                             claim_name,
-                            s(&rc.resource_claim_template_name).to_owned(),
+                            s(&rc.resource_claim_template_name),
                         ],
                         1.0,
                     )
@@ -1050,11 +1047,11 @@ pub fn families(
                 seen.push(id);
                 ms.push(mk(
                     &["key", "operator", "value", "effect", "toleration_seconds"],
-                    vec![
-                        id.0.to_owned(),
-                        id.1.to_owned(),
-                        id.2.to_owned(),
-                        id.3.to_owned(),
+                    values![
+                        id.0,
+                        id.1,
+                        id.2,
+                        id.3,
                         id.4.map(|n| n.to_string()).unwrap_or_default(),
                     ],
                     1.0,

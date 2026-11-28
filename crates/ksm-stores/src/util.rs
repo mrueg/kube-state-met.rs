@@ -6,6 +6,7 @@ use std::sync::Arc;
 use k8s_openapi::apimachinery::pkg::apis::meta::v1::{MicroTime, ObjectMeta, Time};
 use ksm_core::Stability;
 use ksm_core::generator::FamilyGenerator;
+pub use ksm_core::metric::LabelValue;
 use ksm_core::metric::{Family, Metric, MetricType};
 
 pub use ksm_core::Stability::{Alpha, Beta, Stable};
@@ -37,8 +38,8 @@ impl<K: 'static> Families<K> {
 
     fn wrap(
         &self,
-        f: impl Fn(&K) -> Vec<Metric> + Send + Sync + 'static,
-    ) -> impl Fn(&K) -> Family + Send + Sync + 'static {
+        f: impl Fn(&K) -> Vec<Metric<'_>> + Send + Sync + 'static,
+    ) -> impl Fn(&K) -> Family<'_> + Send + Sync + 'static {
         let keys = self.keys;
         let values = self.values;
         move |obj: &K| {
@@ -58,7 +59,7 @@ impl<K: 'static> Families<K> {
         metric_type: MetricType,
         stability: Stability,
         deprecated: &str,
-        f: impl Fn(&K) -> Vec<Metric> + Send + Sync + 'static,
+        f: impl Fn(&K) -> Vec<Metric<'_>> + Send + Sync + 'static,
     ) -> &mut Self {
         let g = FamilyGenerator::new(name, help, metric_type, stability, deprecated, self.wrap(f));
         self.out.push(g);
@@ -73,7 +74,7 @@ impl<K: 'static> Families<K> {
         metric_type: MetricType,
         stability: Stability,
         deprecated: &str,
-        f: impl Fn(&K) -> Vec<Metric> + Send + Sync + 'static,
+        f: impl Fn(&K) -> Vec<Metric<'_>> + Send + Sync + 'static,
     ) -> &mut Self {
         let g =
             FamilyGenerator::opt_in(name, help, metric_type, stability, deprecated, self.wrap(f));
@@ -183,7 +184,7 @@ pub fn micro_time_f64(t: &MicroTime) -> f64 {
 }
 
 /// One sample of a time's Unix seconds; none when the time is zero.
-fn time_metric(t: Option<&Time>) -> Vec<Metric> {
+fn time_metric(t: Option<&Time>) -> Vec<Metric<'static>> {
     match t {
         Some(t) if !time_is_zero(Some(t)) => vec![Metric::value(time_f64(t))],
         _ => Vec::new(),
@@ -191,17 +192,17 @@ fn time_metric(t: Option<&Time>) -> Vec<Metric> {
 }
 
 /// The `_created` sample: none when the creation timestamp is zero.
-pub fn created_metric(m: &ObjectMeta) -> Vec<Metric> {
+pub fn created_metric(m: &ObjectMeta) -> Vec<Metric<'static>> {
     time_metric(m.creation_timestamp.as_ref())
 }
 
 /// The `_deletion_timestamp` sample: none unless the object is being deleted.
-pub fn deletion_metric(m: &ObjectMeta) -> Vec<Metric> {
+pub fn deletion_metric(m: &ObjectMeta) -> Vec<Metric<'static>> {
     time_metric(m.deletion_timestamp.as_ref())
 }
 
 /// The `_metadata_resource_version` sample.
-pub fn rv_metric(m: &ObjectMeta) -> Vec<Metric> {
+pub fn rv_metric(m: &ObjectMeta) -> Vec<Metric<'static>> {
     resource_version_metric(m.resource_version.as_deref())
 }
 
@@ -210,27 +211,49 @@ pub fn i32_or(v: Option<i32>, default: i32) -> f64 {
     f64::from(v.unwrap_or(default))
 }
 
+/// Label values of mixed kinds for [`mk`]: each of `&str`, `&String` (both
+/// borrowed from the object) or `String` (computed) becomes a [`LabelValue`].
+macro_rules! values {
+    ($($v:expr),* $(,)?) => {
+        [$($crate::util::LabelValue::from($v)),*]
+    };
+}
+pub(crate) use values;
+
+/// `"true"` or `"false"`, as Go's `strconv.FormatBool`.
+pub fn bool_str(b: bool) -> &'static str {
+    if b { "true" } else { "false" }
+}
+
 /// A sample with one static label.
-pub fn m1(key: &'static str, value: impl Into<String>, v: f64) -> Metric {
-    Metric::with(&[key], vec![value.into()], v)
+pub fn m1<'a>(key: &'static str, value: impl Into<LabelValue<'a>>, v: f64) -> Metric<'a> {
+    Metric::with(&[key], [value], v)
 }
 
 /// A sample with static labels.
-pub fn mk(keys: &[&'static str], values: Vec<String>, v: f64) -> Metric {
+pub fn mk<'a, V: Into<LabelValue<'a>>>(
+    keys: &[&'static str],
+    values: impl IntoIterator<Item = V>,
+    v: f64,
+) -> Metric<'a> {
     Metric::with(keys, values, v)
 }
 
 /// The `{"true","false","unknown"}` condition samples with the condition's
 /// own labels in front of `status`.
-pub fn conditions_with(keys: &[&'static str], values: &[&str], status: &str) -> Vec<Metric> {
+pub fn conditions_with<'a>(
+    keys: &[&'static str],
+    values: &[&'a str],
+    status: &str,
+) -> Vec<Metric<'a>> {
     condition_metrics(status)
         .into_iter()
         .map(|mut c| {
             let mut k: Vec<ksm_core::metric::LabelKey> = Vec::with_capacity(keys.len() + 1);
             k.extend(keys.iter().map(|k| std::borrow::Cow::Borrowed(*k)));
             k.push(std::borrow::Cow::Borrowed("status"));
-            let mut v: Vec<String> = Vec::with_capacity(values.len() + 1);
-            v.extend(values.iter().map(|s| (*s).to_owned()));
+            let mut v: Vec<LabelValue<'a>> = Vec::with_capacity(values.len() + 1);
+            v.extend(values.iter().map(|s| LabelValue::Borrowed(*s)));
             v.append(&mut c.label_values);
             Metric::new(k, v, c.value)
         })
@@ -256,8 +279,8 @@ pub fn time_or_zero_f64(t: Option<&Time>) -> f64 {
 }
 
 /// Go `strconv.FormatBool` of an optional bool, `""` when unset.
-pub fn opt_bool_string(b: Option<bool>) -> String {
-    b.map(|b| b.to_string()).unwrap_or_default()
+pub fn opt_bool_string(b: Option<bool>) -> &'static str {
+    b.map_or("", bool_str)
 }
 
 /// `v1.ResourceHugePagesPrefix`.
@@ -365,7 +388,7 @@ pub fn go_ip_family(s: &str) -> Option<&'static str> {
 /// The `_owner` samples: `owner_kind`, `owner_name` and, with
 /// `with_controller`, `owner_is_controller` ("false" when unset). Without
 /// owners, one sample with empty values.
-pub fn owner_metrics(m: &ObjectMeta, with_controller: bool) -> Vec<Metric> {
+pub fn owner_metrics(m: &ObjectMeta, with_controller: bool) -> Vec<Metric<'_>> {
     let keys: &[&'static str] = if with_controller {
         &["owner_kind", "owner_name", "owner_is_controller"]
     } else {
@@ -373,14 +396,14 @@ pub fn owner_metrics(m: &ObjectMeta, with_controller: bool) -> Vec<Metric> {
     };
     let owners = m.owner_references.as_deref().unwrap_or_default();
     if owners.is_empty() {
-        return vec![mk(keys, vec![String::new(); keys.len()], 1.0)];
+        return vec![mk(keys, vec![""; keys.len()], 1.0)];
     }
     owners
         .iter()
         .map(|o| {
-            let mut values = vec![o.kind.clone(), o.name.clone()];
+            let mut values = vec![o.kind.as_str(), o.name.as_str()];
             if with_controller {
-                values.push(o.controller.unwrap_or(false).to_string());
+                values.push(bool_str(o.controller.unwrap_or(false)));
             }
             mk(keys, values, 1.0)
         })
@@ -424,13 +447,13 @@ pub fn scaled_value_from_int_or_percent(
 }
 
 /// An optional count as a sample, none when unset (Go checks `!= nil`).
-pub fn opt_i32_metric(v: Option<i32>) -> Vec<Metric> {
+pub fn opt_i32_metric(v: Option<i32>) -> Vec<Metric<'static>> {
     v.map(|v| vec![Metric::value(f64::from(v))])
         .unwrap_or_default()
 }
 
 /// A time as a sample, none when unset (Go checks `!= nil`, not `IsZero`).
-pub fn opt_time_metric(t: Option<&Time>) -> Vec<Metric> {
+pub fn opt_time_metric(t: Option<&Time>) -> Vec<Metric<'static>> {
     t.map(|t| vec![Metric::value(time_f64(t))])
         .unwrap_or_default()
 }
@@ -454,7 +477,7 @@ pub fn usize_f64(n: usize) -> f64 {
 }
 
 /// The `*_metadata_generation` sample: `metadata.generation`, 0 when unset.
-pub fn generation_metric(m: &ObjectMeta) -> Vec<Metric> {
+pub fn generation_metric(m: &ObjectMeta) -> Vec<Metric<'static>> {
     vec![Metric::value(i64_f64(m.generation.unwrap_or(0)))]
 }
 

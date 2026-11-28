@@ -29,16 +29,14 @@ pub fn families(
         |s| {
             vec![mk(
                 &["provisioner", "reclaim_policy", "volume_binding_mode"],
-                vec![
-                    s.provisioner.clone(),
+                values![
+                    s.provisioner.as_str(),
                     s.reclaim_policy
                         .as_deref()
-                        .unwrap_or(DEFAULT_RECLAIM_POLICY)
-                        .to_owned(),
+                        .unwrap_or(DEFAULT_RECLAIM_POLICY),
                     s.volume_binding_mode
                         .as_deref()
-                        .unwrap_or(DEFAULT_VOLUME_BINDING_MODE)
-                        .to_owned(),
+                        .unwrap_or(DEFAULT_VOLUME_BINDING_MODE),
                 ],
                 1.0,
             )]

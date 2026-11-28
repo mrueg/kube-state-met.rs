@@ -32,11 +32,11 @@ pub fn families(
                     "failure_policy",
                     "reinvocation_policy",
                 ],
-                vec![
-                    param_kind.map_or("", |k| s(&k.api_version)).to_owned(),
-                    param_kind.map_or("", |k| s(&k.kind)).to_owned(),
-                    spec.map_or("", |sp| s(&sp.failure_policy)).to_owned(),
-                    spec.map_or("", |sp| s(&sp.reinvocation_policy)).to_owned(),
+                values![
+                    param_kind.map_or("", |k| s(&k.api_version)),
+                    param_kind.map_or("", |k| s(&k.kind)),
+                    spec.map_or("", |sp| s(&sp.failure_policy)),
+                    spec.map_or("", |sp| s(&sp.reinvocation_policy)),
                 ],
                 1.0,
             )]

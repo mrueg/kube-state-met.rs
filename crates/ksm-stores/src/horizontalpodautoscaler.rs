@@ -18,14 +18,14 @@ const TARGET_METRIC_LABELS: &[&str] = &["metric_name", "metric_target_type", "co
 
 /// The `value` / `utilization` / `average` samples of one metric target or
 /// current status (Go's `metricMap`, keyed by `metricTargetType`).
-fn target_metrics(
-    metric_name: &str,
-    container_name: &str,
+fn target_metrics<'a>(
+    metric_name: &'a str,
+    container_name: &'a str,
     value: Option<&Quantity>,
     average_value: Option<&Quantity>,
     average_utilization: Option<i32>,
-) -> Vec<Metric> {
-    let mut entries: Vec<(&str, f64)> = Vec::with_capacity(3);
+) -> Vec<Metric<'a>> {
+    let mut entries: Vec<(&'static str, f64)> = Vec::with_capacity(3);
     if let Some(v) = value {
         entries.push(("value", quantity::ksm_f64(v)));
     }
@@ -37,17 +37,7 @@ fn target_metrics(
     }
     entries
         .into_iter()
-        .map(|(ty, v)| {
-            mk(
-                TARGET_METRIC_LABELS,
-                vec![
-                    metric_name.to_owned(),
-                    ty.to_owned(),
-                    container_name.to_owned(),
-                ],
-                v,
-            )
-        })
+        .map(|(ty, v)| mk(TARGET_METRIC_LABELS, [metric_name, ty, container_name], v))
         .collect()
 }
 
@@ -60,7 +50,7 @@ fn behavior(a: &HorizontalPodAutoscaler) -> Option<&HorizontalPodAutoscalerBehav
 }
 
 /// The tolerance sample of a scaling rule, none when unset.
-fn tolerance_metric(rules: Option<&HPAScalingRules>) -> Vec<Metric> {
+fn tolerance_metric(rules: Option<&HPAScalingRules>) -> Vec<Metric<'_>> {
     rules
         .and_then(|r| r.tolerance.as_ref())
         .map(|t| Metric::value(quantity::from_k8s(t).as_approximate_f64()))
@@ -90,7 +80,7 @@ pub fn families(
             if api_version.is_empty() {
                 vec![mk(
                     &["scaletargetref_kind", "scaletargetref_name"],
-                    vec![kind, name],
+                    values![kind, name],
                     1.0,
                 )]
             } else {
@@ -100,7 +90,7 @@ pub fn families(
                         "scaletargetref_kind",
                         "scaletargetref_name",
                     ],
-                    vec![api_version.to_owned(), kind, name],
+                    values![api_version, kind, name],
                     1.0,
                 )]
             }

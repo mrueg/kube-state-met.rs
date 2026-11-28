@@ -71,10 +71,10 @@ pub fn families(
         |j| {
             vec![mk(
                 &["schedule", "concurrency_policy", "timezone"],
-                vec![
-                    schedule(j).to_owned(),
-                    s(&spec(j).concurrency_policy).to_owned(),
-                    time_zone(j).unwrap_or("local").to_owned(),
+                values![
+                    schedule(j),
+                    s(&spec(j).concurrency_policy),
+                    time_zone(j).unwrap_or("local"),
                 ],
                 1.0,
             )]

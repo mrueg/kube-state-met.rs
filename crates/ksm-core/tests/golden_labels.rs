@@ -42,12 +42,18 @@ fn labels_match_go() {
             "labelName" => (vec![label_name("label", &c.arg)], vec![]),
             "mapToPrometheusLabels" => {
                 let (k, v) = map_to_prometheus_labels(&c.r#in, "label");
-                (k.into_iter().map(|k| k.into_owned()).collect(), v)
+                (
+                    k.into_iter().map(|k| k.into_owned()).collect(),
+                    v.into_iter().map(|v| v.into_owned()).collect(),
+                )
             }
             "createPrometheusLabelKeysValues" => {
                 let (k, v) =
                     create_prometheus_label_keys_values("annotation", Some(&c.r#in), &c.allow);
-                (k.into_iter().map(|k| k.into_owned()).collect(), v)
+                (
+                    k.into_iter().map(|k| k.into_owned()).collect(),
+                    v.into_iter().map(|v| v.into_owned()).collect(),
+                )
             }
             other => panic!("unknown fn {other}"),
         };

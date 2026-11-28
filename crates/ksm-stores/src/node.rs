@@ -33,16 +33,13 @@ fn node_info(n: &Node) -> Option<&NodeSystemInfo> {
 }
 
 /// The `{resource, unit}` samples of a node's allocatable or capacity list.
-fn resource_metrics(list: Option<&BTreeMap<String, Quantity>>) -> Vec<Metric> {
+fn resource_metrics(list: Option<&BTreeMap<String, Quantity>>) -> Vec<Metric<'_>> {
     let mut ms = Vec::new();
     for (resource_name, val) in list.into_iter().flatten() {
-        let mut push = |unit: &str| {
+        let mut push = |unit: &'static str| {
             ms.push(mk(
                 &["resource", "unit"],
-                vec![
-                    sanitize_label_name(resource_name).into_owned(),
-                    unit.to_owned(),
-                ],
+                values![sanitize_label_name(resource_name).into_owned(), unit,],
                 quantity::ksm_f64(val),
             ));
         };
@@ -123,17 +120,14 @@ pub fn families(
                     "system_uuid",
                     "internal_ip",
                 ],
-                vec![
+                values![
                     info_str(|i| &i.kernel_version),
                     info_str(|i| &i.os_image),
                     info_str(|i| &i.container_runtime_version),
                     info_str(|i| &i.kubelet_version),
-                    "deprecated".to_owned(),
-                    spec(n)
-                        .map(|sp| s(&sp.provider_id))
-                        .unwrap_or("")
-                        .to_owned(),
-                    spec(n).map(|sp| s(&sp.pod_cidr)).unwrap_or("").to_owned(),
+                    "deprecated",
+                    spec(n).map(|sp| s(&sp.provider_id)).unwrap_or(""),
+                    spec(n).map(|sp| s(&sp.pod_cidr)).unwrap_or(""),
                     info_str(|i| &i.system_uuid),
                     internal_ip,
                 ],
@@ -188,7 +182,7 @@ pub fn families(
                 .map(|t| {
                     mk(
                         &["key", "value", "effect"],
-                        vec![t.key.clone(), s(&t.value).to_owned(), t.effect.clone()],
+                        values![t.key.as_str(), s(&t.value), t.effect.as_str()],
                         1.0,
                     )
                 })
@@ -251,7 +245,7 @@ pub fn families(
                 .map(|a| {
                     mk(
                         &["type", "address"],
-                        vec![a.type_.clone(), a.address.clone()],
+                        values![a.type_.as_str(), a.address.as_str()],
                         1.0,
                     )
                 })

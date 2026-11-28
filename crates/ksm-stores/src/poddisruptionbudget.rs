@@ -9,7 +9,10 @@ pub const NAME: &str = "poddisruptionbudgets";
 pub const GO_TYPE: &str = "*v1.PodDisruptionBudget";
 
 /// A status field as one sample; Go reads the zero value of a missing status.
-fn status_metric(p: &PodDisruptionBudget, f: fn(&PodDisruptionBudgetStatus) -> f64) -> Vec<Metric> {
+fn status_metric(
+    p: &PodDisruptionBudget,
+    f: fn(&PodDisruptionBudgetStatus) -> f64,
+) -> Vec<Metric<'_>> {
     vec![Metric::value(p.status.as_ref().map_or(0.0, f))]
 }
 

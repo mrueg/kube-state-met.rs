@@ -38,7 +38,7 @@ pub fn families(
                     for (resource, q) in list.iter().flatten() {
                         ms.push(mk(
                             &["resource", "type", "constraint"],
-                            vec![resource.clone(), item.type_.clone(), constraint.to_owned()],
+                            values![resource.as_str(), item.type_.as_str(), constraint],
                             quantity::ksm_f64(q),
                         ));
                     }

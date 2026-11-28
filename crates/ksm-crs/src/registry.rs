@@ -40,12 +40,12 @@ impl EachValue {
     }
 
     /// `ToMetric`: label keys sorted.
-    fn into_metric(self) -> Metric {
+    fn into_metric(self) -> Metric<'static> {
         let mut keys = Vec::with_capacity(self.labels.len());
         let mut values = Vec::with_capacity(self.labels.len());
         for (k, v) in self.labels {
             keys.push(Cow::Owned(k));
-            values.push(v);
+            values.push(Cow::Owned(v));
         }
         Metric::new(keys, values, self.value)
     }
@@ -582,7 +582,7 @@ impl CompiledFamily {
     }
 
     /// `generate`.
-    fn generate(&self, obj: &Value) -> Family {
+    fn generate(&self, obj: &Value) -> Family<'static> {
         let base = self.base_labels(obj);
         let (values, errors) = scrape_values_for(&self.each, obj);
         for err in errors {
