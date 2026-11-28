@@ -2,11 +2,13 @@ name: bench
 # Benchmarks against the Go original (kube-state-metrics at the ported
 # commit). Separate from ci.yml: they take long and their numbers are noisy on
 # shared runners, so they report and never fail on a slowdown. Compare Go and
-# Rust within one run, not across runs.
+# Rust within one run, not across runs. They run on main, on demand, and on
+# pull requests labelled "bench" (the kind+kwok job takes about an hour).
 on:
   push:
     branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
   workflow_dispatch:
 concurrency:
   group: bench-${{ github.ref }}
@@ -17,6 +19,7 @@ jobs:
     # scrape latency p50/p90/p99 (plain and gzip), throughput with 4 clients,
     # CPU per scrape, RSS, and CPU under 1000 pod events/s; then the criterion
     # micro-benchmarks.
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'bench')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -47,6 +50,7 @@ jobs:
     # cluster with 3 control-plane nodes and kwok simulating 100 nodes with
     # 10 000 pods (tools/kind-kwok-bench/run.sh). Includes the API server's
     # list time, and the Go client lists in protobuf.
+    if: github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'bench')
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
